@@ -586,7 +586,7 @@
  */
 
 // ── STATE ──────────────────────────────────────────────────
-let API_URL      = localStorage.getItem('lanchesFutsalApiUrl') || '';
+let API_URL      = '';  // Será carregado do config.json
 let MASTER_KEY   = localStorage.getItem('lanchesFutsalMasterKey') || '';
 let lanchesData  = [];
 let currentFilter= 'all';
@@ -1095,30 +1095,47 @@ window.handleToggle   = (id, checked) => updateStatus(id, checked ? 'Sim' : 'Nã
 window.confirmDelete  = confirmDelete;
 window.confirmPassword = confirmPassword;
 
-// ── INIT ───────────────────────────────────────────────────
-el.lunchDate.value = todayStr();
+// ── LOAD CONFIG E INICIALIZAR ─────────────────────────────
+async function initApp() {
+    el.lunchDate.value = todayStr();
 
-if (!API_URL) {
-    // Primeira configuração: pedir URL da API
-    showConfigModal();
-    setStatus('offline', 'Não configurado');
-    el.lanchesList.innerHTML = `
-        <div class="empty-state">
-            <div class="empty-icon">🔧</div>
-            <p class="empty-text">Configura a URL da API para começar.</p>
-        </div>`;
-} else {
+    try {
+        // Carregar config.json com a URL da API
+        const configRes = await fetch('config.json');
+        if (configRes.ok) {
+            const config = await configRes.json();
+            API_URL = config.apiUrl || '';
+        }
+    } catch (err) {
+        console.error('Erro ao carregar config.json:', err);
+    }
+
+    if (!API_URL) {
+        // Se config.json não existir, mostrar modal de configuração
+        showConfigModal();
+        setStatus('offline', 'Não configurado');
+        el.lanchesList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔧</div>
+                <p class="empty-text">Configura a URL da API para começar.</p>
+            </div>`;
+        return;
+    }
+
     // API está configurada, carregar dados
     loadData();
 
-    // Se não tem Chave de Acesso, mostrar aviso
+    // Se não tem Chave de Acesso, mostrar aviso sutil
     if (!MASTER_KEY) {
-        showToast('💡 Apenas leitura: não tens a Chave de Acesso. Clica em ⚙️ para editar.', 'info', 6000);
+        showToast('💡 Apenas leitura: para editar, clica em ⚙️ e insere a Chave de Acesso.', 'info', 6000);
         // Desabilitar formulário de adição
         el.submitBtn.disabled = true;
         el.submitBtn.textContent = '🔒 Requer Chave de Acesso';
     }
 }
+
+// Iniciar app quando página carregar
+initApp();
 </script>
 </body>
 </html>
