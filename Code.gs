@@ -15,16 +15,21 @@
  *    Execute as: Me  |  Who has access: Anyone
  *    → Copia a URL gerada e cola no site
  *
+ * 4. CONFIGURAÇÃO DA MASTER KEY:
+ *    Na folha "Sheet1", cria uma folha chamada "Config"
+ *    Linha 1: Chave | Valor
+ *    Linha 2: MASTER_KEY | SEU-CÓDIGO-SECRETO (ex: 523241)
+ *
  * ENDPOINTS:
  *   GET  ?action=read          → lista todos os registos
- *   POST action=create         → cria registo (nome, data, entregue, observacoes)
- *   POST action=update         → atualiza registo (id, entregue, ...)
- *   POST action=delete         → elimina registo (id)
+ *   POST action=create         → cria registo (nome, data, entregue, observacoes, masterKey)
+ *   POST action=update         → atualiza registo (id, entregue, masterKey, ...)
+ *   POST action=delete         → elimina registo (id, masterKey)
  * ============================================
  */
 
 const SHEET_NAME = 'Sheet1';
-const MASTER_KEY_NAME = 'MASTER_KEY'; // Nome da config onde guardar a chave
+const CONFIG_SHEET_NAME = 'Config';
 
 // ── HANDLER GET ──────────────────────────────────────────
 function doGet(e) {
@@ -67,7 +72,7 @@ function jsonResponse(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// ── SHEET HELPER ─────────────────────────────────────────
+// ── SHEET HELPERS ────────────────────────────────────────
 function getSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName(SHEET_NAME);
@@ -78,6 +83,19 @@ function getSheet() {
     header.setFontWeight('bold')
           .setBackground('#1e3a8a')
           .setFontColor('#ffffff');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function getConfigSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(CONFIG_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(CONFIG_SHEET_NAME);
+    const header = sheet.getRange(1, 1, 1, 2);
+    header.setValues([['Chave', 'Valor']]);
+    header.setFontWeight('bold').setBackground('#e5e7eb');
     sheet.setFrozenRows(1);
   }
   return sheet;
@@ -104,6 +122,25 @@ function dateToStr(val) {
   return String(val);
 }
 
+// ── MASTER KEY MANAGEMENT ────────────────────────────────
+function getMasterKey() {
+  const sheet = getConfigSheet();
+  const last = sheet.getLastRow();
+  for (let i = 2; i <= last; i++) {
+    const chave = sheet.getRange(i, 1).getValue();
+    if (chave === 'MASTER_KEY') {
+      return String(sheet.getRange(i, 2).getValue());
+    }
+  }
+  return '';
+}
+
+function validateMasterKey(providedKey) {
+  if (!providedKey) return false;
+  const stored = getMasterKey();
+  return String(providedKey) === stored;
+}
+
 // ── READ ─────────────────────────────────────────────────
 function readData() {
   const sheet = getSheet();
@@ -116,59 +153,12 @@ function readData() {
     .map(r => ({
       id:          r[0],
       nome:        r[1] || '',
-      data:        dateToStr(r[2]),   // ← correção crítica
+      data:        dateToStr(r[2]),
       entregue:    r[3] || 'Não',
       observacoes: r[4] || ''
     }));
 
   return { success: true, data: data, count: data.length };
-}
-
-// ── MASTER KEY VALIDATION ────────────────────────────────
-function getMasterKey() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Config') || getConfigSheet();
-  const range = sheet.getRange('A:B');
-  const vals  = range.getValues();
-  for (let i = 0; i < vals.length; i++) {
-    if (vals[i][0] === MASTER_KEY_NAME) return vals[i][1] || '';
-  }
-  return '';
-}
-
-function setMasterKey(key) {
-  const sheet = getConfigSheet();
-  const range = sheet.getRange('A:B');
-  const vals  = range.getValues();
-  let found   = false;
-  for (let i = 0; i < vals.length; i++) {
-    if (vals[i][0] === MASTER_KEY_NAME) {
-      sheet.getRange(i + 1, 2).setValue(key);
-      found = true;
-      break;
-    }
-  }
-  if (!found) {
-    sheet.appendRow([MASTER_KEY_NAME, key]);
-  }
-}
-
-function getConfigSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName('Config');
-  if (!sheet) {
-    sheet = ss.insertSheet('Config');
-    const header = sheet.getRange(1, 1, 1, 2);
-    header.setValues([['Chave', 'Valor']]);
-    header.setFontWeight('bold').setBackground('#e5e7eb');
-    sheet.setFrozenRows(1);
-  }
-  return sheet;
-}
-
-function validateMasterKey(providedKey) {
-  if (!providedKey) return false;
-  const stored = getMasterKey();
-  return providedKey === stored;
 }
 
 // ── CREATE ────────────────────────────────────────────────
@@ -204,7 +194,7 @@ function updateData(p) {
   const idx = ids.findIndex(v => String(v) === String(p.id));
   if (idx === -1) return { success: false, error: 'Registo não encontrado (id=' + p.id + ').' };
 
-  const row = idx + 2; // +1 header +1 índice base-0
+  const row = idx + 2;
   if (p.entregue    !== undefined) sheet.getRange(row, 4).setValue(p.entregue);
   if (p.nome        !== undefined) sheet.getRange(row, 2).setValue(p.nome);
   if (p.data        !== undefined) sheet.getRange(row, 3).setValue(p.data);
@@ -237,26 +227,22 @@ function deleteData(p) {
   return { success: true, message: 'Registo eliminado.', deletedId: p.id };
 }
 
-// ── UTILITÁRIOS (executar manualmente para testar) ────────
+// ── UTILITÁRIOS ──────────────────────────────────────────
 function testAPI() {
+  Logger.log('=== MASTER KEY ===');
+  Logger.log('Chave guardada: ' + getMasterKey());
+
   Logger.log('=== READ ===');
   Logger.log(JSON.stringify(readData()));
 
   Logger.log('=== CREATE ===');
-  const c = createData({ nome: 'Teste Script', data: '2025-01-01', entregue: 'Não', observacoes: 'Teste' });
+  const c = createData({ nome: 'Teste', data: '2025-01-01', entregue: 'Não', observacoes: 'Teste', masterKey: getMasterKey() });
   Logger.log(JSON.stringify(c));
 
   if (c.success) {
     Logger.log('=== UPDATE ===');
-    Logger.log(JSON.stringify(updateData({ id: c.data.id, entregue: 'Sim' })));
+    Logger.log(JSON.stringify(updateData({ id: c.data.id, entregue: 'Sim', masterKey: getMasterKey() })));
     Logger.log('=== DELETE ===');
-    Logger.log(JSON.stringify(deleteData({ id: c.data.id })));
+    Logger.log(JSON.stringify(deleteData({ id: c.data.id, masterKey: getMasterKey() })));
   }
-}
-
-function clearAllData() {
-  const sheet = getSheet();
-  const last  = sheet.getLastRow();
-  if (last > 1) sheet.deleteRows(2, last - 1);
-  Logger.log('Dados limpos.');
 }

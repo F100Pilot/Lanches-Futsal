@@ -1098,17 +1098,26 @@ window.confirmPassword = confirmPassword;
 // ── INIT ───────────────────────────────────────────────────
 el.lunchDate.value = todayStr();
 
-if (API_URL && MASTER_KEY) {
-    loadData();
-} else {
+if (!API_URL) {
+    // Primeira configuração: pedir URL da API
     showConfigModal();
     setStatus('offline', 'Não configurado');
-    const msg = !API_URL ? 'Configura a URL da API para começar.' : 'Configura a Chave de Acesso para continuar.';
     el.lanchesList.innerHTML = `
         <div class="empty-state">
             <div class="empty-icon">🔧</div>
-            <p class="empty-text">${msg}</p>
+            <p class="empty-text">Configura a URL da API para começar.</p>
         </div>`;
+} else {
+    // API está configurada, carregar dados
+    loadData();
+
+    // Se não tem Chave de Acesso, mostrar aviso
+    if (!MASTER_KEY) {
+        showToast('💡 Apenas leitura: não tens a Chave de Acesso. Clica em ⚙️ para editar.', 'info', 6000);
+        // Desabilitar formulário de adição
+        el.submitBtn.disabled = true;
+        el.submitBtn.textContent = '🔒 Requer Chave de Acesso';
+    }
 }
 </script>
 </body>
