@@ -810,7 +810,16 @@ async function loadData(silent = false) {
 
 // ── API: CREATE ────────────────────────────────────────────
 async function addData(nome, data, entregue, observacoes) {
-    if (!API_URL || !MASTER_KEY) { showConfigModal(); return false; }
+    if (!API_URL) { showConfigModal(); return false; }
+
+    // Se não tem Chave, pedir
+    if (!MASTER_KEY) {
+        const key = prompt('🔑 Insere a Chave de Acesso para adicionar:\n(mínimo 6 caracteres)');
+        if (!key) return false;
+        if (key.length < 6) { showToast('Chave inválida.', 'error'); return false; }
+        MASTER_KEY = key;
+        localStorage.setItem('lanchesFutsalMasterKey', key);
+    }
 
     el.submitBtn.disabled = true;
     el.submitBtn.textContent = '⏳ A adicionar...';
@@ -846,7 +855,16 @@ async function addData(nome, data, entregue, observacoes) {
 
 // ── API: UPDATE STATUS ─────────────────────────────────────
 async function updateStatus(id, newEntregue) {
-    if (!API_URL || !MASTER_KEY) { showConfigModal(); return false; }
+    if (!API_URL) { showConfigModal(); return false; }
+
+    // Se não tem Chave, pedir
+    if (!MASTER_KEY) {
+        const key = prompt('🔑 Insere a Chave de Acesso para atualizar:\n(mínimo 6 caracteres)');
+        if (!key) { await loadData(true); renderLanches(); return false; }
+        if (key.length < 6) { showToast('Chave inválida.', 'error'); await loadData(true); renderLanches(); return false; }
+        MASTER_KEY = key;
+        localStorage.setItem('lanchesFutsalMasterKey', key);
+    }
 
     try {
         const res  = await fetch(API_URL, {
@@ -878,7 +896,16 @@ async function updateStatus(id, newEntregue) {
 
 // ── API: DELETE ────────────────────────────────────────────
 async function deleteItem(id) {
-    if (!API_URL || !MASTER_KEY) { showConfigModal(); return false; }
+    if (!API_URL) { showConfigModal(); return false; }
+
+    // Se não tem Chave, pedir
+    if (!MASTER_KEY) {
+        const key = prompt('🔑 Insere a Chave de Acesso para eliminar:\n(mínimo 6 caracteres)');
+        if (!key) return false;
+        if (key.length < 6) { showToast('Chave inválida.', 'error'); return false; }
+        MASTER_KEY = key;
+        localStorage.setItem('lanchesFutsalMasterKey', key);
+    }
 
     try {
         const res  = await fetch(API_URL, {
