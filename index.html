@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanches Futsal</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+    <style>
+        :root {
+            --primary:       #1e3a8a;
+            --primary-light: #3b82f6;
+            --primary-dark:  #1e40af;
+            --success:       #10b981;
+            --warning:       #f59e0b;
+            --danger:        #ef4444;
+            --white:         #ffffff;
+            --gray-50:       #f9fafb;
+            --gray-100:      #f3f4f6;
+            --gray-200:      #e5e7eb;
+            --gray-300:      #d1d5db;
+            --gray-400:      #9ca3af;
+            --gray-500:      #6b7280;
+            --gray-600:      #4b5563;
+            --gray-700:      #374151;
+            --gray-800:      #1f2937;
+            --shadow:        0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+            --shadow-lg:     0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+            --radius:        12px;
+            --radius-sm:     8px;
+            --transition:    all 0.25s ease;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+            background: linear-gradient(145deg, #0f2460 0%, #1e3a8a 40%, #2563eb 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0 20px;
+            color: var(--white);
+        }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .header-icon { font-size: 2.8rem; line-height: 1; animation: bounce 3s ease-in-out infinite; }
+        @keyframes bounce {
+            0%,100% { transform: translateY(0) rotate(0deg); }
+            50%      { transform: translateY(-6px) rotate(-5deg); }
+        }
+        .header h1   { font-size: 1.5rem; font-weight: 800; letter-spacing: -.3px; }
+        .header p    { font-size: .82rem; opacity: .8; margin-top: 1px; }
+        .header-actions { display: flex; gap: 8px; }
+        .icon-btn {
+            width: 38px; height: 38px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+            color: var(--white);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
+        }
+        .icon-btn:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.6); }
+
+        /* ── CONNECTION STATUS ── */
+        .connection-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 14px;
+            background: rgba(255,255,255,.15);
+            border-radius: 20px;
+            font-size: .82rem; color: var(--white);
+            margin-bottom: 18px;
+            backdrop-filter: blur(4px);
+        }
+        .connection-left { display: flex; align-items: center; gap: 8px; }
+        .status-dot {
+            width: 9px; height: 9px; border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .status-dot.online     { background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse-dot 2s infinite; }
+        .status-dot.offline    { background: var(--danger); }
+        .status-dot.connecting { background: var(--warning); animation: pulse-dot 1s infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.4} }
+        .last-sync { font-size: .75rem; opacity: .7; }
+
+        /* ── STATS ── */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 18px 12px 14px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0;
+            height: 3px; width: 100%;
+        }
+        .stat-card.total::after    { background: var(--primary-light); }
+        .stat-card.delivered::after{ background: var(--success); }
+        .stat-card.pending::after  { background: var(--warning); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .stat-number { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+        .stat-card.total    .stat-number { color: var(--primary); }
+        .stat-card.delivered .stat-number{ color: var(--success); }
+        .stat-card.pending  .stat-number { color: var(--warning); }
+        .stat-label { font-size: .75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+
+        /* Progress bar across full width */
+        .progress-bar-wrap {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow);
+        }
+        .progress-label {
+            display: flex; justify-content: space-between;
+            font-size: .8rem; color: var(--gray-600); margin-bottom: 8px; font-weight: 600;
+        }
+        .progress-track {
+            height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; border-radius: 4px;
+            background: linear-gradient(90deg, var(--success) 0%, #34d399 100%);
+            transition: width .6s ease;
+        }
+
+        /* ── FORM CARD ── */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 22px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            font-size: 1rem; font-weight: 700; color: var(--gray-800);
+            margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+        }
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: .875rem; font-weight: 600; color: var(--gray-700); margin-bottom: 5px; }
+        .form-input, .form-select {
+            width: 100%; padding: 11px 14px;
+            border: 2px solid var(--gray-200); border-radius: var(--radius-sm);
+            font-size: .95rem; transition: var(--transition); background: var(--white);
+            font-family: inherit;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 12px 20px; border: none; border-radius: var(--radius-sm);
+            font-size: .95rem; font-weight: 700; cursor: pointer; transition: var(--transition);
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white); width: 100%;
+        }
+        .btn-primary:hover   { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .btn-primary:active  { transform: translateY(0); }
+        .btn-primary:disabled{ opacity: .55; cursor: not-allowed; transform: none; }
+        .btn-danger {
+            background: rgba(239,68,68,.1); color: var(--danger);
+            border: 1.5px solid rgba(239,68,68,.25);
+            padding: 7px 11px; font-size: .8rem; border-radius: 6px;
+        }
+        .btn-danger:hover { background: rgba(239,68,68,.2); }
+        .btn-sm {
+            padding: 7px 14px; font-size: .82rem;
+        }
+
+        /* ── LIST CARD ── */
+        .list-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 14px; gap: 10px; flex-wrap: wrap;
+        }
+        .list-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 5px 12px; border: 2px solid var(--gray-200);
+            border-radius: 20px; background: var(--white);
+            font-size: .78rem; font-weight: 600; cursor: pointer; transition: var(--transition);
+            font-family: inherit;
+        }
+        .filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        .search-wrap { position: relative; width: 100%; margin-bottom: 14px; }
+        .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: .9rem; pointer-events: none; }
+        .search-input {
+            width: 100%; padding: 9px 14px 9px 34px;
+            border: 2px solid var(--gray-200); border-radius: 20px;
+            font-size: .88rem; transition: var(--transition); font-family: inherit;
+        }
+        .search-input:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+        .search-input::placeholder { color: var(--gray-400); }
+
+        /* ── LANCHE ITEM ── */
+        .lanches-list { display: flex; flex-direction: column; gap: 10px; }
+        .lanche-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; background: var(--gray-50);
+            border-radius: var(--radius-sm); transition: var(--transition);
+            border: 2px solid transparent; position: relative;
+        }
+        .lanche-item:hover { background: var(--gray-100); }
+        .lanche-item.delivered { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.3); }
+
+        /* Custom checkbox */
+        .lanche-checkbox { position: relative; width: 22px; height: 22px; flex-shrink: 0; }
+        .lanche-checkbox input { position: absolute; opacity:0; cursor:pointer; width:100%; height:100%; z-index:2; margin:0; }
+        .checkmark {
+            position: absolute; top:0; left:0; width:22px; height:22px;
+            background: var(--white); border: 2px solid var(--gray-300);
+            border-radius: 6px; transition: var(--transition);
+        }
+        .lanche-checkbox input:checked ~ .checkmark { background: var(--success); border-color: var(--success); }
+        .checkmark::after {
+            content: ''; position:absolute; display:none;
+            left: 6px; top: 2px; width: 6px; height: 11px;
+            border: solid var(--white); border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .lanche-checkbox input:checked ~ .checkmark::after { display: block; }
+
+        .lanche-info { flex: 1; min-width: 0; }
+        .lanche-name { font-weight: 700; color: var(--gray-800); font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lanche-item.delivered .lanche-name { text-decoration: line-through; color: var(--gray-400); }
+        .lanche-meta { display: flex; align-items: center; gap: 10px; margin-top: 3px; flex-wrap: wrap; }
+        .lanche-date { font-size: .8rem; color: var(--gray-500); }
+        .lanche-notes { font-size: .78rem; color: var(--gray-400); font-style: italic; }
+        .lanche-badge {
+            padding: 3px 9px; border-radius: 20px; font-size: .7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .3px; flex-shrink: 0;
+        }
+        .badge-entregue { background: rgba(16,185,129,.15); color: #059669; }
+        .badge-pendente  { background: rgba(245,158,11,.15); color: #d97706; }
+
+        .item-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+        /* ── EMPTY / LOADING ── */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--gray-500); }
+        .empty-icon  { font-size: 2.8rem; margin-bottom: 12px; }
+        .empty-text  { font-size: .9rem; line-height: 1.6; }
+        .loading     { display: flex; flex-direction: column; align-items: center; padding: 40px; color: var(--gray-400); }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--gray-200); border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── TOASTS ── */
+        .toast-container { position: fixed; top: 16px; right: 16px; z-index: 9000; display: flex; flex-direction: column; gap: 8px; }
+        .toast {
+            display: flex; align-items: center; gap: 10px;
+            padding: 13px 16px; background: var(--white); border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg); animation: slideInRight .3s ease;
+            max-width: 320px; font-size: .88rem;
+        }
+        @keyframes slideInRight { from { transform: translateX(110%); opacity:0; } to { transform: translateX(0); opacity:1; } }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error   { border-left: 4px solid var(--danger); }
+        .toast.warning { border-left: 4px solid var(--warning); }
+        .toast.info    { border-left: 4px solid var(--primary-light); }
+        .toast-msg { flex: 1; color: var(--gray-700); }
+        .toast-close { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--gray-400); padding: 0 2px; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.55); backdrop-filter: blur(3px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 8000; padding: 20px;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal {
+            background: var(--white); border-radius: var(--radius);
+            padding: 28px; max-width: 440px; width: 100%;
+            box-shadow: var(--shadow-lg); animation: fadeInUp .25s ease;
+        }
+        @keyframes fadeInUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--gray-800); margin-bottom: 8px; }
+        .modal-subtitle { color: var(--gray-600); font-size: .88rem; margin-bottom: 18px; line-height: 1.6; }
+        .modal-steps {
+            background: var(--gray-50); border-radius: var(--radius-sm);
+            padding: 14px 16px; margin-bottom: 18px;
+            font-size: .82rem; color: var(--gray-700); border: 1px solid var(--gray-200);
+        }
+        .modal-steps ol { margin-left: 18px; }
+        .modal-steps li { margin-bottom: 7px; line-height: 1.5; }
+        .modal-steps code { background: var(--gray-200); padding: 1px 5px; border-radius: 4px; font-size: .78rem; }
+        .modal-footer { display: flex; gap: 10px; margin-top: 6px; }
+        .btn-secondary {
+            flex: 1; padding: 11px; border: 2px solid var(--gray-200);
+            border-radius: var(--radius-sm); background: var(--white);
+            font-size: .9rem; font-weight: 600; cursor: pointer;
+            color: var(--gray-600); transition: var(--transition); font-family: inherit;
+        }
+        .btn-secondary:hover { background: var(--gray-100); }
+
+        /* ── CONFIRM MODAL ── */
+        .confirm-modal { max-width: 320px; text-align: center; }
+        .confirm-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .confirm-msg  { color: var(--gray-600); font-size: .9rem; margin-bottom: 22px; line-height: 1.6; }
+        .confirm-actions { display: flex; gap: 10px; }
+        .confirm-actions .btn { flex: 1; padding: 11px; }
+        .btn-confirm-delete { background: var(--danger); color: var(--white); border: none; cursor: pointer; font-family: inherit; }
+        .btn-confirm-delete:hover { background: #dc2626; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 480px) {
+            .container { padding: 14px; }
+            .header h1 { font-size: 1.3rem; }
+            .stats-grid { gap: 7px; }
+            .stat-number { font-size: 1.6rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .toast-container { left: 10px; right: 10px; }
+            .toast { max-width: 100%; }
+        }
+
+        .fade-in { animation: fadeIn .4s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-icon">⚽</div>
+            <div>
+                <h1>Lanches Futsal</h1>
+                <p>Gestão de Lanches da Equipa</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" id="refreshBtn" title="Recarregar dados">↻</button>
+            <button class="icon-btn" id="settingsBtn" title="Configurações">⚙</button>
+        </div>
+    </header>
+
+    <!-- CONNECTION BAR -->
+    <div class="connection-bar">
+        <div class="connection-left">
+            <span class="status-dot connecting" id="statusDot"></span>
+            <span id="statusText">A conectar...</span>
+        </div>
+        <span class="last-sync" id="lastSync"></span>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-number" id="totalCount">–</div>
+            <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card delivered">
+            <div class="stat-number" id="deliveredCount">–</div>
+            <div class="stat-label">Entregues</div>
+        </div>
+        <div class="stat-card pending">
+            <div class="stat-number" id="pendingCount">–</div>
+            <div class="stat-label">Pendentes</div>
+        </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar-wrap fade-in">
+        <div class="progress-label">
+            <span>Progresso de Entrega</span>
+            <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+    </div>
+
+    <!-- ADD FORM -->
+    <div class="card fade-in">
+        <h2 class="card-title">➕ Adicionar Novo Lanche</h2>
+        <form id="addForm">
+            <div class="form-group">
+                <label class="form-label" for="athleteName">Nome do Atleta *</label>
+                <input type="text" id="athleteName" class="form-input" placeholder="Ex: João Silva" required autocomplete="off">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="lunchDate">Data *</label>
+                    <input type="date" id="lunchDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="lunchStatus">Estado</label>
+                    <select id="lunchStatus" class="form-select">
+                        <option value="Não">Pendente</option>
+                        <option value="Sim">Entregue</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="lunchNotes">Observações</label>
+                <input type="text" id="lunchNotes" class="form-input" placeholder="Ex: Lanche para o jogo de sábado">
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                ➕ Adicionar Lanche
+            </button>
+        </form>
+    </div>
+
+    <!-- LANCHE LIST -->
+    <div class="card fade-in">
+        <div class="list-header">
+            <h2 class="card-title" style="margin:0">📋 Lista de Lanches</h2>
+            <div class="list-controls">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="pending">Pendentes</button>
+                <button class="filter-btn" data-filter="delivered">Entregues</button>
+            </div>
+        </div>
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="search" id="searchInput" class="search-input" placeholder="Pesquisar atleta...">
+        </div>
+        <div id="lanchesList" class="lanches-list">
+            <div class="loading">
+                <div class="spinner"></div>
+                <span>A carregar...</span>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /container -->
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- PASSWORD MODAL (para acesso a settings) -->
+<div class="modal-overlay hidden" id="passwordModal">
+    <div class="modal" style="max-width:300px">
+        <h2 class="modal-title">🔐 Acesso Restrito</h2>
+        <p class="modal-subtitle">
+            Os settings são protegidos. Insere a password para continuar.
+        </p>
+        <div class="form-group">
+            <label class="form-label" for="adminPassword">Password *</label>
+            <input type="password" id="adminPassword" class="form-input" placeholder="••••••••"
+                   autofocus onkeypress="if(event.key==='Enter')confirmPassword()">
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="cancelPasswordBtn">Cancelar</button>
+            <button class="btn btn-primary" id="confirmPasswordBtn" style="flex:2">
+                🔓 Verificar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIG MODAL -->
+<div class="modal-overlay hidden" id="configModal">
+    <div class="modal">
+        <h2 class="modal-title">⚙️ Configuração da API</h2>
+        <p class="modal-subtitle">
+            Cola abaixo a URL do teu Google Apps Script. Se ainda não tens,
+            segue os passos indicados.
+        </p>
+        <div class="modal-steps">
+            <strong>Como obter a URL:</strong>
+            <ol>
+                <li>Cria uma Google Sheet com colunas: <code>ID</code>, <code>Nome do Atleta</code>, <code>Data</code>, <code>Entregue</code>, <code>Observações</code></li>
+                <li>Vai a <strong>Extensions → Apps Script</strong></li>
+                <li>Cola o código do ficheiro <code>Code.gs</code> (incluído no projeto)</li>
+                <li>Clica em <strong>Deploy → New deployment → Web app</strong></li>
+                <li>Execute as: <strong>Me</strong> · Who has access: <strong>Anyone</strong></li>
+                <li>Autoriza e copia a URL gerada</li>
+            </ol>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="apiUrlInput">URL da API *</label>
+            <input type="url" id="apiUrlInput" class="form-input"
+                   placeholder="https://script.google.com/macros/s/..." required>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="adminPasswordSet">Password de Admin *</label>
+            <input type="password" id="adminPasswordSet" class="form-input"
+                   placeholder="Define uma password segura"
+                   title="Mínimo 4 caracteres">
+        </div>
+        <p style="font-size:.8rem; color:#666; margin-bottom:16px;">
+            💡 Define uma password para proteger os settings. Apenas tu conseguirás alterar a URL da API.
+        </p>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="cancelConfigBtn">Cancelar</button>
+            <button class="btn btn-primary" id="saveConfigBtn" style="flex:2">
+                💾 Guardar e Continuar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay hidden" id="confirmModal">
+    <div class="modal confirm-modal">
+        <div class="confirm-icon">🗑️</div>
+        <h3 class="modal-title" style="justify-content:center;display:flex">Eliminar Registo?</h3>
+        <p class="confirm-msg" id="confirmMsg">Tens a certeza que queres eliminar este lanche?<br>Esta ação não pode ser desfeita.</p>
+        <div class="confirm-actions">
+            <button class="btn btn-secondary" id="cancelDeleteBtn">Cancelar</button>
+            <button class="btn btn-confirm-delete" id="confirmDeleteBtn">🗑️ Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/*
+ * ============================================================
+ *  LANCHES FUTSAL — index.html
+ *  Stack: HTML + CSS + Vanilla JS  →  GitHub Pages (static)
+ *         Google Sheets + Apps Script  →  JSON API (serverless)
+ * ============================================================
+ *
+ *  PASSO A PASSO PARA CONFIGURAR:
+ *
+ *  1. CRIAR A GOOGLE SHEET
+ *     • Google Drive → Novo → Google Sheets
+ *     • Nome: "Lanches Futsal" (qualquer nome serve)
+ *     • Linha 1 (cabeçalhos):
+ *         A=ID  B=Nome do Atleta  C=Data  D=Entregue  E=Observações
+ *     • Deixa as restantes linhas vazias (o script preenche automaticamente)
+ *
+ *  2. CRIAR O GOOGLE APPS SCRIPT
+ *     • Na Sheet: Extensions → Apps Script
+ *     • Apaga todo o conteúdo existente
+ *     • Cola o conteúdo do ficheiro Code.gs (incluso no projeto)
+ *     • Ctrl+S para guardar; nomeia como "LanchesFutsalAPI"
+ *
+ *  3. FAZER DEPLOY COMO WEB APP
+ *     • Deploy → New deployment
+ *     • Engrenagem ⚙ → Web app
+ *     • Description: "API Lanches Futsal"
+ *     • Execute as: Me
+ *     • Who has access: Anyone
+ *     • Deploy → Autoriza a conta Google → COPIA A URL
+ *       (parecida com: https://script.google.com/macros/s/XXXXXXX/exec)
+ *
+ *  4. PUBLICAR NO GITHUB PAGES
+ *     • Cria repositório no GitHub (ex: lanches-futsal)
+ *     • Faz upload de index.html
+ *     • Settings → Pages → Source: main / root → Save
+ *     • URL: https://<utilizador>.github.io/lanches-futsal
+ *
+ *  5. LIGAR A API
+ *     • Abre o site no browser
+ *     • Cola a URL do passo 3 no modal que aparece
+ *     • Pronto! Partilha o link no WhatsApp. ✅
+ * ============================================================
+ */
+
+// ── STATE ──────────────────────────────────────────────────
+let API_URL      = localStorage.getItem('lanchesFutsalApiUrl') || '';
+let lanchesData  = [];
+let currentFilter= 'all';
+let searchQuery  = '';
+let deleteTarget = null;        // id pendente de confirmação
+let autoRefreshTimer = null;
+
+// ── DOM REFS ───────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const el = {
+    statusDot:       $('statusDot'),
+    statusText:      $('statusText'),
+    lastSync:        $('lastSync'),
+    totalCount:      $('totalCount'),
+    deliveredCount:  $('deliveredCount'),
+    pendingCount:    $('pendingCount'),
+    progressFill:    $('progressFill'),
+    progressPct:     $('progressPct'),
+    addForm:         $('addForm'),
+    athleteName:     $('athleteName'),
+    lunchDate:       $('lunchDate'),
+    lunchStatus:     $('lunchStatus'),
+    lunchNotes:      $('lunchNotes'),
+    submitBtn:       $('submitBtn'),
+    lanchesList:     $('lanchesList'),
+    searchInput:     $('searchInput'),
+    passwordModal:   $('passwordModal'),
+    adminPassword:   $('adminPassword'),
+    confirmPasswordBtn:$('confirmPasswordBtn'),
+    cancelPasswordBtn:$('cancelPasswordBtn'),
+    configModal:     $('configModal'),
+    apiUrlInput:     $('apiUrlInput'),
+    adminPasswordSet:$('adminPasswordSet'),
+    saveConfigBtn:   $('saveConfigBtn'),
+    cancelConfigBtn: $('cancelConfigBtn'),
+    confirmModal:    $('confirmModal'),
+    confirmMsg:      $('confirmMsg'),
+    confirmDeleteBtn:$('confirmDeleteBtn'),
+    cancelDeleteBtn: $('cancelDeleteBtn'),
+    toastContainer:  $('toastContainer'),
+    refreshBtn:      $('refreshBtn'),
+    settingsBtn:     $('settingsBtn'),
+};
+
+// ── TOAST ──────────────────────────────────────────────────
+function showToast(msg, type = 'success', duration = 4500) {
+    const icons = { success:'✅', error:'❌', warning:'⚠️', info:'ℹ️' };
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<span>${icons[type]||'ℹ️'}</span>
+                   <span class="toast-msg">${msg}</span>
+                   <button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+    el.toastContainer.appendChild(t);
+    setTimeout(() => t.isConnected && t.remove(), duration);
+}
+
+// ── CONNECTION STATUS ──────────────────────────────────────
+function setStatus(state, text) {
+    el.statusDot.className = `status-dot ${state}`;
+    el.statusText.textContent = text;
+}
+
+function updateLastSync() {
+    const now = new Date();
+    const hm  = now.toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
+    el.lastSync.textContent = `Atualizado: ${hm}`;
+}
+
+// ── DATE HELPERS ───────────────────────────────────────────
+function todayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatDateDisplay(raw) {
+    if (!raw) return '—';
+    // GAS may return "2024-01-15", "2024-01-15T00:00:00.000Z", or a JS date string
+    const d = new Date(raw);
+    if (isNaN(d)) return raw;
+    // Shift from UTC-midnight to local date
+    const local = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+    return local.toLocaleDateString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+// ── STATS & PROGRESS ───────────────────────────────────────
+function updateStats() {
+    const total     = lanchesData.length;
+    const delivered = lanchesData.filter(l => isDelivered(l)).length;
+    const pending   = total - delivered;
+    const pct       = total ? Math.round((delivered / total) * 100) : 0;
+
+    el.totalCount.textContent     = total;
+    el.deliveredCount.textContent = delivered;
+    el.pendingCount.textContent   = pending;
+    el.progressFill.style.width   = pct + '%';
+    el.progressPct.textContent    = pct + '%';
+}
+
+function isDelivered(l) {
+    // Handles "Sim", true, "TRUE", "true", 1
+    const v = l.entregue;
+    return v === 'Sim' || v === true || String(v).toLowerCase() === 'true' || v === 1 || v === '1';
+}
+
+// ── RENDER LIST ────────────────────────────────────────────
+function renderLanches() {
+    let data = [...lanchesData];
+
+    if (currentFilter === 'delivered') data = data.filter(l =>  isDelivered(l));
+    if (currentFilter === 'pending')   data = data.filter(l => !isDelivered(l));
+
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        data = data.filter(l => (l.nome || '').toLowerCase().includes(q));
+    }
+
+    // Sort: pendentes primeiro, depois mais recentes
+    data.sort((a, b) => {
+        const aDel = isDelivered(a) ? 1 : 0;
+        const bDel = isDelivered(b) ? 1 : 0;
+        if (aDel !== bDel) return aDel - bDel;
+        return new Date(b.data) - new Date(a.data);
+    });
+
+    if (data.length === 0) {
+        const msgs = {
+            all:       ['📋', 'Nenhum lanche registado ainda.<br>Usa o formulário acima para adicionar o primeiro!'],
+            delivered: ['✅', 'Nenhum lanche entregue ainda.'],
+            pending:   ['🎉', 'Todos os lanches foram entregues!'],
+        };
+        const [icon, text] = msgs[currentFilter] || msgs.all;
+        el.lanchesList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">${icon}</div>
+                <p class="empty-text">${searchQuery ? '🔍 Nenhum atleta encontrado para "'+escHtml(searchQuery)+'".' : text}</p>
+            </div>`;
+        return;
+    }
+
+    el.lanchesList.innerHTML = data.map(l => {
+        const del     = isDelivered(l);
+        const badge   = del
+            ? '<span class="lanche-badge badge-entregue">✓ Entregue</span>'
+            : '<span class="lanche-badge badge-pendente">⏳ Pendente</span>';
+        const notes   = l.observacoes
+            ? `<span class="lanche-notes">💬 ${escHtml(l.observacoes)}</span>` : '';
+
+        return `
+        <div class="lanche-item ${del?'delivered':''}" data-id="${l.id}">
+            <label class="lanche-checkbox">
+                <input type="checkbox" ${del?'checked':''} onchange="handleToggle('${l.id}', this.checked)">
+                <span class="checkmark"></span>
+            </label>
+            <div class="lanche-info">
+                <div class="lanche-name">${escHtml(l.nome)}</div>
+                <div class="lanche-meta">
+                    <span class="lanche-date">📅 ${formatDateDisplay(l.data)}</span>
+                    ${notes}
+                </div>
+            </div>
+            <div class="item-actions">
+                ${badge}
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('${l.id}', '${escAttr(l.nome)}')" title="Eliminar">🗑</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function escHtml(t) {
+    if (!t) return '';
+    const d = document.createElement('div');
+    d.textContent = String(t);
+    return d.innerHTML;
+}
+function escAttr(t) {
+    return String(t||'').replace(/'/g, "\\'");
+}
+
+// ── API: LOAD ──────────────────────────────────────────────
+async function loadData(silent = false) {
+    if (!API_URL) { showConfigModal(); return; }
+
+    if (!silent) {
+        setStatus('connecting', 'A carregar dados...');
+        el.lanchesList.innerHTML = '<div class="loading"><div class="spinner"></div><span>A carregar...</span></div>';
+    }
+
+    try {
+        const res  = await fetch(`${API_URL}?action=read`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || 'Resposta inválida da API');
+
+        lanchesData = json.data || [];
+        renderLanches();
+        updateStats();
+        setStatus('online', 'Conectado');
+        updateLastSync();
+
+        if (!silent) startAutoRefresh();
+
+    } catch (err) {
+        console.error('loadData:', err);
+        setStatus('offline', 'Sem conexão');
+        if (!silent) {
+            showToast('Não foi possível carregar os dados. Verifica a URL da API.', 'error', 6000);
+            el.lanchesList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📡</div>
+                    <p class="empty-text">Falha na conexão com a API.<br>
+                    Verifica a URL nas configurações (⚙️) e tenta de novo.</p>
+                </div>`;
+        }
+    }
+}
+
+// ── API: CREATE ────────────────────────────────────────────
+async function addData(nome, data, entregue, observacoes) {
+    if (!API_URL) { showConfigModal(); return false; }
+
+    el.submitBtn.disabled = true;
+    el.submitBtn.textContent = '⏳ A adicionar...';
+
+    try {
+        const res  = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ action:'create', nome, data, entregue, observacoes }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || 'Erro ao criar');
+
+        showToast(`Lanche de ${nome} adicionado! ✅`, 'success');
+        el.addForm.reset();
+        el.lunchDate.value = todayStr();
+        await loadData(true);
+        renderLanches();
+        updateStats();
+        return true;
+
+    } catch (err) {
+        console.error('addData:', err);
+        showToast('Erro ao adicionar lanche. Tenta novamente.', 'error');
+        return false;
+    } finally {
+        el.submitBtn.disabled = false;
+        el.submitBtn.textContent = '➕ Adicionar Lanche';
+    }
+}
+
+// ── API: UPDATE STATUS ─────────────────────────────────────
+async function updateStatus(id, newEntregue) {
+    if (!API_URL) { showConfigModal(); return false; }
+
+    try {
+        const res  = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ action:'update', id, entregue: newEntregue }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || 'Erro ao atualizar');
+
+        const label = newEntregue === 'Sim' ? 'entregue ✅' : 'pendente ⏳';
+        showToast(`Lanche marcado como ${label}`, 'success');
+        await loadData(true);
+        renderLanches();
+        updateStats();
+        return true;
+
+    } catch (err) {
+        console.error('updateStatus:', err);
+        showToast('Erro ao atualizar estado. Tenta novamente.', 'error');
+        // Rollback checkbox
+        await loadData(true);
+        renderLanches();
+        return false;
+    }
+}
+
+// ── API: DELETE ────────────────────────────────────────────
+async function deleteItem(id) {
+    if (!API_URL) { showConfigModal(); return false; }
+
+    try {
+        const res  = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ action:'delete', id }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || 'Erro ao eliminar');
+
+        showToast('Registo eliminado.', 'info');
+        await loadData(true);
+        renderLanches();
+        updateStats();
+        return true;
+
+    } catch (err) {
+        console.error('deleteItem:', err);
+        showToast('Erro ao eliminar. Tenta novamente.', 'error');
+        return false;
+    }
+}
+
+// ── AUTO-REFRESH ───────────────────────────────────────────
+function startAutoRefresh() {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = setInterval(() => loadData(true), 60_000); // 60 s
+}
+
+// ── ADMIN PASSWORD ────────────────────────────────────────────
+const ADMIN_PASSWORD_KEY = 'lanchesFutsalAdminPassword';
+
+function getAdminPassword() {
+    return localStorage.getItem(ADMIN_PASSWORD_KEY) || '';
+}
+
+function setAdminPassword(pwd) {
+    if (pwd && pwd.length >= 4) {
+        localStorage.setItem(ADMIN_PASSWORD_KEY, pwd);
+        return true;
+    }
+    return false;
+}
+
+// ── CONFIG MODAL ───────────────────────────────────────────
+function showPasswordModal() {
+    el.adminPassword.value = '';
+    el.passwordModal.classList.remove('hidden');
+    setTimeout(() => el.adminPassword.focus(), 100);
+}
+
+function hidePasswordModal() {
+    el.passwordModal.classList.add('hidden');
+}
+
+function confirmPassword() {
+    const entered = el.adminPassword.value || '';
+    const stored  = getAdminPassword();
+
+    if (!stored) {
+        showToast('Primeira configuração: defina uma password.', 'info');
+        showConfigModal();
+        hidePasswordModal();
+        return;
+    }
+
+    if (entered === stored) {
+        showConfigModal();
+        hidePasswordModal();
+    } else {
+        showToast('Password incorreta!', 'error');
+        el.adminPassword.value = '';
+        el.adminPassword.focus();
+    }
+}
+
+function showConfigModal() {
+    el.apiUrlInput.value = API_URL || '';
+    el.adminPasswordSet.value = '';
+    el.configModal.classList.remove('hidden');
+    setTimeout(() => el.apiUrlInput.focus(), 100);
+}
+
+function hideConfigModal() {
+    el.configModal.classList.add('hidden');
+}
+
+// ── CONFIRM DELETE MODAL ───────────────────────────────────
+function confirmDelete(id, nome) {
+    deleteTarget = id;
+    el.confirmMsg.innerHTML = `Tens a certeza que queres eliminar o lanche de <strong>${escHtml(nome)}</strong>?<br>Esta ação não pode ser desfeita.`;
+    el.confirmModal.classList.remove('hidden');
+}
+function hideConfirmModal() {
+    el.confirmModal.classList.add('hidden');
+    deleteTarget = null;
+}
+
+// ── EVENT LISTENERS ────────────────────────────────────────
+
+// Form submit
+el.addForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const nome      = el.athleteName.value.trim();
+    const data      = el.lunchDate.value;
+    const entregue  = el.lunchStatus.value;
+    const observacoes = el.lunchNotes.value.trim();
+
+    if (!nome || !data) { showToast('Preenche nome e data.', 'warning'); return; }
+    await addData(nome, data, entregue, observacoes);
+});
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderLanches();
+    });
+});
+
+// Search
+el.searchInput.addEventListener('input', () => {
+    searchQuery = el.searchInput.value.trim();
+    renderLanches();
+});
+
+// Refresh button
+el.refreshBtn.addEventListener('click', () => {
+    el.refreshBtn.textContent = '↻';
+    el.refreshBtn.style.opacity = '.5';
+    loadData().finally(() => { el.refreshBtn.style.opacity = '1'; });
+});
+
+// Settings button
+el.settingsBtn.addEventListener('click', showPasswordModal);
+
+// Save config
+el.saveConfigBtn.addEventListener('click', () => {
+    const url = el.apiUrlInput.value.trim();
+    const pwd = el.adminPasswordSet.value.trim();
+
+    if (!url) { showToast('Insere uma URL válida.', 'warning'); return; }
+    if (!url.includes('script.google.com')) {
+        showToast('A URL deve ser do Google Apps Script.', 'warning'); return;
+    }
+    if (!pwd || pwd.length < 4) {
+        showToast('A password deve ter mínimo 4 caracteres.', 'warning'); return;
+    }
+
+    localStorage.setItem('lanchesFutsalApiUrl', url);
+    setAdminPassword(pwd);
+    API_URL = url;
+    hideConfigModal();
+    showToast('Configuração guardada! A carregar dados...', 'success');
+    loadData();
+});
+
+// Cancel config
+el.cancelConfigBtn.addEventListener('click', () => {
+    if (!API_URL) return; // Must configure first
+    hideConfigModal();
+});
+
+// Password modal
+el.confirmPasswordBtn.addEventListener('click', confirmPassword);
+el.cancelPasswordBtn.addEventListener('click', () => {
+    if (!getAdminPassword()) return; // Must configure first
+    hidePasswordModal();
+});
+el.passwordModal.addEventListener('click', e => {
+    if (e.target === el.passwordModal && getAdminPassword()) hidePasswordModal();
+});
+
+// Click outside config modal
+el.configModal.addEventListener('click', e => {
+    if (e.target === el.configModal && API_URL) hideConfigModal();
+});
+
+// Confirm delete
+el.confirmDeleteBtn.addEventListener('click', async () => {
+    if (!deleteTarget) return;
+    const id = deleteTarget;
+    hideConfirmModal();
+    await deleteItem(id);
+});
+el.cancelDeleteBtn.addEventListener('click', hideConfirmModal);
+el.confirmModal.addEventListener('click', e => {
+    if (e.target === el.confirmModal) hideConfirmModal();
+});
+
+// ── GLOBAL HANDLERS (called from innerHTML) ────────────────
+window.handleToggle   = (id, checked) => updateStatus(id, checked ? 'Sim' : 'Não');
+window.confirmDelete  = confirmDelete;
+window.confirmPassword = confirmPassword;
+
+// ── INIT ───────────────────────────────────────────────────
+el.lunchDate.value = todayStr();
+
+if (API_URL) {
+    loadData();
+} else {
+    showConfigModal();
+    setStatus('offline', 'Não configurado');
+    el.lanchesList.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">🔧</div>
+            <p class="empty-text">Configura a URL da API para começar.</p>
+        </div>`;
+}
+</script>
+</body>
+</html>
