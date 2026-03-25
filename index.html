@@ -1101,11 +1101,10 @@ el.cancelConfigBtn.addEventListener('click', () => {
 // Password modal
 el.confirmPasswordBtn.addEventListener('click', confirmPassword);
 el.cancelPasswordBtn.addEventListener('click', () => {
-    if (!getAdminPassword()) return; // Must configure first
     hidePasswordModal();
 });
 el.passwordModal.addEventListener('click', e => {
-    if (e.target === el.passwordModal && getAdminPassword()) hidePasswordModal();
+    if (e.target === el.passwordModal) hidePasswordModal();
 });
 
 // Click outside config modal
