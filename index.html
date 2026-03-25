@@ -1040,14 +1040,16 @@ el.addForm.addEventListener('submit', async e => {
     await addData(nome, data, entregue, observacoes);
 });
 
-// Filter buttons
+// Filter buttons (click + touch support for mobile)
 document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    const handleFilterClick = () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
         renderLanches();
-    });
+    };
+    btn.addEventListener('click', handleFilterClick);
+    btn.addEventListener('touchend', handleFilterClick);
 });
 
 // Search
@@ -1056,18 +1058,22 @@ el.searchInput.addEventListener('input', () => {
     renderLanches();
 });
 
-// Refresh button
-el.refreshBtn.addEventListener('click', () => {
+// Refresh button (click + touch support for mobile)
+const handleRefreshClick = () => {
     el.refreshBtn.textContent = '↻';
     el.refreshBtn.style.opacity = '.5';
     loadData().finally(() => { el.refreshBtn.style.opacity = '1'; });
-});
+};
+el.refreshBtn.addEventListener('click', handleRefreshClick);
+el.refreshBtn.addEventListener('touchend', handleRefreshClick);
 
-// Settings button
-el.settingsBtn.addEventListener('click', showPasswordModal);
+// Settings button (click + touch support for mobile)
+const handleSettingsClick = showPasswordModal;
+el.settingsBtn.addEventListener('click', handleSettingsClick);
+el.settingsBtn.addEventListener('touchend', handleSettingsClick);
 
 // Save config
-el.saveConfigBtn.addEventListener('click', () => {
+const handleSaveConfig = () => {
     const url = el.apiUrlInput.value.trim();
     const pwd = el.adminPasswordSet.value.trim();
     const key = el.masterKeyInput.value.trim();
@@ -1090,37 +1096,58 @@ el.saveConfigBtn.addEventListener('click', () => {
     hideConfigModal();
     showToast('Configuração guardada! A carregar dados...', 'success');
     loadData();
-});
+};
+el.saveConfigBtn.addEventListener('click', handleSaveConfig);
+el.saveConfigBtn.addEventListener('touchend', handleSaveConfig);
 
 // Cancel config
-el.cancelConfigBtn.addEventListener('click', () => {
-    if (!API_URL) return; // Must configure first
+const handleCancelConfig = () => {
+    if (!API_URL) return;
     hideConfigModal();
-});
+};
+el.cancelConfigBtn.addEventListener('click', handleCancelConfig);
+el.cancelConfigBtn.addEventListener('touchend', handleCancelConfig);
 
-// Password modal
-el.confirmPasswordBtn.addEventListener('click', confirmPassword);
-el.cancelPasswordBtn.addEventListener('click', () => {
-    hidePasswordModal();
-});
-el.passwordModal.addEventListener('click', e => {
-    if (e.target === el.passwordModal) hidePasswordModal();
-});
+// Password modal (click + touch support for mobile)
+const addPasswordEventListeners = () => {
+    el.confirmPasswordBtn.addEventListener('click', confirmPassword);
+    el.confirmPasswordBtn.addEventListener('touchend', confirmPassword);
+
+    el.cancelPasswordBtn.addEventListener('click', hidePasswordModal);
+    el.cancelPasswordBtn.addEventListener('touchend', hidePasswordModal);
+
+    el.passwordModal.addEventListener('click', e => {
+        if (e.target === el.passwordModal) hidePasswordModal();
+    });
+    el.passwordModal.addEventListener('touchend', e => {
+        if (e.target === el.passwordModal) hidePasswordModal();
+    });
+};
+addPasswordEventListeners();
 
 // Click outside config modal
 el.configModal.addEventListener('click', e => {
     if (e.target === el.configModal && API_URL) hideConfigModal();
 });
 
-// Confirm delete
-el.confirmDeleteBtn.addEventListener('click', async () => {
+// Confirm delete (click + touch support for mobile)
+const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
     const id = deleteTarget;
     hideConfirmModal();
     await deleteItem(id);
-});
-el.cancelDeleteBtn.addEventListener('click', hideConfirmModal);
+};
+el.confirmDeleteBtn.addEventListener('click', handleConfirmDelete);
+el.confirmDeleteBtn.addEventListener('touchend', handleConfirmDelete);
+
+const handleCancelDelete = hideConfirmModal;
+el.cancelDeleteBtn.addEventListener('click', handleCancelDelete);
+el.cancelDeleteBtn.addEventListener('touchend', handleCancelDelete);
+
 el.confirmModal.addEventListener('click', e => {
+    if (e.target === el.confirmModal) hideConfirmModal();
+});
+el.confirmModal.addEventListener('touchend', e => {
     if (e.target === el.confirmModal) hideConfirmModal();
 });
 
