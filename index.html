@@ -246,7 +246,7 @@
         .lanche-checkbox input:checked ~ .checkmark::after { display: block; }
 
         .lanche-info { flex: 1; min-width: 0; }
-        .lanche-name { font-weight: 700; color: var(--gray-800); font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lanche-name { font-weight: 700; color: var(--gray-800); font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
         .lanche-item.delivered .lanche-name { text-decoration: line-through; color: var(--gray-400); }
         .lanche-meta { display: flex; align-items: center; gap: 10px; margin-top: 3px; flex-wrap: wrap; }
         .lanche-date { font-size: .8rem; color: var(--gray-500); }
@@ -339,6 +339,26 @@
             .form-row { grid-template-columns: 1fr; }
             .toast-container { left: 10px; right: 10px; }
             .toast { max-width: 100%; }
+
+            /* Ensure lanche names are always visible on mobile */
+            .lanche-item {
+                flex-wrap: wrap;
+                align-items: flex-start;
+            }
+            .lanche-info {
+                width: 100%;
+                min-width: unset;
+            }
+            .lanche-name {
+                white-space: normal;
+                overflow: visible;
+                text-overflow: clip;
+            }
+            .item-actions {
+                width: 100%;
+                margin-top: 10px;
+                gap: 8px;
+            }
         }
 
         .fade-in { animation: fadeIn .4s ease; }
