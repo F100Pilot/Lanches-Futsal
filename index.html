@@ -1059,17 +1059,25 @@ el.searchInput.addEventListener('input', () => {
 });
 
 // Refresh button (click + touch support for mobile)
-const handleRefreshClick = () => {
+const handleRefreshClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     el.refreshBtn.textContent = '↻';
     el.refreshBtn.style.opacity = '.5';
     loadData().finally(() => { el.refreshBtn.style.opacity = '1'; });
 };
 el.refreshBtn.addEventListener('click', handleRefreshClick);
+el.refreshBtn.addEventListener('touchstart', handleRefreshClick);
 el.refreshBtn.addEventListener('touchend', handleRefreshClick);
 
 // Settings button (click + touch support for mobile)
-const handleSettingsClick = showPasswordModal;
+const handleSettingsClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showPasswordModal();
+};
 el.settingsBtn.addEventListener('click', handleSettingsClick);
+el.settingsBtn.addEventListener('touchstart', handleSettingsClick);
 el.settingsBtn.addEventListener('touchend', handleSettingsClick);
 
 // Save config
