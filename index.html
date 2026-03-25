@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Lanches Futsal</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
     <style>
@@ -1100,8 +1103,9 @@ async function initApp() {
     el.lunchDate.value = todayStr();
 
     try {
-        // Carregar config.json com a URL da API
-        const configRes = await fetch('config.json');
+        // Carregar config.json com cache busting (força sempre versão fresca)
+        const timestamp = new Date().getTime();
+        const configRes = await fetch(`config.json?v=${timestamp}`);
         if (configRes.ok) {
             const config = await configRes.json();
             API_URL = config.apiUrl || '';
