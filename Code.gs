@@ -24,6 +24,7 @@
  */
 
 const SHEET_NAME = 'Sheet1';
+const MASTER_KEY_NAME = 'MASTER_KEY'; // Nome da config onde guardar a chave
 
 // ── HANDLER GET ──────────────────────────────────────────
 function doGet(e) {
@@ -123,8 +124,58 @@ function readData() {
   return { success: true, data: data, count: data.length };
 }
 
+// ── MASTER KEY VALIDATION ────────────────────────────────
+function getMasterKey() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Config') || getConfigSheet();
+  const range = sheet.getRange('A:B');
+  const vals  = range.getValues();
+  for (let i = 0; i < vals.length; i++) {
+    if (vals[i][0] === MASTER_KEY_NAME) return vals[i][1] || '';
+  }
+  return '';
+}
+
+function setMasterKey(key) {
+  const sheet = getConfigSheet();
+  const range = sheet.getRange('A:B');
+  const vals  = range.getValues();
+  let found   = false;
+  for (let i = 0; i < vals.length; i++) {
+    if (vals[i][0] === MASTER_KEY_NAME) {
+      sheet.getRange(i + 1, 2).setValue(key);
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    sheet.appendRow([MASTER_KEY_NAME, key]);
+  }
+}
+
+function getConfigSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Config');
+  if (!sheet) {
+    sheet = ss.insertSheet('Config');
+    const header = sheet.getRange(1, 1, 1, 2);
+    header.setValues([['Chave', 'Valor']]);
+    header.setFontWeight('bold').setBackground('#e5e7eb');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function validateMasterKey(providedKey) {
+  if (!providedKey) return false;
+  const stored = getMasterKey();
+  return providedKey === stored;
+}
+
 // ── CREATE ────────────────────────────────────────────────
 function createData(p) {
+  if (!validateMasterKey(p.masterKey)) {
+    return { success: false, error: 'Acesso negado: chave inválida.' };
+  }
   if (!p.nome || !p.data) {
     return { success: false, error: 'Os campos "nome" e "data" são obrigatórios.' };
   }
@@ -140,6 +191,9 @@ function createData(p) {
 
 // ── UPDATE ────────────────────────────────────────────────
 function updateData(p) {
+  if (!validateMasterKey(p.masterKey)) {
+    return { success: false, error: 'Acesso negado: chave inválida.' };
+  }
   if (!p.id) return { success: false, error: 'O campo "id" é obrigatório.' };
 
   const sheet = getSheet();
@@ -166,6 +220,9 @@ function updateData(p) {
 
 // ── DELETE ────────────────────────────────────────────────
 function deleteData(p) {
+  if (!validateMasterKey(p.masterKey)) {
+    return { success: false, error: 'Acesso negado: chave inválida.' };
+  }
   if (!p.id) return { success: false, error: 'O campo "id" é obrigatório.' };
 
   const sheet = getSheet();

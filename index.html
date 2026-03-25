@@ -500,14 +500,23 @@
             <input type="url" id="apiUrlInput" class="form-input"
                    placeholder="https://script.google.com/macros/s/..." required>
         </div>
-        <div class="form-group">
-            <label class="form-label" for="adminPasswordSet">Password de Admin *</label>
-            <input type="password" id="adminPasswordSet" class="form-input"
-                   placeholder="Define uma password segura"
-                   title="Mínimo 4 caracteres">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="adminPasswordSet">Password de Admin *</label>
+                <input type="password" id="adminPasswordSet" class="form-input"
+                       placeholder="Define uma password segura"
+                       title="Mínimo 4 caracteres">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="masterKeyInput">Chave de Acesso *</label>
+                <input type="password" id="masterKeyInput" class="form-input"
+                       placeholder="Código secreto"
+                       title="Mínimo 6 caracteres">
+            </div>
         </div>
         <p style="font-size:.8rem; color:#666; margin-bottom:16px;">
-            💡 Define uma password para proteger os settings. Apenas tu conseguirás alterar a URL da API.
+            🔐 <strong>Password:</strong> Protege os settings (roda dentada).<br>
+            🔑 <strong>Chave de Acesso:</strong> Apenas tu consegues adicionar/editar/deletar registos.
         </p>
         <div class="modal-footer">
             <button class="btn-secondary" id="cancelConfigBtn">Cancelar</button>
@@ -578,6 +587,7 @@
 
 // ── STATE ──────────────────────────────────────────────────
 let API_URL      = localStorage.getItem('lanchesFutsalApiUrl') || '';
+let MASTER_KEY   = localStorage.getItem('lanchesFutsalMasterKey') || '';
 let lanchesData  = [];
 let currentFilter= 'all';
 let searchQuery  = '';
@@ -610,6 +620,7 @@ const el = {
     configModal:     $('configModal'),
     apiUrlInput:     $('apiUrlInput'),
     adminPasswordSet:$('adminPasswordSet'),
+    masterKeyInput:  $('masterKeyInput'),
     saveConfigBtn:   $('saveConfigBtn'),
     cancelConfigBtn: $('cancelConfigBtn'),
     confirmModal:    $('confirmModal'),
@@ -796,7 +807,7 @@ async function loadData(silent = false) {
 
 // ── API: CREATE ────────────────────────────────────────────
 async function addData(nome, data, entregue, observacoes) {
-    if (!API_URL) { showConfigModal(); return false; }
+    if (!API_URL || !MASTER_KEY) { showConfigModal(); return false; }
 
     el.submitBtn.disabled = true;
     el.submitBtn.textContent = '⏳ A adicionar...';
@@ -805,7 +816,7 @@ async function addData(nome, data, entregue, observacoes) {
         const res  = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ action:'create', nome, data, entregue, observacoes }),
+            body: new URLSearchParams({ action:'create', nome, data, entregue, observacoes, masterKey: MASTER_KEY }),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
@@ -832,13 +843,13 @@ async function addData(nome, data, entregue, observacoes) {
 
 // ── API: UPDATE STATUS ─────────────────────────────────────
 async function updateStatus(id, newEntregue) {
-    if (!API_URL) { showConfigModal(); return false; }
+    if (!API_URL || !MASTER_KEY) { showConfigModal(); return false; }
 
     try {
         const res  = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ action:'update', id, entregue: newEntregue }),
+            body: new URLSearchParams({ action:'update', id, entregue: newEntregue, masterKey: MASTER_KEY }),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
@@ -864,13 +875,13 @@ async function updateStatus(id, newEntregue) {
 
 // ── API: DELETE ────────────────────────────────────────────
 async function deleteItem(id) {
-    if (!API_URL) { showConfigModal(); return false; }
+    if (!API_URL || !MASTER_KEY) { showConfigModal(); return false; }
 
     try {
         const res  = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ action:'delete', id }),
+            body: new URLSearchParams({ action:'delete', id, masterKey: MASTER_KEY }),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
@@ -896,8 +907,9 @@ function startAutoRefresh() {
     autoRefreshTimer = setInterval(() => loadData(true), 60_000); // 60 s
 }
 
-// ── ADMIN PASSWORD ────────────────────────────────────────────
+// ── SECURITY: PASSWORDS & KEYS ────────────────────────────
 const ADMIN_PASSWORD_KEY = 'lanchesFutsalAdminPassword';
+const MASTER_KEY_STORAGE = 'lanchesFutsalMasterKey';
 
 function getAdminPassword() {
     return localStorage.getItem(ADMIN_PASSWORD_KEY) || '';
@@ -906,6 +918,19 @@ function getAdminPassword() {
 function setAdminPassword(pwd) {
     if (pwd && pwd.length >= 4) {
         localStorage.setItem(ADMIN_PASSWORD_KEY, pwd);
+        return true;
+    }
+    return false;
+}
+
+function getMasterKey() {
+    return localStorage.getItem(MASTER_KEY_STORAGE) || '';
+}
+
+function setMasterKey(key) {
+    if (key && key.length >= 6) {
+        localStorage.setItem(MASTER_KEY_STORAGE, key);
+        MASTER_KEY = key;
         return true;
     }
     return false;
@@ -946,6 +971,7 @@ function confirmPassword() {
 function showConfigModal() {
     el.apiUrlInput.value = API_URL || '';
     el.adminPasswordSet.value = '';
+    el.masterKeyInput.value = '';
     el.configModal.classList.remove('hidden');
     setTimeout(() => el.apiUrlInput.focus(), 100);
 }
@@ -1009,17 +1035,22 @@ el.settingsBtn.addEventListener('click', showPasswordModal);
 el.saveConfigBtn.addEventListener('click', () => {
     const url = el.apiUrlInput.value.trim();
     const pwd = el.adminPasswordSet.value.trim();
+    const key = el.masterKeyInput.value.trim();
 
     if (!url) { showToast('Insere uma URL válida.', 'warning'); return; }
     if (!url.includes('script.google.com')) {
         showToast('A URL deve ser do Google Apps Script.', 'warning'); return;
     }
     if (!pwd || pwd.length < 4) {
-        showToast('A password deve ter mínimo 4 caracteres.', 'warning'); return;
+        showToast('Password: mínimo 4 caracteres.', 'warning'); return;
+    }
+    if (!key || key.length < 6) {
+        showToast('Chave de Acesso: mínimo 6 caracteres.', 'warning'); return;
     }
 
     localStorage.setItem('lanchesFutsalApiUrl', url);
     setAdminPassword(pwd);
+    setMasterKey(key);
     API_URL = url;
     hideConfigModal();
     showToast('Configuração guardada! A carregar dados...', 'success');
@@ -1067,15 +1098,16 @@ window.confirmPassword = confirmPassword;
 // ── INIT ───────────────────────────────────────────────────
 el.lunchDate.value = todayStr();
 
-if (API_URL) {
+if (API_URL && MASTER_KEY) {
     loadData();
 } else {
     showConfigModal();
     setStatus('offline', 'Não configurado');
+    const msg = !API_URL ? 'Configura a URL da API para começar.' : 'Configura a Chave de Acesso para continuar.';
     el.lanchesList.innerHTML = `
         <div class="empty-state">
             <div class="empty-icon">🔧</div>
-            <p class="empty-text">Configura a URL da API para começar.</p>
+            <p class="empty-text">${msg}</p>
         </div>`;
 }
 </script>
