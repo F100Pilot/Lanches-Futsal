@@ -1060,25 +1060,21 @@ el.searchInput.addEventListener('input', () => {
 
 // Refresh button (click + touch support for mobile)
 const handleRefreshClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e.type.includes('touch')) e.preventDefault();
     el.refreshBtn.textContent = '↻';
     el.refreshBtn.style.opacity = '.5';
     loadData().finally(() => { el.refreshBtn.style.opacity = '1'; });
 };
 el.refreshBtn.addEventListener('click', handleRefreshClick);
-el.refreshBtn.addEventListener('touchstart', handleRefreshClick);
-el.refreshBtn.addEventListener('touchend', handleRefreshClick);
+el.refreshBtn.addEventListener('touchstart', handleRefreshClick, false);
 
 // Settings button (click + touch support for mobile)
 const handleSettingsClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e.type.includes('touch')) e.preventDefault();
     showPasswordModal();
 };
 el.settingsBtn.addEventListener('click', handleSettingsClick);
-el.settingsBtn.addEventListener('touchstart', handleSettingsClick);
-el.settingsBtn.addEventListener('touchend', handleSettingsClick);
+el.settingsBtn.addEventListener('touchstart', handleSettingsClick, false);
 
 // Save config
 const handleSaveConfig = () => {
