@@ -819,6 +819,9 @@ async function addData(nome, data, entregue, observacoes) {
         if (key.length < 6) { showToast('Chave inválida.', 'error'); return false; }
         MASTER_KEY = key;
         localStorage.setItem('lanchesFutsalMasterKey', key);
+        // Atualizar UI do botão
+        el.submitBtn.textContent = '➕ Adicionar Lanche';
+        showToast('✅ Chave guardada! Podes agora adicionar lanches.', 'success');
     }
 
     el.submitBtn.disabled = true;
@@ -864,6 +867,7 @@ async function updateStatus(id, newEntregue) {
         if (key.length < 6) { showToast('Chave inválida.', 'error'); await loadData(true); renderLanches(); return false; }
         MASTER_KEY = key;
         localStorage.setItem('lanchesFutsalMasterKey', key);
+        showToast('✅ Chave guardada! Podes agora editar lanches.', 'success');
     }
 
     try {
@@ -905,6 +909,7 @@ async function deleteItem(id) {
         if (key.length < 6) { showToast('Chave inválida.', 'error'); return false; }
         MASTER_KEY = key;
         localStorage.setItem('lanchesFutsalMasterKey', key);
+        showToast('✅ Chave guardada! Podes agora eliminar lanches.', 'success');
     }
 
     try {
@@ -1158,10 +1163,7 @@ async function initApp() {
 
     // Se não tem Chave de Acesso, mostrar aviso sutil
     if (!MASTER_KEY) {
-        showToast('💡 Apenas leitura: para editar, clica em ⚙️ e insere a Chave de Acesso.', 'info', 6000);
-        // Desabilitar formulário de adição
-        el.submitBtn.disabled = true;
-        el.submitBtn.textContent = '🔒 Requer Chave de Acesso';
+        showToast('💡 Apenas leitura: clica em "Adicionar" e insere a Chave de Acesso para editar.', 'info', 6000);
     }
 }
 
