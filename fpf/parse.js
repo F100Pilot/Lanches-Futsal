@@ -77,13 +77,20 @@ export function toJogo(match, team, { today }) {
     };
 }
 
-/** Descodifica o payload do bookmarklet (base64url de JSON). Devolve null se inválido. */
+export const PAYLOAD_VERSION = 2;
+
+/**
+ * Descodifica o payload do bookmarklet (base64url de JSON).
+ * Devolve null se inválido, { outdated: true } se veio de um favorito de versão anterior.
+ */
 export function decodePayload(encoded) {
     try {
         const b64 = String(encoded).replace(/-/g, '+').replace(/_/g, '/');
         const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
         const obj = JSON.parse(new TextDecoder().decode(bytes));
-        if (!obj || obj.v !== 2 || !Array.isArray(obj.matches)) return null;
+        if (!obj || typeof obj.v !== 'number') return null;
+        if (obj.v < PAYLOAD_VERSION) return { outdated: true };
+        if (obj.v !== PAYLOAD_VERSION || !Array.isArray(obj.matches)) return null;
         return obj;
     } catch {
         return null;

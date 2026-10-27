@@ -374,6 +374,12 @@
         .check input { width: 22px; height: 22px; accent-color: var(--accent); }
         .input:disabled { opacity: .6; }
         select.input { appearance: auto; }
+        .about { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+        .about dl { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+        .about dl div { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+        .about dt { color: var(--muted); }
+        .about dd { margin: 0; font-weight: 600; text-align: right; }
+        .about .link-btn { align-self: flex-start; }
         .section-title { font-family: var(--display); font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-top: 4px; }
 
         @media (prefers-reduced-motion: reduce) {
@@ -496,8 +502,11 @@
         </div>
         <label class="field">
             <span class="field-label">Atleta</span>
-            <input class="input" id="athleteName" list="atletasDatalist" required maxlength="100" autocomplete="off" placeholder="Escolhe ou escreve o nome">
-            <datalist id="atletasDatalist"></datalist>
+            <select class="input" id="athleteSelect" required></select>
+        </label>
+        <label class="field hidden" id="athleteOtherField">
+            <span class="field-label">Nome do atleta</span>
+            <input class="input" id="athleteName" maxlength="100" autocomplete="off" placeholder="Ex: João Silva">
         </label>
         <label class="field">
             <span class="field-label">Jogo <small>(opcional)</small></span>
@@ -620,6 +629,14 @@
             <button type="button" class="menu-item" id="menuPassword"><svg width="22" height="22" aria-hidden="true"><use href="#i-key"/></svg>Alterar password</button>
             <button type="button" class="menu-item danger" id="logoutBtn"><svg width="22" height="22" aria-hidden="true"><use href="#i-out"/></svg>Terminar sessão</button>
         </div>
+        <section class="about" aria-labelledby="aboutTitle">
+            <span class="section-title" id="aboutTitle">Sobre</span>
+            <dl>
+                <div><dt>Versão</dt><dd id="appVersion"></dd></div>
+                <div><dt>Developer</dt><dd>Paulo Morais</dd></div>
+            </dl>
+            <a class="link-btn" href="https://github.com/F100Pilot/Lanches-Futsal/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Novidades de cada versão <svg width="14" height="14" aria-hidden="true"><use href="#i-ext"/></svg></a>
+        </section>
     </div>
 </div>
 
@@ -754,6 +771,9 @@
  * ============================================================
  */
 
+// Versão da app (ver CHANGELOG.md): atualizar a cada publicação
+const APP_VERSION = '2.3.0';
+const APP_RELEASE_DATE = '2026-10-27';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
 const LANCHE_COLUMNS = 'id,nome,data,entregue,observacoes,atleta_id,jogo_id';
@@ -800,7 +820,7 @@ const el = {
     calPrev: $('calPrev'), calNext: $('calNext'), calTitle: $('calTitle'), calGrid: $('calGrid'), jogosList: $('jogosList'),
     addBtn: $('addBtn'),
     lancheModal: $('lancheModal'), lancheForm: $('lancheForm'), lancheTitle: $('lancheTitle'),
-    athleteName: $('athleteName'), atletasDatalist: $('atletasDatalist'), lunchGame: $('lunchGame'),
+    athleteSelect: $('athleteSelect'), athleteOtherField: $('athleteOtherField'), athleteName: $('athleteName'), lunchGame: $('lunchGame'),
     lunchDate: $('lunchDate'), optPending: $('optPending'), optDone: $('optDone'),
     lunchNotes: $('lunchNotes'), saveBtn: $('saveBtn'), deleteBtn: $('deleteBtn'),
     jogoModal: $('jogoModal'), jogoForm: $('jogoForm'), jogoTitle: $('jogoTitle'),
@@ -1203,11 +1223,6 @@ function renderJogos({ animate = true } = {}) {
 // ── RENDER: ATLETAS (editores) ─────────────────────────────
 function renderAtletas() {
     el.menuAtletasHint.textContent = atletasData.length ? String(atletasData.filter(a => a.ativo).length) + ' ativos' : '';
-    el.atletasDatalist.innerHTML = atletasData
-        .filter(a => a.ativo)
-        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
-        .map(a => `<option value="${escHtml(a.nome)}"></option>`).join('');
-
     if (!atletasData.length) {
         el.atletasList.innerHTML = emptyHtml('Ainda não há atletas.');
         return;
@@ -1350,6 +1365,37 @@ function syncGameDate() {
     el.lunchDate.disabled = !!jogo;
 }
 
+const OTHER_ATHLETE = '__outro';
+
+/** Opções: atletas ativos (+ o atleta do lanche se inativo) e "Outro nome…" para lanches sem atleta registado. */
+function fillAthleteSelect(lanche) {
+    const byName = lanche && lanche.atleta_id == null
+        ? atletasData.find(a => a.nome.toLowerCase() === lanche.nome.toLowerCase()) : null;
+    const selectedId = lanche ? (lanche.atleta_id ?? (byName ? byName.id : null)) : null;
+    const options = atletasData
+        .filter(a => a.ativo || a.id === selectedId)
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
+        .map(a => `<option value="${Number(a.id)}">${escHtml(a.nome)}${a.ativo ? '' : ' (inativo)'}</option>`);
+    el.athleteSelect.innerHTML = `<option value="">Escolhe o atleta</option>${options.join('')}<option value="${OTHER_ATHLETE}">Outro nome…</option>`;
+    if (selectedId != null && atletaById(selectedId)) {
+        el.athleteSelect.value = String(selectedId);
+        el.athleteName.value = '';
+    } else if (lanche || !options.length) {
+        el.athleteSelect.value = OTHER_ATHLETE;
+        el.athleteName.value = lanche ? lanche.nome : '';
+    } else {
+        el.athleteSelect.value = '';
+        el.athleteName.value = '';
+    }
+    syncAthleteOther();
+}
+
+function syncAthleteOther() {
+    const other = el.athleteSelect.value === OTHER_ATHLETE;
+    el.athleteOtherField.classList.toggle('hidden', !other);
+    el.athleteName.required = other;
+}
+
 function showLancheModal(id = null, { jogoId = null } = {}) {
     const lanche = id == null ? null : lancheById(id);
     if (id != null && !lanche) return;
@@ -1357,19 +1403,20 @@ function showLancheModal(id = null, { jogoId = null } = {}) {
     el.lancheTitle.textContent = lanche ? 'Editar lanche' : 'Novo lanche';
     el.saveBtn.textContent = lanche ? 'Guardar alterações' : 'Adicionar lanche';
     el.deleteBtn.classList.toggle('hidden', !lanche);
-    el.athleteName.value = lanche ? lancheNome(lanche) : '';
+    fillAthleteSelect(lanche);
     el.lunchDate.value = lanche ? lanche.data : todayStr();
     (lanche && lanche.entregue ? el.optDone : el.optPending).checked = true;
     el.lunchNotes.value = lanche ? lanche.observacoes : '';
     fillGameSelect(lanche ? lanche.jogo_id : jogoId);
-    openModal(el.lancheModal, el.athleteName);
+    openModal(el.lancheModal, el.athleteSelect);
 }
 
 async function saveLanche(e) {
     e.preventDefault();
-    const nome = el.athleteName.value.trim();
+    const choice = el.athleteSelect.value;
+    const atleta = choice && choice !== OTHER_ATHLETE ? atletaById(Number(choice)) : null;
+    const nome = atleta ? atleta.nome : (choice === OTHER_ATHLETE ? el.athleteName.value.trim() : '');
     const jogo = el.lunchGame.value ? jogoById(Number(el.lunchGame.value)) : null;
-    const atleta = atletasData.find(a => a.nome.toLowerCase() === nome.toLowerCase());
     const fields = {
         nome: atleta ? atleta.nome : nome,
         atleta_id: atleta ? atleta.id : null,
@@ -1586,7 +1633,7 @@ let bookmarkletSource = null;
 
 async function buildBookmarklet() {
     if (!bookmarkletSource) {
-        const res = await fetch('fpf/bookmarklet.js');
+        const res = await fetch(`fpf/bookmarklet.js?v=${APP_VERSION}`, { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         bookmarkletSource = await res.text();
     }
@@ -1633,8 +1680,12 @@ async function offerFpfImport() {
     const encoded = fpfPending;
     fpfPending = null;
     await loadData({ silent: true });   // dados de editor atuais (fpf_id, nome da equipa) antes de comparar
-    const { decodePayload, toJogo } = await import('./fpf/parse.js');
+    const { decodePayload, toJogo } = await import(`./fpf/parse.js?v=${APP_VERSION}`);
     const payload = decodePayload(encoded);
+    if (payload && payload.outdated) {
+        showToast('O favorito da FPF está desatualizado. Apaga-o da barra de favoritos e volta a arrastá-lo a partir das Opções.', 'error', 9000);
+        return;
+    }
     if (!payload) { showToast('Dados da FPF inválidos.', 'error'); return; }
     // O favorito já filtrou pela equipa com que foi instalado; o nome das Opções é só alternativa
     const team = String(payload.team || '').trim() || fpfEquipaNome;
@@ -1827,6 +1878,10 @@ el.fpfConfirmBtn.addEventListener('click', confirmFpfImport);
 el.loginForm.addEventListener('submit', login);
 el.accountForm.addEventListener('submit', changePassword);
 el.lunchGame.addEventListener('change', syncGameDate);
+el.athleteSelect.addEventListener('change', () => {
+    syncAthleteOther();
+    if (el.athleteSelect.value === OTHER_ATHLETE) el.athleteName.focus();
+});
 
 el.deleteBtn.addEventListener('click', confirmDeleteLanche);
 el.deleteGameBtn.addEventListener('click', confirmDeleteJogo);
@@ -1919,6 +1974,11 @@ document.addEventListener('keydown', e => {
     if (open.length) closeModal(open[open.length - 1]);
 });
 
+window.addEventListener('hashchange', () => {
+    readFpfHash();
+    if (fpfPending) offerFpfImport();
+});
+
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden && db) loadData({ silent: true });
 });
@@ -1929,7 +1989,14 @@ function showFatal(msg) {
     el.lanchesList.innerHTML = emptyHtml(escHtml(msg));
 }
 
+function renderVersion() {
+    const p = parseDate(APP_RELEASE_DATE);
+    const date = p ? `${String(p.d).padStart(2, '0')}/${String(p.mo).padStart(2, '0')}/${p.y}` : APP_RELEASE_DATE;
+    $('appVersion').textContent = `${APP_VERSION} · ${date}`;
+}
+
 async function initApp() {
+    renderVersion();
     readFpfHash();
     let config;
     try {

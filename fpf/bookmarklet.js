@@ -58,7 +58,12 @@ async function importarParaLanches(TEAM, APP) {
             for (let i = 0; i < urls.length; i++) {
                 say(`a ler ${competicao} — jornada ${i + 1} de ${urls.length}…`);
                 const fixtureId = (/fixtureId=(\d+)/.exec(urls[i]) || [])[1];
+                // Um pedido de cada vez, com pausa, como ao clicar nas jornadas à mão
+                if (i > 0) await new Promise(r => setTimeout(r, 800));
                 const res = await fetch(urls[i], { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (res.status === 403 || res.status === 429) {
+                    throw new Error(`o site da FPF recusou os pedidos (HTTP ${res.status}), provavelmente por limite de pedidos. Espera 10–15 minutos e tenta de novo.`);
+                }
                 if (!res.ok) throw new Error(`a FPF respondeu HTTP ${res.status}.`);
                 const root = new DOMParser().parseFromString(await res.text(), 'text/html');
                 for (const m of matchesOf(root)) {
