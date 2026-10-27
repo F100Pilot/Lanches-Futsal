@@ -266,6 +266,105 @@
         .toast-msg { flex: 1; }
         .toast-close { border: 0; background: transparent; color: var(--muted); width: 28px; height: 28px; font-size: 18px; }
 
+        /* ── TABS ── */
+        .tabs {
+            display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px;
+            padding: 4px; background: var(--surface); border-radius: var(--radius-sm);
+        }
+        .tabs button {
+            height: 44px; border: 0; border-radius: 9px; background: transparent; color: var(--muted);
+            font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: 1px; text-transform: uppercase;
+            transition: background .2s, color .2s;
+        }
+        .tabs button.active { background: var(--surface-2); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+        .view { display: flex; flex-direction: column; gap: 16px; }
+        .fpf-btn { width: auto; padding: 0 10px; font-family: var(--display); font-weight: 800; font-size: 16px; letter-spacing: .5px; text-decoration: none; }
+
+        /* ── HERO extras ── */
+        .hero-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+
+        /* ── CALENDAR ── */
+        .cal { background: var(--surface); border-radius: var(--radius); padding: 12px; }
+        .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .cal-title { font-family: var(--display); font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: .5px; }
+        .cal-nav {
+            width: 44px; height: 44px; border-radius: 10px; border: 0; background: transparent; color: var(--text);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .cal-nav:hover { background: var(--surface-2); }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; text-align: center; }
+        .cal-wd { font-size: 11px; color: var(--muted); padding: 4px 0; text-transform: uppercase; }
+        .cal-day {
+            height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted);
+            font-size: 14px; font-variant-numeric: tabular-nums;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+        }
+        .cal-day:disabled { cursor: default; }
+        .cal-day.has-game { color: var(--text); font-weight: 700; }
+        .cal-day.has-game:hover { background: var(--surface-2); }
+        .cal-day.today { box-shadow: inset 0 0 0 1px var(--muted); }
+        .cal-day.selected { background: var(--accent); color: var(--accent-ink); }
+        .cal-dot { width: 6px; height: 6px; border-radius: 3px; }
+        .cal-dot.done { background: var(--accent); }
+        .cal-dot.pending { background: var(--warn); }
+        .cal-dot.none { box-shadow: inset 0 0 0 1.5px var(--muted); }
+        .cal-day.selected .cal-dot { background: var(--accent-ink); box-shadow: none; }
+        .cal-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin-top: 8px; padding: 0 4px; }
+        .cal-legend span { display: flex; align-items: center; gap: 5px; }
+
+        /* ── GAME CARD ── */
+        .game { background: var(--surface); border-radius: 14px; padding: 6px; display: flex; flex-direction: column; }
+        .game.past { opacity: .7; }
+        .game-vs { font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+        .game-meta { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+        .game-score { font-family: var(--display); font-weight: 800; font-size: 24px; flex-shrink: 0; padding: 0 8px; }
+        .badge {
+            display: inline-flex; align-items: center; height: 20px; padding: 0 7px; margin-left: 6px; border-radius: 6px;
+            font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; vertical-align: 2px;
+        }
+        .badge-casa { background: var(--accent-soft); color: var(--accent); }
+        .badge-fora { background: var(--surface-2); color: var(--muted); }
+        .badge-off { background: var(--surface-2); color: var(--muted); margin-left: 0; }
+        .game-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 6px 2px; margin-top: 4px; border-top: 1px solid var(--line); }
+        .game-lanche { flex: 1; min-width: 0; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+        .game-lanche strong { color: var(--text); font-weight: 600; }
+        .link-btn {
+            display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 12px; border-radius: 10px;
+            border: 0; background: var(--surface-2); color: var(--text); font-size: 13px; font-weight: 600; text-decoration: none;
+        }
+        .link-btn:hover { background: var(--line); }
+
+        /* ── MENUS & ROWS ── */
+        .menu { display: flex; flex-direction: column; gap: 6px; }
+        .menu-item {
+            display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px; width: 100%;
+            border-radius: 14px; border: 0; background: var(--bg); color: var(--text); font-size: 15px; font-weight: 600; text-align: left;
+        }
+        .menu-item:hover { background: var(--surface-2); }
+        .menu-item svg { color: var(--accent); flex-shrink: 0; }
+        .menu-item.danger, .menu-item.danger svg { color: var(--danger); }
+        .menu-hint { margin-left: auto; font-size: 12px; color: var(--muted); font-weight: 500; }
+        .row-list { display: flex; flex-direction: column; gap: 6px; }
+        .row {
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px; width: 100%;
+            border-radius: 14px; border: 0; background: var(--bg); color: var(--text); text-align: left;
+        }
+        .row:hover { background: var(--surface-2); }
+        .row.inactive { opacity: .55; }
+        .row-num {
+            width: 38px; height: 38px; border-radius: 10px; background: var(--surface-2); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 700; font-size: 18px;
+        }
+        .row-info { flex: 1; min-width: 0; }
+        .row-title { font-weight: 600; overflow-wrap: anywhere; }
+        .row-sub { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+        .field-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+        .check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .check input { width: 22px; height: 22px; accent-color: var(--accent); }
+        .input:disabled { opacity: .6; }
+        select.input { appearance: auto; }
+        .section-title { font-family: var(--display); font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-top: 4px; }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
         }
@@ -277,6 +376,15 @@
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></symbol>
     <symbol id="i-ball" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z"/></g></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></g></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c1.9.6 3.1 2.4 3.5 5.5"/></g></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></g></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></g></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/></g></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></g></symbol>
+    <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
 </svg>
 
 <div class="container">
@@ -297,78 +405,95 @@
             </div>
         </div>
         <div class="header-actions">
-            <button class="user-chip admin-only" id="userChip"></button>
+            <a class="icon-btn fpf-btn hidden" id="fpfLink" target="_blank" rel="noopener noreferrer"
+               title="Página da equipa no site da FPF" aria-label="Página da equipa no site da FPF (abre noutro separador)">FPF</a>
             <button class="icon-btn" id="refreshBtn" title="Recarregar" aria-label="Recarregar dados">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
             </button>
             <button class="icon-btn" id="loginBtn" title="Entrar (editores)" aria-label="Entrar como editor">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             </button>
-            <button class="icon-btn admin-only" id="logoutBtn" title="Terminar sessão" aria-label="Terminar sessão">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg>
-            </button>
+            <button class="user-chip admin-only" id="userChip" title="Opções" aria-label="Opções"></button>
         </div>
     </header>
 
-    <section class="hero hidden" id="hero" aria-labelledby="heroEyebrow">
-        <span class="eyebrow" id="heroEyebrow">Próximo lanche</span>
-        <div class="hero-date" id="heroDate"></div>
-        <div class="hero-row">
-            <div>
-                <div class="hero-label">A cargo de</div>
-                <div class="hero-name" id="heroName"></div>
-                <div class="hero-note" id="heroNote"></div>
+    <section class="hero hidden" id="hero" aria-live="polite"></section>
+
+    <nav class="tabs" role="tablist" aria-label="Secções">
+        <button role="tab" id="tabLanches" aria-selected="true" aria-controls="viewLanches" class="active" data-view="lanches">Lanches</button>
+        <button role="tab" id="tabJogos" aria-selected="false" aria-controls="viewJogos" data-view="jogos">Jogos</button>
+    </nav>
+
+    <!-- VISTA: LANCHES -->
+    <div class="view" id="viewLanches" role="tabpanel" aria-labelledby="tabLanches">
+        <section aria-label="Resumo">
+            <div class="score">
+                <div class="score-cell"><div class="score-num" id="totalCount">–</div><div class="score-label">Total</div></div>
+                <div class="score-cell"><div class="score-num delivered" id="deliveredCount">–</div><div class="score-label">Entregues</div></div>
+                <div class="score-cell"><div class="score-num pending" id="pendingCount">–</div><div class="score-label">Pendentes</div></div>
             </div>
-            <span id="heroChip"></span>
+        </section>
+        <div class="progress" aria-label="Progresso de entrega">
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            <span class="progress-pct" id="progressPct">0%</span>
         </div>
-    </section>
 
-    <section aria-label="Resumo">
-        <div class="score">
-            <div class="score-cell"><div class="score-num" id="totalCount">–</div><div class="score-label">Total</div></div>
-            <div class="score-cell"><div class="score-num delivered" id="deliveredCount">–</div><div class="score-label">Entregues</div></div>
-            <div class="score-cell"><div class="score-num pending" id="pendingCount">–</div><div class="score-label">Pendentes</div></div>
+        <div class="segmented" role="group" aria-label="Filtrar">
+            <button class="active" data-filter="all" aria-pressed="true">Todos</button>
+            <button data-filter="pending" aria-pressed="false">Pendentes</button>
+            <button data-filter="delivered" aria-pressed="false">Entregues</button>
         </div>
-    </section>
-    <div class="progress" aria-label="Progresso de entrega">
-        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-        <span class="progress-pct" id="progressPct">0%</span>
+        <label class="search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input type="search" id="searchInput" placeholder="Pesquisar atleta…" aria-label="Pesquisar atleta">
+        </label>
+
+        <div id="lanchesList" class="list" aria-live="polite">
+            <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
     </div>
 
-    <div class="segmented" role="group" aria-label="Filtrar">
-        <button class="active" data-filter="all" aria-pressed="true">Todos</button>
-        <button data-filter="pending" aria-pressed="false">Pendentes</button>
-        <button data-filter="delivered" aria-pressed="false">Entregues</button>
-    </div>
-    <label class="search">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input type="search" id="searchInput" placeholder="Pesquisar atleta…" aria-label="Pesquisar atleta">
-    </label>
-
-    <div id="lanchesList" class="list" aria-live="polite">
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    <!-- VISTA: JOGOS -->
+    <div class="view hidden" id="viewJogos" role="tabpanel" aria-labelledby="tabJogos">
+        <section class="cal" aria-label="Calendário de jogos">
+            <div class="cal-head">
+                <button class="cal-nav" id="calPrev" aria-label="Mês anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
+                <h2 class="cal-title" id="calTitle" aria-live="polite"></h2>
+                <button class="cal-nav" id="calNext" aria-label="Mês seguinte"><svg width="20" height="20" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+            <div class="cal-legend" aria-hidden="true">
+                <span><i class="cal-dot done"></i>Lanche entregue</span>
+                <span><i class="cal-dot pending"></i>Lanche pendente</span>
+                <span><i class="cal-dot none"></i>Sem lanche</span>
+            </div>
+        </section>
+        <div id="jogosList" class="list" aria-live="polite"></div>
     </div>
 </div>
 
-<button class="fab admin-only" id="addBtn" aria-label="Adicionar lanche" title="Adicionar lanche">
+<button class="fab admin-only" id="addBtn" aria-label="Adicionar" title="Adicionar">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
 </button>
 
 <div class="toasts" id="toastContainer" aria-live="assertive"></div>
 
-<!-- FOLHA: ADICIONAR / EDITAR -->
+<!-- FOLHA: LANCHE -->
 <div class="overlay hidden" id="lancheModal">
     <form class="sheet" id="lancheForm" role="dialog" aria-modal="true" aria-labelledby="lancheTitle">
         <div class="grabber" aria-hidden="true"></div>
         <div class="sheet-head">
             <h2 class="sheet-title" id="lancheTitle">Novo lanche</h2>
-            <button type="button" class="icon-btn" data-close="lancheModal" aria-label="Fechar">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-            </button>
+            <button type="button" class="icon-btn" data-close="lancheModal" aria-label="Fechar"><svg width="18" height="18" aria-hidden="true"><use href="#i-x"/></svg></button>
         </div>
         <label class="field">
-            <span class="field-label">Nome do atleta</span>
-            <input class="input" id="athleteName" required maxlength="100" autocomplete="off" placeholder="Ex: João Silva">
+            <span class="field-label">Atleta</span>
+            <input class="input" id="athleteName" list="atletasDatalist" required maxlength="100" autocomplete="off" placeholder="Escolhe ou escreve o nome">
+            <datalist id="atletasDatalist"></datalist>
+        </label>
+        <label class="field">
+            <span class="field-label">Jogo <small>(opcional)</small></span>
+            <select class="input" id="lunchGame"></select>
         </label>
         <label class="field">
             <span class="field-label">Data</span>
@@ -385,10 +510,161 @@
         </div>
         <label class="field">
             <span class="field-label">Observações <small>(opcional)</small></span>
-            <input class="input" id="lunchNotes" maxlength="300" placeholder="Ex: jogo em casa">
+            <input class="input" id="lunchNotes" maxlength="300" placeholder="Ex: fruta e água">
         </label>
         <button type="submit" class="btn btn-primary" id="saveBtn">Adicionar lanche</button>
         <button type="button" class="btn btn-danger hidden" id="deleteBtn">Eliminar lanche</button>
+    </form>
+</div>
+
+<!-- FOLHA: JOGO -->
+<div class="overlay hidden" id="jogoModal">
+    <form class="sheet" id="jogoForm" role="dialog" aria-modal="true" aria-labelledby="jogoTitle">
+        <div class="grabber" aria-hidden="true"></div>
+        <div class="sheet-head">
+            <h2 class="sheet-title" id="jogoTitle">Novo jogo</h2>
+            <button type="button" class="icon-btn" data-close="jogoModal" aria-label="Fechar"><svg width="18" height="18" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+        <label class="field">
+            <span class="field-label">Adversário</span>
+            <input class="input" id="gameOpponent" required maxlength="100" autocomplete="off" placeholder="Ex: GD Estrela">
+        </label>
+        <div class="field-row">
+            <label class="field">
+                <span class="field-label">Data</span>
+                <input class="input" type="date" id="gameDate" required>
+            </label>
+            <label class="field">
+                <span class="field-label">Hora <small>(opcional)</small></span>
+                <input class="input" type="time" id="gameTime">
+            </label>
+        </div>
+        <div class="field">
+            <span class="field-label" id="homeLabel">Jogo em</span>
+            <div class="toggle-group" role="radiogroup" aria-labelledby="homeLabel">
+                <input type="radio" name="casa" id="optHome" value="true" checked>
+                <label for="optHome" class="opt-done">Casa</label>
+                <input type="radio" name="casa" id="optAway" value="false">
+                <label for="optAway" class="opt-pending">Fora</label>
+            </div>
+        </div>
+        <label class="field">
+            <span class="field-label">Local <small>(opcional)</small></span>
+            <input class="input" id="gamePlace" maxlength="150" placeholder="Ex: Pavilhão Municipal">
+        </label>
+        <div class="field-row">
+            <label class="field">
+                <span class="field-label">Competição <small>(opcional)</small></span>
+                <input class="input" id="gameCompetition" maxlength="100" placeholder="Ex: Campeonato">
+            </label>
+            <label class="field">
+                <span class="field-label">Resultado <small>(opcional)</small></span>
+                <input class="input" id="gameResult" maxlength="20" placeholder="Ex: 3-2">
+            </label>
+        </div>
+        <label class="field">
+            <span class="field-label">Link FPF do jogo <small>(opcional)</small></span>
+            <input class="input" type="url" id="gameUrl" maxlength="500" placeholder="https://...">
+        </label>
+        <button type="submit" class="btn btn-primary" id="saveGameBtn">Adicionar jogo</button>
+        <button type="button" class="btn btn-danger hidden" id="deleteGameBtn">Eliminar jogo</button>
+    </form>
+</div>
+
+<!-- FOLHA: OPÇÕES -->
+<div class="overlay hidden" id="optionsModal">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
+        <div class="grabber" aria-hidden="true"></div>
+        <div class="sheet-head">
+            <div>
+                <h2 class="sheet-title" id="optionsTitle">Opções</h2>
+                <p class="sheet-sub" id="optionsEmail"></p>
+            </div>
+            <button type="button" class="icon-btn" data-close="optionsModal" aria-label="Fechar"><svg width="18" height="18" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+        <div class="menu">
+            <button type="button" class="menu-item" id="menuAtletas"><svg width="22" height="22" aria-hidden="true"><use href="#i-users"/></svg>Atletas<span class="menu-hint" id="menuAtletasHint"></span></button>
+            <button type="button" class="menu-item" id="menuNovoJogo"><svg width="22" height="22" aria-hidden="true"><use href="#i-cal"/></svg>Novo jogo</button>
+        </div>
+        <form class="field" id="fpfForm">
+            <span class="section-title">Site da FPF</span>
+            <label class="field">
+                <span class="field-label">Link da página da equipa</span>
+                <input class="input" type="url" id="fpfUrlInput" maxlength="500" placeholder="https://...">
+            </label>
+            <button type="submit" class="btn btn-ghost" id="saveFpfBtn">Guardar link</button>
+        </form>
+        <div class="menu">
+            <button type="button" class="menu-item" id="menuPassword"><svg width="22" height="22" aria-hidden="true"><use href="#i-key"/></svg>Alterar password</button>
+            <button type="button" class="menu-item danger" id="logoutBtn"><svg width="22" height="22" aria-hidden="true"><use href="#i-out"/></svg>Terminar sessão</button>
+        </div>
+    </div>
+</div>
+
+<!-- FOLHA: LISTA DE ATLETAS -->
+<div class="overlay hidden" id="atletasModal">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="atletasTitle">
+        <div class="grabber" aria-hidden="true"></div>
+        <div class="sheet-head">
+            <h2 class="sheet-title" id="atletasTitle">Atletas</h2>
+            <button type="button" class="icon-btn" data-close="atletasModal" aria-label="Fechar"><svg width="18" height="18" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+        <button type="button" class="btn btn-primary" id="newAtletaBtn">Novo atleta</button>
+        <div class="row-list" id="atletasList"></div>
+    </div>
+</div>
+
+<!-- FOLHA: ATLETA -->
+<div class="overlay hidden" id="atletaModal">
+    <form class="sheet" id="atletaForm" role="dialog" aria-modal="true" aria-labelledby="atletaTitle">
+        <div class="grabber" aria-hidden="true"></div>
+        <div class="sheet-head">
+            <h2 class="sheet-title" id="atletaTitle">Novo atleta</h2>
+            <button type="button" class="icon-btn" data-close="atletaModal" aria-label="Fechar"><svg width="18" height="18" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+        <div class="field-row" style="grid-template-columns: minmax(0, 3fr) minmax(0, 1fr)">
+            <label class="field">
+                <span class="field-label">Nome</span>
+                <input class="input" id="atletaNome" required maxlength="100" autocomplete="off">
+            </label>
+            <label class="field">
+                <span class="field-label">Nº</span>
+                <input class="input" type="number" id="atletaNumero" min="0" max="99" inputmode="numeric">
+            </label>
+        </div>
+        <label class="check"><input type="checkbox" id="atletaAtivo" checked> Ativo na equipa</label>
+        <span class="section-title">Encarregado de educação <small style="font-family:var(--body);font-size:12px;text-transform:none;letter-spacing:0">(só visível para editores)</small></span>
+        <label class="field">
+            <span class="field-label">Nome</span>
+            <input class="input" id="encNome" maxlength="100" autocomplete="off">
+        </label>
+        <label class="field">
+            <span class="field-label">Telefone</span>
+            <input class="input" type="tel" id="encTelefone" maxlength="20" pattern="[0-9 +()\-]{0,20}" autocomplete="off">
+        </label>
+        <button type="submit" class="btn btn-primary" id="saveAtletaBtn">Guardar atleta</button>
+        <button type="button" class="btn btn-danger hidden" id="deleteAtletaBtn">Eliminar atleta</button>
+    </form>
+</div>
+
+<!-- CONTA: ALTERAR PASSWORD -->
+<div class="overlay center hidden" id="accountModal">
+    <form class="dialog" id="accountForm" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+        <h2 class="sheet-title" id="accountTitle">Alterar password</h2>
+        <label class="field">
+            <span class="field-label">Nova password</span>
+            <input class="input" type="password" id="newPassword" autocomplete="new-password" required minlength="10">
+            <span class="form-hint">Mínimo 10 caracteres.</span>
+        </label>
+        <label class="field">
+            <span class="field-label">Repetir nova password</span>
+            <input class="input" type="password" id="newPasswordConfirm" autocomplete="new-password" required minlength="10">
+        </label>
+        <p class="form-error" id="accountError"></p>
+        <div class="btn-row">
+            <button type="button" class="btn btn-ghost" data-close="accountModal">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="accountSubmitBtn">Guardar</button>
+        </div>
     </form>
 </div>
 
@@ -409,28 +685,6 @@
         <div class="btn-row">
             <button type="button" class="btn btn-ghost" data-close="loginModal">Cancelar</button>
             <button type="submit" class="btn btn-primary" id="loginSubmitBtn">Entrar</button>
-        </div>
-    </form>
-</div>
-
-<!-- CONTA: ALTERAR PASSWORD -->
-<div class="overlay center hidden" id="accountModal">
-    <form class="dialog" id="accountForm" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
-        <h2 class="sheet-title" id="accountTitle">Alterar password</h2>
-        <p class="sheet-sub" id="accountEmail"></p>
-        <label class="field">
-            <span class="field-label">Nova password</span>
-            <input class="input" type="password" id="newPassword" autocomplete="new-password" required minlength="10">
-            <span class="form-hint">Mínimo 10 caracteres.</span>
-        </label>
-        <label class="field">
-            <span class="field-label">Repetir nova password</span>
-            <input class="input" type="password" id="newPasswordConfirm" autocomplete="new-password" required minlength="10">
-        </label>
-        <p class="form-error" id="accountError"></p>
-        <div class="btn-row">
-            <button type="button" class="btn btn-ghost" data-close="accountModal">Cancelar</button>
-            <button type="submit" class="btn btn-primary" id="accountSubmitBtn">Guardar</button>
         </div>
     </form>
 </div>
@@ -457,17 +711,19 @@
  *  Stack: HTML + CSS + Vanilla JS  →  GitHub Pages (static)
  *         Supabase (Postgres + Auth + RLS)  →  base de dados
  *
- *  • Leitura pública (pais).
- *  • Escrita apenas para os editores definidos em public.editors
- *    (imposto pela base de dados, não pelo browser).
+ *  • Leitura pública (pais): lanches, jogos, atletas (nome/nº), link FPF.
+ *  • Escrita e contactos dos encarregados: apenas editores (public.editors),
+ *    imposto pela base de dados, não pelo browser.
  *  • Configuração em config.json (supabaseUrl + supabaseKey publishable).
- *  • Setup completo: ver README.md e supabase/schema.sql.
+ *  • Schema: supabase/schema.sql + supabase/002_atletas_jogos.sql.
  * ============================================================
  */
 
 const REFRESH_INTERVAL_MS = 60_000;
-const LANCHE_COLUMNS = 'id,nome,data,entregue,observacoes';
 const MIN_PASSWORD_LENGTH = 10;
+const LANCHE_COLUMNS = 'id,nome,data,entregue,observacoes,atleta_id,jogo_id';
+const JOGO_COLUMNS = 'id,data,hora,adversario,casa,local,competicao,resultado,fpf_url';
+const ATLETA_COLUMNS = 'id,nome,numero,ativo';
 const WEEKDAYS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
 const MONTHS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
                 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
@@ -475,32 +731,58 @@ const MONTHS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
 // ── STATE ──────────────────────────────────────────────────
 let db = null;
 let isEditor = false;
+let sessionEmail = '';
 let lanchesData = [];
+let jogosData = [];
+let atletasData = [];
+let contactos = new Map();     // atleta_id → { encarregado_nome, telefone } (só editores)
+let fpfEquipaUrl = '';
+let currentView = 'lanches';
 let currentFilter = 'all';
 let searchQuery = '';
-let editTarget = null;      // id em edição (null = novo)
-let deleteTarget = null;
+let calMonth = null;           // { y, m } (m = 1..12)
+let selectedDay = null;        // "AAAA-MM-DD" ou null
+let editTarget = null;         // lanche em edição (null = novo)
+let jogoTarget = null;
+let atletaTarget = null;
+let pendingDelete = null;      // função a executar ao confirmar
 let refreshTimer = null;
 
 // ── DOM REFS ───────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 const el = {
     statusDot: $('statusDot'), statusText: $('statusText'), lastSync: $('lastSync'),
-    hero: $('hero'), heroDate: $('heroDate'), heroName: $('heroName'), heroNote: $('heroNote'), heroChip: $('heroChip'),
+    fpfLink: $('fpfLink'), refreshBtn: $('refreshBtn'), loginBtn: $('loginBtn'), userChip: $('userChip'),
+    hero: $('hero'),
+    tabs: document.querySelectorAll('.tabs button'), viewLanches: $('viewLanches'), viewJogos: $('viewJogos'),
     totalCount: $('totalCount'), deliveredCount: $('deliveredCount'), pendingCount: $('pendingCount'),
     progressFill: $('progressFill'), progressPct: $('progressPct'),
     lanchesList: $('lanchesList'), searchInput: $('searchInput'),
-    userChip: $('userChip'), refreshBtn: $('refreshBtn'), loginBtn: $('loginBtn'), logoutBtn: $('logoutBtn'),
+    calPrev: $('calPrev'), calNext: $('calNext'), calTitle: $('calTitle'), calGrid: $('calGrid'), jogosList: $('jogosList'),
     addBtn: $('addBtn'),
     lancheModal: $('lancheModal'), lancheForm: $('lancheForm'), lancheTitle: $('lancheTitle'),
-    athleteName: $('athleteName'), lunchDate: $('lunchDate'), optPending: $('optPending'), optDone: $('optDone'),
+    athleteName: $('athleteName'), atletasDatalist: $('atletasDatalist'), lunchGame: $('lunchGame'),
+    lunchDate: $('lunchDate'), optPending: $('optPending'), optDone: $('optDone'),
     lunchNotes: $('lunchNotes'), saveBtn: $('saveBtn'), deleteBtn: $('deleteBtn'),
+    jogoModal: $('jogoModal'), jogoForm: $('jogoForm'), jogoTitle: $('jogoTitle'),
+    gameOpponent: $('gameOpponent'), gameDate: $('gameDate'), gameTime: $('gameTime'),
+    optHome: $('optHome'), optAway: $('optAway'), gamePlace: $('gamePlace'), gameCompetition: $('gameCompetition'),
+    gameResult: $('gameResult'), gameUrl: $('gameUrl'), saveGameBtn: $('saveGameBtn'), deleteGameBtn: $('deleteGameBtn'),
+    optionsModal: $('optionsModal'), optionsEmail: $('optionsEmail'),
+    menuAtletas: $('menuAtletas'), menuAtletasHint: $('menuAtletasHint'), menuNovoJogo: $('menuNovoJogo'),
+    fpfForm: $('fpfForm'), fpfUrlInput: $('fpfUrlInput'), saveFpfBtn: $('saveFpfBtn'),
+    menuPassword: $('menuPassword'), logoutBtn: $('logoutBtn'),
+    atletasModal: $('atletasModal'), atletasList: $('atletasList'), newAtletaBtn: $('newAtletaBtn'),
+    atletaModal: $('atletaModal'), atletaForm: $('atletaForm'), atletaTitle: $('atletaTitle'),
+    atletaNome: $('atletaNome'), atletaNumero: $('atletaNumero'), atletaAtivo: $('atletaAtivo'),
+    encNome: $('encNome'), encTelefone: $('encTelefone'),
+    saveAtletaBtn: $('saveAtletaBtn'), deleteAtletaBtn: $('deleteAtletaBtn'),
+    accountModal: $('accountModal'), accountForm: $('accountForm'),
+    newPassword: $('newPassword'), newPasswordConfirm: $('newPasswordConfirm'),
+    accountError: $('accountError'), accountSubmitBtn: $('accountSubmitBtn'),
     loginModal: $('loginModal'), loginForm: $('loginForm'), loginEmail: $('loginEmail'),
     loginPassword: $('loginPassword'), loginError: $('loginError'), loginSubmitBtn: $('loginSubmitBtn'),
     confirmModal: $('confirmModal'), confirmMsg: $('confirmMsg'), confirmDeleteBtn: $('confirmDeleteBtn'),
-    accountModal: $('accountModal'), accountForm: $('accountForm'), accountEmail: $('accountEmail'),
-    newPassword: $('newPassword'), newPasswordConfirm: $('newPasswordConfirm'),
-    accountError: $('accountError'), accountSubmitBtn: $('accountSubmitBtn'),
     toastContainer: $('toastContainer'),
 };
 
@@ -534,7 +816,7 @@ function updateLastSync() {
     el.lastSync.textContent = `· ${hm}`;
 }
 
-// ── DATE HELPERS (datas "AAAA-MM-DD", sem conversões de fuso horário) ──
+// ── HELPERS (datas "AAAA-MM-DD", sem conversões de fuso horário) ──
 function todayStr() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -547,10 +829,51 @@ function parseDate(raw) {
     return { y, mo, d, wd: WEEKDAYS[new Date(y, mo - 1, d).getDay()] };
 }
 
+function dateKey(y, mo, d) {
+    return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+
+/** "AAAA-MM-DD" → "dom · 1 nov" */
+function shortDate(raw) {
+    const p = parseDate(raw);
+    return p ? `${p.wd} · ${p.d} ${MONTHS[p.mo - 1].slice(0, 3)}` : (raw || '');
+}
+
+function hhmm(time) {
+    return time ? String(time).slice(0, 5) : '';
+}
+
 function escHtml(t) {
     const d = document.createElement('div');
     d.textContent = t == null ? '' : String(t);
     return d.innerHTML;
+}
+
+/** Só aceita links https (o resto é ignorado para evitar javascript: e afins). */
+function safeUrl(raw) {
+    try {
+        const u = new URL(String(raw || '').trim());
+        return u.protocol === 'https:' ? u.href : '';
+    } catch {
+        return '';
+    }
+}
+
+function byDateAsc(a, b) { return a.data.localeCompare(b.data) || String(a.hora || '').localeCompare(String(b.hora || '')) || a.id - b.id; }
+function byDateDesc(a, b) { return -byDateAsc(a, b); }
+
+const atletaById = id => atletasData.find(a => a.id === id);
+const jogoById = id => jogosData.find(j => j.id === id);
+const lancheById = id => lanchesData.find(l => l.id === id);
+
+/** Nome a mostrar: o nome atual do atleta, se ligado; senão o nome guardado no lanche. */
+function lancheNome(l) {
+    const a = l.atleta_id != null ? atletaById(l.atleta_id) : null;
+    return a ? a.nome : l.nome;
+}
+
+function lanchesDoJogo(jogoId) {
+    return lanchesData.filter(l => l.jogo_id === jogoId);
 }
 
 // ── MODALS ─────────────────────────────────────────────────
@@ -562,10 +885,18 @@ function openModal(modal, focusEl) {
 function closeModal(modal) {
     modal.classList.add('hidden');
     if (modal === el.lancheModal) editTarget = null;
-    if (modal === el.confirmModal) deleteTarget = null;
+    if (modal === el.jogoModal) jogoTarget = null;
+    if (modal === el.atletaModal) atletaTarget = null;
+    if (modal === el.confirmModal) pendingDelete = null;
 }
 
-// ── RENDER ─────────────────────────────────────────────────
+function askDelete(html, action) {
+    pendingDelete = action;
+    el.confirmMsg.innerHTML = html;
+    openModal(el.confirmModal, el.confirmDeleteBtn);
+}
+
+// ── RENDER: COMUM ──────────────────────────────────────────
 function chipHtml(lanche, interactive) {
     const done = lanche.entregue;
     const cls = done ? 'chip chip-done' : 'chip chip-pending';
@@ -573,7 +904,24 @@ function chipHtml(lanche, interactive) {
     const label = done ? 'Entregue' : 'Pendente';
     if (!interactive) return `<span class="${cls}">${icon}${label}</span>`;
     const action = done ? 'Marcar como pendente' : 'Marcar como entregue';
-    return `<button class="${cls}" data-action="toggle" aria-label="${action}: ${escHtml(lanche.nome)}">${icon}${label}</button>`;
+    return `<button class="${cls}" data-action="toggle" data-lanche="${Number(lanche.id)}" aria-label="${action}: ${escHtml(lancheNome(lanche))}">${icon}${label}</button>`;
+}
+
+function dateBlockHtml(raw) {
+    const p = parseDate(raw);
+    return `
+        <div class="date-block">
+            <div class="date-day">${p ? p.d : '?'}</div>
+            <div class="date-wd">${p ? p.wd : ''}</div>
+        </div>`;
+}
+
+function emptyHtml(msg) {
+    return `
+        <div class="empty">
+            <svg width="48" height="48" aria-hidden="true"><use href="#i-ball"/></svg>
+            <p>${msg}</p>
+        </div>`;
 }
 
 function animateNumber(node, to) {
@@ -588,6 +936,61 @@ function animateNumber(node, to) {
     requestAnimationFrame(step);
 }
 
+function gameTitleHtml(j) {
+    const badge = j.casa
+        ? '<span class="badge badge-casa">Casa</span>'
+        : '<span class="badge badge-fora">Fora</span>';
+    return `vs ${escHtml(j.adversario)}${badge}`;
+}
+
+function gameMetaText(j) {
+    return [hhmm(j.hora), j.local, j.competicao].filter(Boolean).join(' · ');
+}
+
+function lancheLineHtml(j) {
+    const ls = lanchesDoJogo(j.id);
+    if (!ls.length) return '<span class="game-lanche">Sem lanche atribuído</span>';
+    return `<span class="game-lanche">Lanche: <strong>${ls.map(l => escHtml(lancheNome(l))).join(', ')}</strong></span>`
+        + ls.map(l => chipHtml(l, isEditor)).join('');
+}
+
+// ── RENDER: HERO ───────────────────────────────────────────
+function renderHero() {
+    const today = todayStr();
+    const nextGame = jogosData.filter(j => j.data >= today).sort(byDateAsc)[0];
+    if (nextGame) {
+        const fpf = safeUrl(nextGame.fpf_url);
+        el.hero.innerHTML = `
+            <span class="eyebrow">Próximo jogo</span>
+            <div class="hero-date">${escHtml(shortDate(nextGame.data))}${nextGame.hora ? ' · ' + escHtml(hhmm(nextGame.hora)) : ''}</div>
+            <div class="hero-row">
+                <div>
+                    <div class="hero-name">${gameTitleHtml(nextGame)}</div>
+                    <div class="hero-note">${escHtml([nextGame.local, nextGame.competicao].filter(Boolean).join(' · '))}</div>
+                </div>
+                ${fpf ? `<a class="link-btn" href="${escHtml(fpf)}" target="_blank" rel="noopener noreferrer">FPF <svg width="14" height="14" aria-hidden="true"><use href="#i-ext"/></svg></a>` : ''}
+            </div>
+            <div class="hero-foot" data-jogo="${Number(nextGame.id)}">${lancheLineHtml(nextGame)}</div>`;
+        el.hero.classList.remove('hidden');
+        return;
+    }
+    const nextLanche = lanchesData.filter(l => l.data >= today).sort(byDateAsc)[0];
+    el.hero.classList.toggle('hidden', !nextLanche);
+    if (!nextLanche) return;
+    el.hero.innerHTML = `
+        <span class="eyebrow">Próximo lanche</span>
+        <div class="hero-date">${escHtml(shortDate(nextLanche.data))}</div>
+        <div class="hero-row">
+            <div>
+                <div class="hero-label">A cargo de</div>
+                <div class="hero-name">${escHtml(lancheNome(nextLanche))}</div>
+                <div class="hero-note">${escHtml(nextLanche.observacoes || '')}</div>
+            </div>
+            ${chipHtml(nextLanche, false)}
+        </div>`;
+}
+
+// ── RENDER: LANCHES ────────────────────────────────────────
 function updateStats() {
     const total = lanchesData.length;
     const delivered = lanchesData.filter(l => l.entregue).length;
@@ -599,52 +1002,36 @@ function updateStats() {
     el.progressPct.textContent = pct + '%';
 }
 
-function renderHero() {
-    const today = todayStr();
-    const next = lanchesData
-        .filter(l => l.data >= today)
-        .sort((a, b) => a.data.localeCompare(b.data) || a.id - b.id)[0];
-    el.hero.classList.toggle('hidden', !next);
-    if (!next) return;
-    const p = parseDate(next.data);
-    el.heroDate.textContent = p ? `${p.wd} · ${p.d} ${MONTHS[p.mo - 1].slice(0, 3)}` : next.data;
-    el.heroName.textContent = next.nome;
-    el.heroNote.textContent = next.observacoes || '';
-    el.heroChip.innerHTML = chipHtml(next, false);
-}
-
-function itemHtml(l, index, isPast) {
-    const p = parseDate(l.data);
-    const note = l.observacoes ? `<div class="item-note">${escHtml(l.observacoes)}</div>` : '';
-    const inner = `
-        <div class="date-block">
-            <div class="date-day">${p ? p.d : '?'}</div>
-            <div class="date-wd">${p ? p.wd : ''}</div>
-        </div>
+function lancheItemHtml(l, index, isPast) {
+    const jogo = l.jogo_id != null ? jogoById(l.jogo_id) : null;
+    const sub = [jogo ? `vs ${jogo.adversario}` : '', l.observacoes].filter(Boolean).join(' · ');
+    const note = sub ? `<div class="item-note">${escHtml(sub)}</div>` : '';
+    const nome = lancheNome(l);
+    const inner = `${dateBlockHtml(l.data)}
         <div class="item-info">
-            <div class="item-name">${escHtml(l.nome)}</div>
+            <div class="item-name">${escHtml(nome)}</div>
             ${note}
         </div>`;
     const main = isEditor
-        ? `<button class="item-main" data-action="edit" aria-label="Editar lanche de ${escHtml(l.nome)}">${inner}</button>`
+        ? `<button class="item-main" data-action="edit-lanche" data-lanche="${Number(l.id)}" aria-label="Editar lanche de ${escHtml(nome)}">${inner}</button>`
         : `<div class="item-main">${inner}</div>`;
     const cls = ['item', l.entregue ? 'done' : '', isPast ? 'past' : ''].join(' ');
-    return `<article class="${cls}" data-id="${Number(l.id)}" style="--i:${Math.min(index, 12)}">${main}${chipHtml(l, isEditor)}</article>`;
+    return `<article class="${cls}" style="--i:${Math.min(index, 12)}">${main}${chipHtml(l, isEditor)}</article>`;
 }
 
-function groupsHtml(items, isPast, startIndex) {
+function monthGroupsHtml(items, renderItem, isPast, startIndex) {
     const currentYear = new Date().getFullYear();
     let html = '';
     let lastKey = '';
-    items.forEach((l, i) => {
-        const p = parseDate(l.data);
+    items.forEach((item, i) => {
+        const p = parseDate(item.data);
         const key = p ? `${p.y}-${p.mo}` : 'other';
         if (key !== lastKey) {
             const label = p ? MONTHS[p.mo - 1] + (p.y !== currentYear ? ` ${p.y}` : '') : 'Sem data';
             html += `<div class="eyebrow group-label">${escHtml(label)}</div>`;
             lastKey = key;
         }
-        html += itemHtml(l, startIndex + i, isPast);
+        html += renderItem(item, startIndex + i, isPast);
     });
     return html;
 }
@@ -655,7 +1042,7 @@ function renderLanches({ animate = true } = {}) {
     if (currentFilter === 'pending') data = data.filter(l => !l.entregue);
     if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        data = data.filter(l => l.nome.toLowerCase().includes(q));
+        data = data.filter(l => lancheNome(l).toLowerCase().includes(q));
     }
 
     if (data.length === 0) {
@@ -664,58 +1051,183 @@ function renderLanches({ animate = true } = {}) {
             delivered: 'Nenhum lanche entregue ainda.',
             pending: 'Todos os lanches foram entregues!',
         };
-        const msg = searchQuery ? `Nenhum atleta encontrado para "${escHtml(searchQuery)}".` : msgs[currentFilter];
-        el.lanchesList.innerHTML = `
-            <div class="empty">
-                <svg width="48" height="48" aria-hidden="true"><use href="#i-ball"/></svg>
-                <p>${msg}</p>
-            </div>`;
+        el.lanchesList.innerHTML = emptyHtml(searchQuery
+            ? `Nenhum atleta encontrado para "${escHtml(searchQuery)}".`
+            : msgs[currentFilter]);
         return;
     }
 
     // Próximos (mais cedo primeiro) e anteriores (mais recente primeiro), agrupados por mês
     const today = todayStr();
-    const upcoming = data.filter(l => l.data >= today).sort((a, b) => a.data.localeCompare(b.data) || a.id - b.id);
-    const past = data.filter(l => l.data < today).sort((a, b) => b.data.localeCompare(a.data) || b.id - a.id);
+    const upcoming = data.filter(l => l.data >= today).sort(byDateAsc);
+    const past = data.filter(l => l.data < today).sort(byDateDesc);
 
-    let html = groupsHtml(upcoming, false, 0);
+    let html = monthGroupsHtml(upcoming, lancheItemHtml, false, 0);
     if (past.length) {
-        html += `<div class="eyebrow section-divider">Anteriores</div>` + groupsHtml(past, true, upcoming.length);
+        html += `<div class="eyebrow section-divider">Anteriores</div>`
+            + monthGroupsHtml(past, lancheItemHtml, true, upcoming.length);
     }
     el.lanchesList.innerHTML = html;
     if (animate) el.lanchesList.querySelectorAll('.item').forEach(n => n.classList.add('stagger'));
 }
 
-function renderAll(opts) {
-    renderHero();
-    renderLanches(opts);
-    updateStats();
+// ── RENDER: CALENDÁRIO & JOGOS ─────────────────────────────
+function defaultCalMonth() {
+    const today = todayStr();
+    const next = jogosData.filter(j => j.data >= today).sort(byDateAsc)[0];
+    const p = parseDate(next ? next.data : today);
+    return { y: p.y, m: p.mo };
 }
 
-function findLanche(id) {
-    return lanchesData.find(l => l.id === id);
+function dayStatus(dayGames) {
+    const ls = dayGames.flatMap(j => lanchesDoJogo(j.id));
+    if (!ls.length) return 'none';
+    return ls.every(l => l.entregue) ? 'done' : 'pending';
+}
+
+function renderCalendar() {
+    if (!calMonth) calMonth = defaultCalMonth();
+    const { y, m } = calMonth;
+    el.calTitle.textContent = `${MONTHS[m - 1]} ${y}`;
+
+    const gamesByDay = new Map();
+    jogosData.forEach(j => {
+        if (!gamesByDay.has(j.data)) gamesByDay.set(j.data, []);
+        gamesByDay.get(j.data).push(j);
+    });
+
+    const firstWeekday = (new Date(y, m - 1, 1).getDay() + 6) % 7;   // segunda = 0
+    const daysInMonth = new Date(y, m, 0).getDate();
+    const today = todayStr();
+    let html = ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'].map(d => `<div class="cal-wd">${d}</div>`).join('');
+    html += '<div></div>'.repeat(firstWeekday);
+    for (let d = 1; d <= daysInMonth; d++) {
+        const key = dateKey(y, m, d);
+        const games = gamesByDay.get(key) || [];
+        const cls = ['cal-day', games.length ? 'has-game' : '', key === today ? 'today' : '', key === selectedDay ? 'selected' : ''].join(' ');
+        const label = games.length
+            ? `${d} de ${MONTHS[m - 1]}: ${games.map(g => `jogo vs ${g.adversario}`).join(', ')}`
+            : `${d} de ${MONTHS[m - 1]}`;
+        const dot = games.length ? `<i class="cal-dot ${dayStatus(games)}"></i>` : '';
+        html += `<button class="${cls}" data-day="${key}" ${games.length ? '' : 'disabled'}
+                    aria-label="${escHtml(label)}" ${key === selectedDay ? 'aria-pressed="true"' : ''}>${d}${dot}</button>`;
+    }
+    el.calGrid.innerHTML = html;
+}
+
+function jogoCardHtml(j, index) {
+    const fpf = safeUrl(j.fpf_url);
+    const score = j.resultado ? `<div class="game-score">${escHtml(j.resultado)}</div>` : '';
+    const inner = `${dateBlockHtml(j.data)}
+        <div class="item-info">
+            <div class="game-vs">${gameTitleHtml(j)}</div>
+            <div class="game-meta">${escHtml(gameMetaText(j))}</div>
+        </div>`;
+    const main = isEditor
+        ? `<button class="item-main" data-action="edit-jogo" data-jogo="${Number(j.id)}" aria-label="Editar jogo vs ${escHtml(j.adversario)}">${inner}</button>`
+        : `<div class="item-main">${inner}</div>`;
+    const assign = isEditor && !lanchesDoJogo(j.id).length
+        ? `<button class="link-btn" data-action="assign" data-jogo="${Number(j.id)}">Atribuir lanche</button>` : '';
+    const link = fpf
+        ? `<a class="link-btn" href="${escHtml(fpf)}" target="_blank" rel="noopener noreferrer" aria-label="Ver jogo no site da FPF">FPF <svg width="14" height="14" aria-hidden="true"><use href="#i-ext"/></svg></a>` : '';
+    const past = j.data < todayStr() ? 'past' : '';
+    return `
+        <article class="game ${past}" style="--i:${Math.min(index, 12)}">
+            <div style="display:flex;align-items:center">${main}${score}</div>
+            <div class="game-foot" data-jogo="${Number(j.id)}">${lancheLineHtml(j)}${assign}${link}</div>
+        </article>`;
+}
+
+function renderJogos({ animate = true } = {}) {
+    renderCalendar();
+    const { y, m } = calMonth;
+    const prefix = `${y}-${String(m).padStart(2, '0')}-`;
+    const games = jogosData
+        .filter(j => selectedDay ? j.data === selectedDay : j.data.startsWith(prefix))
+        .sort(byDateAsc);
+    if (!games.length) {
+        const hint = isEditor ? '<br>Usa o botão + para adicionar um jogo.' : '';
+        el.jogosList.innerHTML = emptyHtml(`Sem jogos em ${MONTHS[m - 1]}.${hint}`);
+        return;
+    }
+    const heading = selectedDay
+        ? `<div class="eyebrow group-label">${escHtml(shortDate(selectedDay))}</div>`
+        : `<div class="eyebrow group-label">${games.length} ${games.length === 1 ? 'jogo' : 'jogos'} em ${MONTHS[m - 1]}</div>`;
+    el.jogosList.innerHTML = heading + games.map(jogoCardHtml).join('');
+    if (animate) el.jogosList.querySelectorAll('.game').forEach(n => n.classList.add('stagger'));
+}
+
+// ── RENDER: ATLETAS (editores) ─────────────────────────────
+function renderAtletas() {
+    el.menuAtletasHint.textContent = atletasData.length ? String(atletasData.filter(a => a.ativo).length) + ' ativos' : '';
+    el.atletasDatalist.innerHTML = atletasData
+        .filter(a => a.ativo)
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
+        .map(a => `<option value="${escHtml(a.nome)}"></option>`).join('');
+
+    if (!atletasData.length) {
+        el.atletasList.innerHTML = emptyHtml('Ainda não há atletas.');
+        return;
+    }
+    const sorted = [...atletasData].sort((a, b) =>
+        (b.ativo - a.ativo) || ((a.numero ?? 999) - (b.numero ?? 999)) || a.nome.localeCompare(b.nome, 'pt'));
+    el.atletasList.innerHTML = sorted.map(a => {
+        const c = contactos.get(a.id);
+        const sub = [c && c.encarregado_nome, c && c.telefone].filter(Boolean).join(' · ') || 'Sem contacto do encarregado';
+        return `
+            <button class="row ${a.ativo ? '' : 'inactive'}" data-atleta="${Number(a.id)}" aria-label="Editar ${escHtml(a.nome)}">
+                <span class="row-num">${a.numero ?? '–'}</span>
+                <span class="row-info">
+                    <span class="row-title">${escHtml(a.nome)}</span>
+                    ${a.ativo ? '' : '<span class="badge badge-off">Inativo</span>'}
+                    <span class="row-sub" style="display:block">${escHtml(sub)}</span>
+                </span>
+            </button>`;
+    }).join('');
+}
+
+function renderHeaderLinks() {
+    const url = safeUrl(fpfEquipaUrl);
+    el.fpfLink.classList.toggle('hidden', !url);
+    if (url) el.fpfLink.href = url;
+}
+
+function renderAll(opts) {
+    renderHeaderLinks();
+    renderHero();
+    updateStats();
+    renderLanches(opts);
+    renderJogos(opts);
+    renderAtletas();
 }
 
 // ── DATA: READ ─────────────────────────────────────────────
 async function loadData({ silent = false } = {}) {
     if (!silent) setStatus('connecting', 'A carregar...');
 
-    const { data, error } = await db.from('lanches').select(LANCHE_COLUMNS);
+    const [lanches, jogos, atletas, definicoes, cont] = await Promise.all([
+        db.from('lanches').select(LANCHE_COLUMNS),
+        db.from('jogos').select(JOGO_COLUMNS),
+        db.from('atletas').select(ATLETA_COLUMNS),
+        db.from('definicoes').select('fpf_equipa_url').eq('id', 1).maybeSingle(),
+        isEditor ? db.from('atletas_contactos').select('atleta_id,encarregado_nome,telefone') : Promise.resolve({ data: [] }),
+    ]);
+    const error = lanches.error || jogos.error || atletas.error || definicoes.error || cont.error;
     if (error) {
         console.error('loadData:', error);
         setStatus('offline', 'Sem ligação');
         if (!silent) {
             showToast('Não foi possível carregar os dados.', 'error', 6000);
-            el.lanchesList.innerHTML = `
-                <div class="empty">
-                    <svg width="48" height="48" aria-hidden="true"><use href="#i-ball"/></svg>
-                    <p>Falha na ligação à base de dados.<br>Tenta de novo com o botão de recarregar.</p>
-                </div>`;
+            el.lanchesList.innerHTML = emptyHtml('Falha na ligação à base de dados.<br>Tenta de novo com o botão de recarregar.');
         }
         return;
     }
 
-    lanchesData = data;
+    lanchesData = lanches.data;
+    jogosData = jogos.data;
+    atletasData = atletas.data;
+    fpfEquipaUrl = definicoes.data ? definicoes.data.fpf_equipa_url || '' : '';
+    contactos = new Map(cont.data.map(c => [c.atleta_id, c]));
     renderAll({ animate: !silent });
     setStatus('online', 'Conectado');
     updateLastSync();
@@ -730,13 +1242,14 @@ function startAutoRefresh() {
 
 // ── DATA: WRITE ────────────────────────────────────────────
 /**
- * Executa uma escrita e trata erros comuns. `query` deve terminar em .select('id')
+ * Executa uma escrita e trata erros comuns. `query` deve terminar em .select(...)
  * para que uma escrita bloqueada pelo RLS (0 linhas afetadas) seja detetada.
+ * Devolve as linhas afetadas, ou null em caso de falha.
  */
 async function runWrite(query, failMsg) {
     if (!isEditor) {
         showToast('Inicia sessão como editor para alterar dados.', 'warning');
-        return false;
+        return null;
     }
     const { data, error } = await query;
     if (error || !data || data.length === 0) {
@@ -745,16 +1258,17 @@ async function runWrite(query, failMsg) {
         if (denied) {
             showToast('Sem permissão ou registo inexistente. Inicia sessão novamente.', 'error');
             await refreshEditorState();
+        } else if (error.code === '23505') {
+            showToast('Já existe um registo com esse nome.', 'error');
         } else if (error.code === '23514') {
-            showToast('Dados inválidos (nome até 100 e observações até 300 caracteres).', 'error');
+            showToast('Dados inválidos: verifica os campos (tamanho, número 0–99, telefone, link https).', 'error');
         } else {
             showToast(failMsg, 'error');
         }
         await loadData({ silent: true });
-        return false;
+        return null;
     }
-    await loadData({ silent: true });
-    return true;
+    return data;
 }
 
 async function withBusyButton(btn, busyLabel, fn) {
@@ -769,30 +1283,54 @@ async function withBusyButton(btn, busyLabel, fn) {
     }
 }
 
-function showLancheModal(id = null) {
-    const lanche = id == null ? null : findLanche(id);
+// Lanches
+function fillGameSelect(selectedId) {
+    const today = todayStr();
+    const options = jogosData
+        .filter(j => j.data >= today || j.id === selectedId)
+        .sort(byDateAsc)
+        .map(j => `<option value="${Number(j.id)}">${escHtml(shortDate(j.data))} · vs ${escHtml(j.adversario)}</option>`);
+    el.lunchGame.innerHTML = '<option value="">Sem jogo</option>' + options.join('');
+    el.lunchGame.value = selectedId != null ? String(selectedId) : '';
+    syncGameDate();
+}
+
+function syncGameDate() {
+    const jogo = el.lunchGame.value ? jogoById(Number(el.lunchGame.value)) : null;
+    if (jogo) el.lunchDate.value = jogo.data;
+    el.lunchDate.disabled = !!jogo;
+}
+
+function showLancheModal(id = null, { jogoId = null } = {}) {
+    const lanche = id == null ? null : lancheById(id);
     if (id != null && !lanche) return;
     editTarget = lanche ? id : null;
     el.lancheTitle.textContent = lanche ? 'Editar lanche' : 'Novo lanche';
     el.saveBtn.textContent = lanche ? 'Guardar alterações' : 'Adicionar lanche';
     el.deleteBtn.classList.toggle('hidden', !lanche);
-    el.athleteName.value = lanche ? lanche.nome : '';
+    el.athleteName.value = lanche ? lancheNome(lanche) : '';
     el.lunchDate.value = lanche ? lanche.data : todayStr();
     (lanche && lanche.entregue ? el.optDone : el.optPending).checked = true;
     el.lunchNotes.value = lanche ? lanche.observacoes : '';
+    fillGameSelect(lanche ? lanche.jogo_id : jogoId);
     openModal(el.lancheModal, el.athleteName);
 }
 
 async function saveLanche(e) {
     e.preventDefault();
+    const nome = el.athleteName.value.trim();
+    const jogo = el.lunchGame.value ? jogoById(Number(el.lunchGame.value)) : null;
+    const atleta = atletasData.find(a => a.nome.toLowerCase() === nome.toLowerCase());
     const fields = {
-        nome: el.athleteName.value.trim(),
-        data: el.lunchDate.value,
+        nome: atleta ? atleta.nome : nome,
+        atleta_id: atleta ? atleta.id : null,
+        jogo_id: jogo ? jogo.id : null,
+        data: jogo ? jogo.data : el.lunchDate.value,
         entregue: el.optDone.checked,
         observacoes: el.lunchNotes.value.trim(),
     };
     if (!fields.nome || !fields.data) {
-        showToast('Preenche nome e data.', 'warning');
+        showToast('Preenche o atleta e a data.', 'warning');
         return;
     }
     const id = editTarget;
@@ -801,39 +1339,202 @@ async function saveLanche(e) {
         : db.from('lanches').update(fields).eq('id', id).select('id');
     const ok = await withBusyButton(el.saveBtn, 'A guardar...', () =>
         runWrite(query, id == null ? 'Erro ao adicionar lanche.' : 'Erro ao editar lanche.'));
-    if (ok) {
-        showToast(id == null ? `Lanche de ${fields.nome} adicionado.` : 'Lanche atualizado.', 'success');
-        closeModal(el.lancheModal);
-    }
+    if (!ok) return;
+    showToast(id == null ? `Lanche de ${fields.nome} adicionado.` : 'Lanche atualizado.', 'success');
+    closeModal(el.lancheModal);
+    await loadData({ silent: true });
 }
 
 async function toggleLanche(id, chip) {
-    const lanche = findLanche(id);
+    const lanche = lancheById(id);
     if (!lanche) return;
     chip.disabled = true;
     chip.classList.add('pop');
     const entregue = !lanche.entregue;
     const ok = await runWrite(
         db.from('lanches').update({ entregue }).eq('id', id).select('id'), 'Erro ao atualizar estado.');
-    if (ok) showToast(`${lanche.nome}: ${entregue ? 'entregue' : 'pendente'}`, 'success');
+    if (ok) showToast(`${lancheNome(lanche)}: ${entregue ? 'entregue' : 'pendente'}`, 'success');
+    await loadData({ silent: true });
 }
 
-function showConfirmDelete(id) {
-    const lanche = findLanche(id);
+function confirmDeleteLanche() {
+    const lanche = lancheById(editTarget);
     if (!lanche) return;
-    deleteTarget = id;
-    el.confirmMsg.innerHTML =
-        `O lanche de <strong>${escHtml(lanche.nome)}</strong> vai ser eliminado. Esta ação não pode ser desfeita.`;
-    openModal(el.confirmModal, el.confirmDeleteBtn);
+    const id = lanche.id;
+    askDelete(`O lanche de <strong>${escHtml(lancheNome(lanche))}</strong> vai ser eliminado. Esta ação não pode ser desfeita.`, async () => {
+        closeModal(el.lancheModal);
+        const ok = await runWrite(db.from('lanches').delete().eq('id', id).select('id'), 'Erro ao eliminar.');
+        if (ok) showToast('Lanche eliminado.', 'info');
+        await loadData({ silent: true });
+    });
 }
 
-async function confirmDelete() {
-    if (deleteTarget == null) return;
-    const id = deleteTarget;
-    closeModal(el.confirmModal);
-    closeModal(el.lancheModal);
-    const ok = await runWrite(db.from('lanches').delete().eq('id', id).select('id'), 'Erro ao eliminar.');
-    if (ok) showToast('Lanche eliminado.', 'info');
+// Jogos
+function showJogoModal(id = null) {
+    const jogo = id == null ? null : jogoById(id);
+    if (id != null && !jogo) return;
+    jogoTarget = jogo ? id : null;
+    el.jogoTitle.textContent = jogo ? 'Editar jogo' : 'Novo jogo';
+    el.saveGameBtn.textContent = jogo ? 'Guardar alterações' : 'Adicionar jogo';
+    el.deleteGameBtn.classList.toggle('hidden', !jogo);
+    el.gameOpponent.value = jogo ? jogo.adversario : '';
+    el.gameDate.value = jogo ? jogo.data : (selectedDay || todayStr());
+    el.gameTime.value = jogo ? hhmm(jogo.hora) : '';
+    (jogo && !jogo.casa ? el.optAway : el.optHome).checked = true;
+    el.gamePlace.value = jogo ? jogo.local : '';
+    el.gameCompetition.value = jogo ? jogo.competicao : '';
+    el.gameResult.value = jogo ? jogo.resultado : '';
+    el.gameUrl.value = jogo ? jogo.fpf_url || '' : '';
+    openModal(el.jogoModal, el.gameOpponent);
+}
+
+async function saveJogo(e) {
+    e.preventDefault();
+    const rawUrl = el.gameUrl.value.trim();
+    const fields = {
+        adversario: el.gameOpponent.value.trim(),
+        data: el.gameDate.value,
+        hora: el.gameTime.value || null,
+        casa: el.optHome.checked,
+        local: el.gamePlace.value.trim(),
+        competicao: el.gameCompetition.value.trim(),
+        resultado: el.gameResult.value.trim(),
+        fpf_url: rawUrl ? safeUrl(rawUrl) : null,
+    };
+    if (!fields.adversario || !fields.data) {
+        showToast('Preenche o adversário e a data.', 'warning');
+        return;
+    }
+    if (rawUrl && !fields.fpf_url) {
+        showToast('O link tem de começar por https://', 'warning');
+        return;
+    }
+    const id = jogoTarget;
+    const query = id == null
+        ? db.from('jogos').insert(fields).select('id')
+        : db.from('jogos').update(fields).eq('id', id).select('id');
+    const ok = await withBusyButton(el.saveGameBtn, 'A guardar...', () =>
+        runWrite(query, id == null ? 'Erro ao adicionar jogo.' : 'Erro ao editar jogo.'));
+    if (!ok) return;
+    // Lanches ligados acompanham a data do jogo
+    if (id != null) {
+        const stale = lanchesDoJogo(id).filter(l => l.data !== fields.data).map(l => l.id);
+        if (stale.length) await runWrite(db.from('lanches').update({ data: fields.data }).in('id', stale).select('id'), 'Erro ao atualizar a data dos lanches.');
+    }
+    showToast(id == null ? `Jogo vs ${fields.adversario} adicionado.` : 'Jogo atualizado.', 'success');
+    closeModal(el.jogoModal);
+    const p = parseDate(fields.data);
+    calMonth = { y: p.y, m: p.mo };
+    selectedDay = null;
+    await loadData({ silent: true });
+}
+
+function confirmDeleteJogo() {
+    const jogo = jogoById(jogoTarget);
+    if (!jogo) return;
+    const id = jogo.id;
+    const n = lanchesDoJogo(id).length;
+    const extra = n ? ' O lanche associado fica na lista, sem jogo.' : '';
+    askDelete(`O jogo vs <strong>${escHtml(jogo.adversario)}</strong> vai ser eliminado.${extra}`, async () => {
+        closeModal(el.jogoModal);
+        const ok = await runWrite(db.from('jogos').delete().eq('id', id).select('id'), 'Erro ao eliminar jogo.');
+        if (ok) showToast('Jogo eliminado.', 'info');
+        await loadData({ silent: true });
+    });
+}
+
+// Atletas
+function showAtletaModal(id = null) {
+    const atleta = id == null ? null : atletaById(id);
+    if (id != null && !atleta) return;
+    atletaTarget = atleta ? id : null;
+    const c = atleta ? contactos.get(atleta.id) : null;
+    el.atletaTitle.textContent = atleta ? 'Editar atleta' : 'Novo atleta';
+    el.deleteAtletaBtn.classList.toggle('hidden', !atleta);
+    el.atletaNome.value = atleta ? atleta.nome : '';
+    el.atletaNumero.value = atleta && atleta.numero != null ? atleta.numero : '';
+    el.atletaAtivo.checked = atleta ? atleta.ativo : true;
+    el.encNome.value = c ? c.encarregado_nome : '';
+    el.encTelefone.value = c ? c.telefone : '';
+    openModal(el.atletaModal, el.atletaNome);
+}
+
+async function saveAtleta(e) {
+    e.preventDefault();
+    const numeroRaw = el.atletaNumero.value.trim();
+    const fields = {
+        nome: el.atletaNome.value.trim(),
+        numero: numeroRaw === '' ? null : Number(numeroRaw),
+        ativo: el.atletaAtivo.checked,
+    };
+    const contacto = { encarregado_nome: el.encNome.value.trim(), telefone: el.encTelefone.value.trim() };
+    if (!fields.nome) { showToast('Preenche o nome do atleta.', 'warning'); return; }
+    if (fields.numero != null && !(Number.isInteger(fields.numero) && fields.numero >= 0 && fields.numero <= 99)) {
+        showToast('O número tem de estar entre 0 e 99.', 'warning'); return;
+    }
+    if (!/^[0-9 +()-]{0,20}$/.test(contacto.telefone)) {
+        showToast('Telefone inválido.', 'warning'); return;
+    }
+
+    const id = atletaTarget;
+    await withBusyButton(el.saveAtletaBtn, 'A guardar...', async () => {
+        const query = id == null
+            ? db.from('atletas').insert(fields).select('id')
+            : db.from('atletas').update(fields).eq('id', id).select('id');
+        const rows = await runWrite(query, 'Erro ao guardar atleta.');
+        if (!rows) return;
+        const atletaId = rows[0].id;
+        const prev = contactos.get(atletaId);
+        const hasContact = contacto.encarregado_nome || contacto.telefone;
+        if (hasContact || prev) {
+            const saved = await runWrite(
+                db.from('atletas_contactos').upsert({ atleta_id: atletaId, ...contacto }).select('atleta_id'),
+                'Atleta guardado, mas houve um erro ao guardar o contacto.');
+            if (!saved) return;
+        }
+        showToast(id == null ? `${fields.nome} adicionado.` : 'Atleta atualizado.', 'success');
+        closeModal(el.atletaModal);
+        await loadData({ silent: true });
+    });
+}
+
+function confirmDeleteAtleta() {
+    const atleta = atletaById(atletaTarget);
+    if (!atleta) return;
+    const id = atleta.id;
+    askDelete(`<strong>${escHtml(atleta.nome)}</strong> e o contacto do encarregado vão ser eliminados. Os lanches mantêm o nome. Para esconder sem apagar, desmarca "Ativo na equipa".`, async () => {
+        closeModal(el.atletaModal);
+        const ok = await runWrite(db.from('atletas').delete().eq('id', id).select('id'), 'Erro ao eliminar atleta.');
+        if (ok) showToast('Atleta eliminado.', 'info');
+        await loadData({ silent: true });
+    });
+}
+
+// Definições
+async function saveFpfUrl(e) {
+    e.preventDefault();
+    const raw = el.fpfUrlInput.value.trim();
+    const url = raw ? safeUrl(raw) : null;
+    if (raw && !url) { showToast('O link tem de começar por https://', 'warning'); return; }
+    const ok = await withBusyButton(el.saveFpfBtn, 'A guardar...', () =>
+        runWrite(db.from('definicoes').update({ fpf_equipa_url: url }).eq('id', 1).select('id'), 'Erro ao guardar o link.'));
+    if (!ok) return;
+    showToast(url ? 'Link da FPF guardado.' : 'Link da FPF removido.', 'success');
+    await loadData({ silent: true });
+}
+
+// ── VIEWS ──────────────────────────────────────────────────
+function setView(view) {
+    currentView = view;
+    el.tabs.forEach(t => {
+        const active = t.dataset.view === view;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-selected', String(active));
+    });
+    el.viewLanches.classList.toggle('hidden', view !== 'lanches');
+    el.viewJogos.classList.toggle('hidden', view !== 'jogos');
+    el.addBtn.setAttribute('aria-label', view === 'jogos' ? 'Adicionar jogo' : 'Adicionar lanche');
+    el.addBtn.title = el.addBtn.getAttribute('aria-label');
 }
 
 // ── AUTH ───────────────────────────────────────────────────
@@ -857,20 +1558,20 @@ async function applySession(session) {
             return; // onAuthStateChange volta a chamar applySession(null)
         }
     }
+    const changed = editor !== isEditor;
     isEditor = editor;
+    sessionEmail = isEditor ? session.user.email : '';
     document.body.classList.toggle('is-editor', isEditor);
     el.loginBtn.classList.toggle('hidden', isEditor);
-    const email = isEditor ? session.user.email : '';
-    el.userChip.textContent = email.charAt(0);
-    el.userChip.title = email ? `${email} — alterar password` : '';
-    el.userChip.setAttribute('aria-label', email ? `Conta ${email}: alterar password` : '');
-    el.accountEmail.textContent = email;
+    el.userChip.textContent = sessionEmail.charAt(0);
+    el.userChip.title = sessionEmail ? `Opções (${sessionEmail})` : '';
+    el.optionsEmail.textContent = sessionEmail;
     if (!isEditor) {
-        closeModal(el.lancheModal);
-        closeModal(el.confirmModal);
-        closeModal(el.accountModal);
+        contactos = new Map();
+        [el.lancheModal, el.jogoModal, el.optionsModal, el.atletasModal, el.atletaModal, el.accountModal, el.confirmModal]
+            .forEach(closeModal);
     }
-    renderLanches({ animate: false });
+    if (changed) await loadData({ silent: true });
 }
 
 async function login(e) {
@@ -933,22 +1634,47 @@ async function logout() {
 
 // ── EVENT LISTENERS ────────────────────────────────────────
 el.lancheForm.addEventListener('submit', saveLanche);
+el.jogoForm.addEventListener('submit', saveJogo);
+el.atletaForm.addEventListener('submit', saveAtleta);
+el.fpfForm.addEventListener('submit', saveFpfUrl);
 el.loginForm.addEventListener('submit', login);
-el.addBtn.addEventListener('click', () => showLancheModal());
-el.deleteBtn.addEventListener('click', () => showConfirmDelete(editTarget));
-el.confirmDeleteBtn.addEventListener('click', confirmDelete);
+el.accountForm.addEventListener('submit', changePassword);
+el.lunchGame.addEventListener('change', syncGameDate);
+
+el.deleteBtn.addEventListener('click', confirmDeleteLanche);
+el.deleteGameBtn.addEventListener('click', confirmDeleteJogo);
+el.deleteAtletaBtn.addEventListener('click', confirmDeleteAtleta);
+el.confirmDeleteBtn.addEventListener('click', () => {
+    const action = pendingDelete;
+    closeModal(el.confirmModal);
+    if (action) action();
+});
+
+el.addBtn.addEventListener('click', () => currentView === 'jogos' ? showJogoModal() : showLancheModal());
 el.loginBtn.addEventListener('click', () => {
     el.loginError.textContent = '';
     openModal(el.loginModal, el.loginEmail);
 });
+el.userChip.addEventListener('click', () => {
+    el.fpfUrlInput.value = fpfEquipaUrl;
+    openModal(el.optionsModal);
+});
+el.menuAtletas.addEventListener('click', () => openModal(el.atletasModal, el.newAtletaBtn));
+el.menuNovoJogo.addEventListener('click', () => { closeModal(el.optionsModal); setView('jogos'); showJogoModal(); });
+el.menuPassword.addEventListener('click', showAccountModal);
 el.logoutBtn.addEventListener('click', logout);
-el.userChip.addEventListener('click', showAccountModal);
-el.accountForm.addEventListener('submit', changePassword);
+el.newAtletaBtn.addEventListener('click', () => showAtletaModal());
+el.atletasList.addEventListener('click', e => {
+    const row = e.target.closest('[data-atleta]');
+    if (row) showAtletaModal(Number(row.dataset.atleta));
+});
 el.refreshBtn.addEventListener('click', async () => {
     el.refreshBtn.classList.add('spinning');
     await loadData();
     el.refreshBtn.classList.remove('spinning');
 });
+
+el.tabs.forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
 
 document.querySelectorAll('.segmented button').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -966,14 +1692,32 @@ el.searchInput.addEventListener('input', () => {
     renderLanches({ animate: false });
 });
 
-// Ações da lista (delegação: sem handlers inline)
-el.lanchesList.addEventListener('click', e => {
+el.calPrev.addEventListener('click', () => shiftMonth(-1));
+el.calNext.addEventListener('click', () => shiftMonth(1));
+function shiftMonth(delta) {
+    const idx = calMonth.y * 12 + (calMonth.m - 1) + delta;
+    calMonth = { y: Math.floor(idx / 12), m: (idx % 12) + 1 };
+    selectedDay = null;
+    renderJogos();
+}
+el.calGrid.addEventListener('click', e => {
+    const day = e.target.closest('[data-day]');
+    if (!day || day.disabled) return;
+    selectedDay = selectedDay === day.dataset.day ? null : day.dataset.day;
+    renderJogos();
+});
+
+// Ações nas listas e no destaque (delegação: sem handlers inline)
+function handleListClick(e) {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
-    const id = Number(btn.closest('.item').dataset.id);
-    if (btn.dataset.action === 'edit') showLancheModal(id);
-    if (btn.dataset.action === 'toggle') toggleLanche(id, btn);
-});
+    const action = btn.dataset.action;
+    if (action === 'toggle') toggleLanche(Number(btn.dataset.lanche), btn);
+    if (action === 'edit-lanche') showLancheModal(Number(btn.dataset.lanche));
+    if (action === 'edit-jogo') showJogoModal(Number(btn.dataset.jogo));
+    if (action === 'assign') showLancheModal(null, { jogoId: Number(btn.dataset.jogo) });
+}
+[el.lanchesList, el.jogosList, el.hero].forEach(n => n.addEventListener('click', handleListClick));
 
 // Fechar modais: botões [data-close], clique fora, tecla Esc
 document.querySelectorAll('[data-close]').forEach(btn =>
@@ -993,11 +1737,7 @@ document.addEventListener('visibilitychange', () => {
 // ── INIT ───────────────────────────────────────────────────
 function showFatal(msg) {
     setStatus('offline', 'Não configurado');
-    el.lanchesList.innerHTML = `
-        <div class="empty">
-            <svg width="48" height="48" aria-hidden="true"><use href="#i-ball"/></svg>
-            <p>${escHtml(msg)}</p>
-        </div>`;
+    el.lanchesList.innerHTML = emptyHtml(escHtml(msg));
 }
 
 async function initApp() {
