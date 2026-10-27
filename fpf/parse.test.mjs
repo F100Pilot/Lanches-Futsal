@@ -66,12 +66,14 @@ test('inferYear: época de agosto a julho', () => {
     assert.equal(inferYear(3, new Date('2027-02-01')), 2027);
 });
 
-test('decodePayload: base64url do bookmarklet (v2), com acentos; inválidos devolvem null', () => {
+test('decodePayload: base64url do bookmarklet (v2), com acentos; v1 = desatualizado; inválidos devolvem null', () => {
     const obj = { v: 2, team: 'Carregado', series: ['1ª FASE · SÉRIE 1'], matches: [{ fixtureId: '1', home: 'Gd Pirescôxe' }] };
     const b64 = Buffer.from(JSON.stringify(obj), 'utf8').toString('base64url');
     assert.deepEqual(decodePayload(b64), obj);
     assert.equal(decodePayload('%%%'), null);
-    assert.equal(decodePayload(Buffer.from('{"v":1,"matches":[]}').toString('base64url')), null);
+    assert.deepEqual(decodePayload(Buffer.from('{"v":1,"matches":[]}').toString('base64url')), { outdated: true });
+    assert.equal(decodePayload(Buffer.from('{"v":3,"matches":[]}').toString('base64url')), null);
+    assert.equal(decodePayload(Buffer.from('{"matches":[]}').toString('base64url')), null);
     assert.equal(decodePayload(Buffer.from('{"v":2,"matches":"x"}').toString('base64url')), null);
 });
 

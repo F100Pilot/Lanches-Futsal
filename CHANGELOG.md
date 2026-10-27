@@ -8,6 +8,11 @@ Numeração `MAIOR.MENOR.CORREÇÃO`: funcionalidades novas sobem o MENOR, corre
 ## 2.3.0 — 27/10/2026
 - Versão da app e créditos do developer em Opções → Sobre.
 - Histórico de versões (este ficheiro).
+- Correção: um favorito da FPF de versão anterior mostrava "Dados da FPF inválidos"; agora a app pede para o reinstalar.
+- O código do favorito e o leitor da FPF são sempre carregados sem cache (evita instalar uma versão antiga).
+- Importação da FPF: pedidos às jornadas espaçados (como ao clicar à mão) e mensagem clara quando o site limita os pedidos (HTTP 403/429).
+- Importação da FPF funciona mesmo com a app já aberta noutro separador.
+- Lanche: o atleta escolhe-se numa lista pendente (atletas ativos), com "Outro nome…" para lanches sem atleta registado.
 
 ## 2.2.2 — 27/10/2026
 - Correção: a importação da FPF podia dizer "Nenhum jogo de """ quando a app abria com a sessão já iniciada.
