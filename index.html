@@ -589,10 +589,16 @@
         <form class="field" id="fpfForm">
             <span class="section-title">Site da FPF</span>
             <label class="field">
-                <span class="field-label">Link da página da equipa</span>
-                <input class="input" type="url" id="fpfUrlInput" maxlength="500" placeholder="https://...">
+                <span class="field-label">Link da competição</span>
+                <input class="input" type="url" id="fpfUrlInput" maxlength="500" placeholder="https://resultados.fpf.pt/Competition/Details?...">
             </label>
-            <button type="submit" class="btn btn-ghost" id="saveFpfBtn">Guardar link</button>
+            <label class="field">
+                <span class="field-label">Nome da equipa na FPF</span>
+                <input class="input" id="fpfTeamInput" maxlength="100" required autocomplete="off" placeholder="Ex: Carregado">
+            </label>
+            <button type="submit" class="btn btn-ghost" id="saveFpfBtn">Guardar</button>
+            <button type="button" class="btn btn-primary" id="importFpfBtn">Importar jogos da FPF</button>
+            <span class="form-hint">Lê o calendário da série onde a equipa está e cria/atualiza os jogos. Volta a importar sempre que quiseres atualizar horas e resultados.</span>
         </form>
         <div class="menu">
             <button type="button" class="menu-item" id="menuPassword"><svg width="22" height="22" aria-hidden="true"><use href="#i-key"/></svg>Alterar password</button>
@@ -737,6 +743,7 @@ let jogosData = [];
 let atletasData = [];
 let contactos = new Map();     // atleta_id → { encarregado_nome, telefone } (só editores)
 let fpfEquipaUrl = '';
+let fpfEquipaNome = '';      // só editores
 let currentView = 'lanches';
 let currentFilter = 'all';
 let searchQuery = '';
@@ -770,7 +777,8 @@ const el = {
     gameResult: $('gameResult'), gameUrl: $('gameUrl'), saveGameBtn: $('saveGameBtn'), deleteGameBtn: $('deleteGameBtn'),
     optionsModal: $('optionsModal'), optionsEmail: $('optionsEmail'),
     menuAtletas: $('menuAtletas'), menuAtletasHint: $('menuAtletasHint'), menuNovoJogo: $('menuNovoJogo'),
-    fpfForm: $('fpfForm'), fpfUrlInput: $('fpfUrlInput'), saveFpfBtn: $('saveFpfBtn'),
+    fpfForm: $('fpfForm'), fpfUrlInput: $('fpfUrlInput'), fpfTeamInput: $('fpfTeamInput'),
+    saveFpfBtn: $('saveFpfBtn'), importFpfBtn: $('importFpfBtn'),
     menuPassword: $('menuPassword'), logoutBtn: $('logoutBtn'),
     atletasModal: $('atletasModal'), atletasList: $('atletasList'), newAtletaBtn: $('newAtletaBtn'),
     atletaModal: $('atletaModal'), atletaForm: $('atletaForm'), atletaTitle: $('atletaTitle'),
@@ -1209,7 +1217,7 @@ async function loadData({ silent = false } = {}) {
         db.from('lanches').select(LANCHE_COLUMNS),
         db.from('jogos').select(JOGO_COLUMNS),
         db.from('atletas').select(ATLETA_COLUMNS),
-        db.from('definicoes').select('fpf_equipa_url').eq('id', 1).maybeSingle(),
+        db.from('definicoes').select(isEditor ? 'fpf_equipa_url,fpf_equipa_nome' : 'fpf_equipa_url').eq('id', 1).maybeSingle(),
         isEditor ? db.from('atletas_contactos').select('atleta_id,encarregado_nome,telefone') : Promise.resolve({ data: [] }),
     ]);
     const error = lanches.error || jogos.error || atletas.error || definicoes.error || cont.error;
@@ -1227,6 +1235,7 @@ async function loadData({ silent = false } = {}) {
     jogosData = jogos.data;
     atletasData = atletas.data;
     fpfEquipaUrl = definicoes.data ? definicoes.data.fpf_equipa_url || '' : '';
+    fpfEquipaNome = definicoes.data ? definicoes.data.fpf_equipa_nome || '' : '';
     contactos = new Map(cont.data.map(c => [c.atleta_id, c]));
     renderAll({ animate: !silent });
     setStatus('online', 'Conectado');
@@ -1511,16 +1520,52 @@ function confirmDeleteAtleta() {
 }
 
 // Definições
-async function saveFpfUrl(e) {
-    e.preventDefault();
+async function saveFpfSettings() {
     const raw = el.fpfUrlInput.value.trim();
     const url = raw ? safeUrl(raw) : null;
-    if (raw && !url) { showToast('O link tem de começar por https://', 'warning'); return; }
-    const ok = await withBusyButton(el.saveFpfBtn, 'A guardar...', () =>
-        runWrite(db.from('definicoes').update({ fpf_equipa_url: url }).eq('id', 1).select('id'), 'Erro ao guardar o link.'));
-    if (!ok) return;
-    showToast(url ? 'Link da FPF guardado.' : 'Link da FPF removido.', 'success');
+    const nome = el.fpfTeamInput.value.trim();
+    if (raw && !url) { showToast('O link tem de começar por https://', 'warning'); return false; }
+    if (!nome) { showToast('Indica o nome da equipa tal como aparece na FPF.', 'warning'); return false; }
+    if (url === (fpfEquipaUrl || null) && nome === fpfEquipaNome) return true;
+    const ok = await runWrite(
+        db.from('definicoes').update({ fpf_equipa_url: url, fpf_equipa_nome: nome }).eq('id', 1).select('id'),
+        'Erro ao guardar as definições da FPF.');
+    if (!ok) return false;
     await loadData({ silent: true });
+    return true;
+}
+
+async function saveFpf(e) {
+    e.preventDefault();
+    const ok = await withBusyButton(el.saveFpfBtn, 'A guardar...', saveFpfSettings);
+    if (ok) showToast('Definições da FPF guardadas.', 'success');
+}
+
+async function functionErrorMessage(error) {
+    try {
+        const body = await error.context.json();
+        if (body && body.error) return body.error;
+    } catch { /* resposta sem JSON */ }
+    return 'Não foi possível importar da FPF.';
+}
+
+async function importFpf() {
+    await withBusyButton(el.importFpfBtn, 'A importar da FPF...', async () => {
+        if (!(await saveFpfSettings())) return;
+        const { data, error } = await db.functions.invoke('importar-fpf', { method: 'POST' });
+        if (error) {
+            console.error('importar-fpf:', error);
+            showToast(await functionErrorMessage(error), 'error', 7000);
+            return;
+        }
+        const series = (data.series || []).join(', ');
+        showToast(`FPF${series ? ` (${series})` : ''}: ${data.criados} jogos novos, ${data.atualizados} atualizados.`, 'success', 6000);
+        closeModal(el.optionsModal);
+        calMonth = null;
+        selectedDay = null;
+        setView('jogos');
+        await loadData({ silent: true });
+    });
 }
 
 // ── VIEWS ──────────────────────────────────────────────────
@@ -1636,7 +1681,8 @@ async function logout() {
 el.lancheForm.addEventListener('submit', saveLanche);
 el.jogoForm.addEventListener('submit', saveJogo);
 el.atletaForm.addEventListener('submit', saveAtleta);
-el.fpfForm.addEventListener('submit', saveFpfUrl);
+el.fpfForm.addEventListener('submit', saveFpf);
+el.importFpfBtn.addEventListener('click', importFpf);
 el.loginForm.addEventListener('submit', login);
 el.accountForm.addEventListener('submit', changePassword);
 el.lunchGame.addEventListener('change', syncGameDate);
@@ -1657,6 +1703,7 @@ el.loginBtn.addEventListener('click', () => {
 });
 el.userChip.addEventListener('click', () => {
     el.fpfUrlInput.value = fpfEquipaUrl;
+    el.fpfTeamInput.value = fpfEquipaNome;
     openModal(el.optionsModal);
 });
 el.menuAtletas.addEventListener('click', () => openModal(el.atletasModal, el.newAtletaBtn));
