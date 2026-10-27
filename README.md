@@ -19,7 +19,11 @@ Separadores **Lanches** (lista por mês) e **Jogos** (calendário mensal + lista
 2. **+** adiciona um lanche (separador Lanches) ou um jogo (separador Jogos).
 3. Tocar num lanche/jogo para editar ou eliminar; tocar no estado para marcar entregue/pendente; "Atribuir lanche" num jogo sem lanche.
 4. O círculo com a inicial abre as **Opções**: atletas (nome, nº, ativo, contacto do encarregado), novo jogo, site da FPF, alterar password, terminar sessão.
-5. **Importar jogos da FPF** (Opções → Site da FPF): lê a página da competição, encontra as séries onde a equipa aparece (pelo nome exato na FPF) e cria/atualiza os jogos com data, hora, adversário, casa/fora, pavilhão e resultado. Se a equipa mudar de série dentro da mesma competição, a importação acompanha; se a FPF criar uma competição nova, basta trocar o link.
+5. **Importar jogos da FPF** (Opções → Site da FPF). O site da FPF só responde a browsers, por isso a leitura é feita no computador do editor com um botão de favoritos:
+   1. Arrastar o botão **📌 Importar para Lanches Futsal** para a barra de favoritos (uma vez; repetir se o nome da equipa mudar).
+   2. Abrir o link da competição na FPF e clicar no favorito: lê as séries onde a equipa aparece (nome exato na FPF), todas as jornadas, e abre a app com os jogos da equipa.
+   3. Na app, confirmar a lista: cria/atualiza os jogos (data, hora, adversário, casa/fora, pavilhão, fase/série, resultado, link). A hora definida à mão mantém-se quando a FPF não a publica; lanches ligados acompanham a data do jogo.
+   Se a equipa mudar de série dentro da mesma competição, a importação acompanha; se a FPF criar uma competição nova, basta trocar o link.
 
 ---
 
@@ -48,7 +52,7 @@ Supabase: Auth (2 editores) + Postgres (RLS) → lanches, lanches_log, editors
 ```
 
 - Schema: [`supabase/schema.sql`](supabase/schema.sql), [`supabase/002_atletas_jogos.sql`](supabase/002_atletas_jogos.sql) e [`supabase/003_importar_fpf.sql`](supabase/003_importar_fpf.sql) (aplicar por esta ordem)
-- Edge Function [`supabase/functions/importar-fpf`](supabase/functions/importar-fpf): importação de jogos de `resultados.fpf.pt` (corre com a sessão do editor; testes do leitor: `node --test supabase/functions/importar-fpf/parse.test.mjs`)
+- Importação da FPF: [`fpf/bookmarklet.js`](fpf/bookmarklet.js) (corre no browser do editor, na página da FPF) e [`fpf/parse.js`](fpf/parse.js) (conversão para `jogos`, usada pela app; testes: `node --test fpf/parse.test.mjs`)
 - `.github/workflows/keepalive.yml`: leitura a cada 3 dias para o projeto gratuito não ser pausado.
 
 ---
