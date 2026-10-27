@@ -18,7 +18,8 @@ Separadores **Lanches** (lista por mês) e **Jogos** (calendário mensal + lista
 1. Clicar no cadeado no cabeçalho e entrar com **email + password** pessoais.
 2. **+** adiciona um lanche (separador Lanches) ou um jogo (separador Jogos).
 3. Tocar num lanche/jogo para editar ou eliminar; tocar no estado para marcar entregue/pendente; "Atribuir lanche" num jogo sem lanche.
-4. O círculo com a inicial abre as **Opções**: atletas (nome, nº, ativo, contacto do encarregado), novo jogo, link FPF da equipa, alterar password, terminar sessão.
+4. O círculo com a inicial abre as **Opções**: atletas (nome, nº, ativo, contacto do encarregado), novo jogo, site da FPF, alterar password, terminar sessão.
+5. **Importar jogos da FPF** (Opções → Site da FPF): lê a página da competição, encontra as séries onde a equipa aparece (pelo nome exato na FPF) e cria/atualiza os jogos com data, hora, adversário, casa/fora, pavilhão e resultado. Se a equipa mudar de série dentro da mesma competição, a importação acompanha; se a FPF criar uma competição nova, basta trocar o link.
 
 ---
 
@@ -46,7 +47,8 @@ GitHub Pages (index.html + config.json)
 Supabase: Auth (2 editores) + Postgres (RLS) → lanches, lanches_log, editors
 ```
 
-- Schema: [`supabase/schema.sql`](supabase/schema.sql) e [`supabase/002_atletas_jogos.sql`](supabase/002_atletas_jogos.sql) (aplicar por esta ordem)
+- Schema: [`supabase/schema.sql`](supabase/schema.sql), [`supabase/002_atletas_jogos.sql`](supabase/002_atletas_jogos.sql) e [`supabase/003_importar_fpf.sql`](supabase/003_importar_fpf.sql) (aplicar por esta ordem)
+- Edge Function [`supabase/functions/importar-fpf`](supabase/functions/importar-fpf): importação de jogos de `resultados.fpf.pt` (corre com a sessão do editor; testes do leitor: `node --test supabase/functions/importar-fpf/parse.test.mjs`)
 - `.github/workflows/keepalive.yml`: leitura a cada 3 dias para o projeto gratuito não ser pausado.
 
 ---
