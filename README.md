@@ -12,11 +12,13 @@ Aplicação web para gestão de lanches de uma equipa de Futsal, partilhada via 
 - Abrem o link e veem a lista, filtros (Todos / Pendentes / Entregues) e pesquisa por nome.
 - Não veem formulários nem botões de edição.
 
+Separadores **Lanches** (lista por mês) e **Jogos** (calendário mensal + lista de jogos, com quem leva o lanche). O botão **FPF** no cabeçalho abre a página da competição no site da FPF.
+
 ### ✏️ Editores (máx. 2: administrador + colega)
-1. Clicar em 🔐 no cabeçalho.
-2. Entrar com **email + password** pessoais.
-3. Adicionar, editar, marcar como entregue e eliminar lanches.
-4. O círculo com a inicial permite alterar a password; o botão de saída termina a sessão.
+1. Clicar no cadeado no cabeçalho e entrar com **email + password** pessoais.
+2. **+** adiciona um lanche (separador Lanches) ou um jogo (separador Jogos).
+3. Tocar num lanche/jogo para editar ou eliminar; tocar no estado para marcar entregue/pendente; "Atribuir lanche" num jogo sem lanche.
+4. O círculo com a inicial abre as **Opções**: atletas (nome, nº, ativo, contacto do encarregado), novo jogo, link FPF da equipa, alterar password, terminar sessão.
 
 ---
 
@@ -27,7 +29,8 @@ Aplicação web para gestão de lanches de uma equipa de Futsal, partilhada via 
 | Qualquer pessoa com o link pode **ler** nome, data, estado e observações | RLS (`leitura publica`) |
 | Só contas em `public.editors` (máx. 2), com email confirmado, podem **escrever** | RLS + `is_editor()` |
 | Emails dos editores não são visíveis a anónimos | Permissões por coluna |
-| Todas as alterações ficam registadas (quem, quando, antes/depois) | Tabela `lanches_log` |
+| Contactos dos encarregados só visíveis para editores | Tabela `atletas_contactos` (RLS) |
+| Todas as alterações ficam registadas (quem, quando, tabela, antes/depois) | Tabela `lanches_log` |
 | Passwords com hash, limite de tentativas de login | Supabase Auth |
 
 A `supabaseKey` em `config.json` é a chave **publishable** (pública por desenho); a segurança está nas regras da base de dados, não no browser.
@@ -43,7 +46,7 @@ GitHub Pages (index.html + config.json)
 Supabase: Auth (2 editores) + Postgres (RLS) → lanches, lanches_log, editors
 ```
 
-- Schema completo: [`supabase/schema.sql`](supabase/schema.sql)
+- Schema: [`supabase/schema.sql`](supabase/schema.sql) e [`supabase/002_atletas_jogos.sql`](supabase/002_atletas_jogos.sql) (aplicar por esta ordem)
 - `.github/workflows/keepalive.yml`: leitura a cada 3 dias para o projeto gratuito não ser pausado.
 
 ---
