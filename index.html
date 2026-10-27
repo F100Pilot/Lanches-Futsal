@@ -316,6 +316,7 @@
         .game { background: var(--surface); border-radius: 14px; padding: 6px; display: flex; flex-direction: column; }
         .game.past { opacity: .7; }
         .game-vs { font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+        .team-us { color: var(--accent); }
         .game-meta { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
         .game-score { font-family: var(--display); font-weight: 800; font-size: 24px; flex-shrink: 0; padding: 0 8px; }
         .badge {
@@ -772,7 +773,7 @@
  */
 
 // Versão da app (ver CHANGELOG.md): atualizar a cada publicação
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.3.1';
 const APP_RELEASE_DATE = '2026-10-27';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
@@ -1003,7 +1004,11 @@ function gameTitleHtml(j) {
     const badge = j.casa
         ? '<span class="badge badge-casa">Casa</span>'
         : '<span class="badge badge-fora">Fora</span>';
-    return `vs ${escHtml(j.adversario)}${badge}`;
+    if (!fpfEquipaNome) return `vs ${escHtml(j.adversario)}${badge}`;
+    // Equipa da casa primeiro, como no site da FPF
+    const nos = `<span class="team-us">${escHtml(fpfEquipaNome)}</span>`;
+    const eles = escHtml(j.adversario);
+    return `${j.casa ? `${nos} vs ${eles}` : `${eles} vs ${nos}`}${badge}`;
 }
 
 function gameMetaText(j) {
@@ -1260,6 +1265,13 @@ function renderAll(opts) {
 }
 
 // ── DATA: READ ─────────────────────────────────────────────
+/** Link e nome da equipa; se a leitura do nome não for permitida (migração 004 por aplicar), só o link. */
+async function loadDefinicoes() {
+    const full = await db.from('definicoes').select('fpf_equipa_url,fpf_equipa_nome').eq('id', 1).maybeSingle();
+    if (!full.error) return full;
+    return db.from('definicoes').select('fpf_equipa_url').eq('id', 1).maybeSingle();
+}
+
 let loadSeq = 0;   // pedidos sobrepostos (ex.: arranque + início de sessão): só o mais recente conta
 
 async function loadData({ silent = false } = {}) {
@@ -1271,7 +1283,7 @@ async function loadData({ silent = false } = {}) {
         db.from('lanches').select(LANCHE_COLUMNS),
         db.from('jogos').select(isEditor ? JOGO_COLUMNS_EDITOR : JOGO_COLUMNS),
         db.from('atletas').select(ATLETA_COLUMNS),
-        db.from('definicoes').select(isEditor ? 'fpf_equipa_url,fpf_equipa_nome' : 'fpf_equipa_url').eq('id', 1).maybeSingle(),
+        loadDefinicoes(),
         isEditor ? db.from('atletas_contactos').select('atleta_id,encarregado_nome,telefone') : Promise.resolve({ data: [] }),
     ]);
     if (seq !== loadSeq) return;   // chegou entretanto uma resposta mais recente
@@ -1290,7 +1302,8 @@ async function loadData({ silent = false } = {}) {
     jogosData = jogos.data;
     atletasData = atletas.data;
     fpfEquipaUrl = definicoes.data ? definicoes.data.fpf_equipa_url || '' : '';
-    if (asEditor && definicoes.data) fpfEquipaNome = definicoes.data.fpf_equipa_nome || '';
+    if (definicoes.data && 'fpf_equipa_nome' in definicoes.data) fpfEquipaNome = definicoes.data.fpf_equipa_nome || '';
+    else if (asEditor) fpfEquipaNome = '';
     contactos = new Map(cont.data.map(c => [c.atleta_id, c]));
     renderAll({ animate: !silent });
     setStatus('online', 'Conectado');

@@ -53,7 +53,7 @@ GitHub Pages (index.html + config.json)
 Supabase: Auth (2 editores) + Postgres (RLS) → lanches, lanches_log, editors
 ```
 
-- Schema: [`supabase/schema.sql`](supabase/schema.sql), [`supabase/002_atletas_jogos.sql`](supabase/002_atletas_jogos.sql) e [`supabase/003_importar_fpf.sql`](supabase/003_importar_fpf.sql) (aplicar por esta ordem)
+- Schema: [`supabase/schema.sql`](supabase/schema.sql), [`supabase/002_atletas_jogos.sql`](supabase/002_atletas_jogos.sql) e [`supabase/003_importar_fpf.sql`](supabase/003_importar_fpf.sql) e [`supabase/004_nome_equipa_publico.sql`](supabase/004_nome_equipa_publico.sql) (aplicar por esta ordem)
 - Importação da FPF: [`fpf/bookmarklet.js`](fpf/bookmarklet.js) (corre no browser do editor, na página da FPF) e [`fpf/parse.js`](fpf/parse.js) (conversão para `jogos`, usada pela app; testes: `node --test fpf/parse.test.mjs`)
 - `.github/workflows/keepalive.yml`: leitura a cada 3 dias para o projeto gratuito não ser pausado.
 

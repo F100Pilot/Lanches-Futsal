@@ -12,6 +12,7 @@ async function importarParaLanches(TEAM, APP) {
     const norm = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     const txt = e => e ? e.textContent.replace(/\s+/g, ' ').trim() : '';
     const target = norm(TEAM);
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
 
     const status = document.createElement('div');
     status.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:2147483647;background:#0B1220;color:#A3E635;font:600 15px system-ui,sans-serif;padding:12px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4)';
@@ -58,11 +59,20 @@ async function importarParaLanches(TEAM, APP) {
             for (let i = 0; i < urls.length; i++) {
                 say(`a ler ${competicao} — jornada ${i + 1} de ${urls.length}…`);
                 const fixtureId = (/fixtureId=(\d+)/.exec(urls[i]) || [])[1];
-                // Um pedido de cada vez, com pausa, como ao clicar nas jornadas à mão
-                if (i > 0) await new Promise(r => setTimeout(r, 800));
-                const res = await fetch(urls[i], { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                // Um pedido de cada vez, com pausa, como ao clicar nas jornadas à mão.
+                // Se o site limitar pedidos (403/429), espera e tenta de novo essa jornada (até 3 vezes).
+                if (i > 0) await sleep(1500);
+                let res;
+                for (let attempt = 1; ; attempt++) {
+                    res = await fetch(urls[i], { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if ((res.status !== 403 && res.status !== 429) || attempt === 3) break;
+                    for (let w = 10; w > 0; w--) {
+                        say(`a FPF pediu uma pausa — nova tentativa da jornada ${i + 1} em ${w}s…`);
+                        await sleep(1000);
+                    }
+                }
                 if (res.status === 403 || res.status === 429) {
-                    throw new Error(`o site da FPF recusou os pedidos (HTTP ${res.status}), provavelmente por limite de pedidos. Espera 10–15 minutos e tenta de novo.`);
+                    throw new Error(`o site da FPF continua a recusar os pedidos (HTTP ${res.status}). Espera 10–15 minutos e tenta de novo.`);
                 }
                 if (!res.ok) throw new Error(`a FPF respondeu HTTP ${res.status}.`);
                 const root = new DOMParser().parseFromString(await res.text(), 'text/html');
