@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Lanches Futsal</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
     <style>
@@ -304,14 +301,6 @@
         @keyframes fadeInUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
         .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--gray-800); margin-bottom: 8px; }
         .modal-subtitle { color: var(--gray-600); font-size: .88rem; margin-bottom: 18px; line-height: 1.6; }
-        .modal-steps {
-            background: var(--gray-50); border-radius: var(--radius-sm);
-            padding: 14px 16px; margin-bottom: 18px;
-            font-size: .82rem; color: var(--gray-700); border: 1px solid var(--gray-200);
-        }
-        .modal-steps ol { margin-left: 18px; }
-        .modal-steps li { margin-bottom: 7px; line-height: 1.5; }
-        .modal-steps code { background: var(--gray-200); padding: 1px 5px; border-radius: 4px; font-size: .78rem; }
         .modal-footer { display: flex; gap: 10px; margin-top: 6px; }
         .btn-secondary {
             flex: 1; padding: 11px; border: 2px solid var(--gray-200);
@@ -361,6 +350,16 @@
             }
         }
 
+
+        /* ── SESSION / PERMISSIONS ── */
+        body:not(.is-editor) .admin-only { display: none !important; }
+        .user-chip {
+            display: flex; align-items: center; gap: 6px;
+            font-size: .75rem; color: var(--white); opacity: .85; margin-right: 4px;
+        }
+        .lanche-checkbox input:disabled { cursor: default; }
+        .form-error { color: var(--danger); font-size: .82rem; min-height: 1.2em; margin-bottom: 8px; }
+
         .fade-in { animation: fadeIn .4s ease; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .hidden { display: none !important; }
@@ -372,20 +371,22 @@
     <!-- HEADER -->
     <header class="header">
         <div class="header-left">
-            <div class="header-icon">⚽</div>
+            <div class="header-icon" aria-hidden="true">⚽</div>
             <div>
                 <h1>Lanches Futsal</h1>
                 <p>Gestão de Lanches da Equipa</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="icon-btn" id="refreshBtn" title="Recarregar dados">↻</button>
-            <button class="icon-btn" id="settingsBtn" title="Configurações">⚙</button>
+            <span class="user-chip admin-only" id="userChip"></span>
+            <button class="icon-btn" id="refreshBtn" title="Recarregar dados" aria-label="Recarregar dados">↻</button>
+            <button class="icon-btn" id="loginBtn" title="Entrar (editores)" aria-label="Entrar">🔐</button>
+            <button class="icon-btn admin-only" id="logoutBtn" title="Terminar sessão" aria-label="Terminar sessão">⏻</button>
         </div>
     </header>
 
     <!-- CONNECTION BAR -->
-    <div class="connection-bar">
+    <div class="connection-bar" role="status">
         <div class="connection-left">
             <span class="status-dot connecting" id="statusDot"></span>
             <span id="statusText">A conectar...</span>
@@ -420,13 +421,13 @@
         </div>
     </div>
 
-    <!-- ADD FORM -->
-    <div class="card fade-in">
+    <!-- ADD FORM (só editores) -->
+    <div class="card fade-in admin-only">
         <h2 class="card-title">➕ Adicionar Novo Lanche</h2>
         <form id="addForm">
             <div class="form-group">
                 <label class="form-label" for="athleteName">Nome do Atleta *</label>
-                <input type="text" id="athleteName" class="form-input" placeholder="Ex: João Silva" required autocomplete="off">
+                <input type="text" id="athleteName" class="form-input" placeholder="Ex: João Silva" required maxlength="100" autocomplete="off">
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -436,18 +437,16 @@
                 <div class="form-group">
                     <label class="form-label" for="lunchStatus">Estado</label>
                     <select id="lunchStatus" class="form-select">
-                        <option value="Não">Pendente</option>
-                        <option value="Sim">Entregue</option>
+                        <option value="false">Pendente</option>
+                        <option value="true">Entregue</option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
                 <label class="form-label" for="lunchNotes">Observações</label>
-                <input type="text" id="lunchNotes" class="form-input" placeholder="Ex: Lanche para o jogo de sábado">
+                <input type="text" id="lunchNotes" class="form-input" placeholder="Ex: Lanche para o jogo de sábado" maxlength="300">
             </div>
-            <button type="submit" class="btn btn-primary" id="submitBtn">
-                ➕ Adicionar Lanche
-            </button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">➕ Adicionar Lanche</button>
         </form>
     </div>
 
@@ -455,17 +454,17 @@
     <div class="card fade-in">
         <div class="list-header">
             <h2 class="card-title" style="margin:0">📋 Lista de Lanches</h2>
-            <div class="list-controls">
+            <div class="list-controls" role="group" aria-label="Filtrar">
                 <button class="filter-btn active" data-filter="all">Todos</button>
                 <button class="filter-btn" data-filter="pending">Pendentes</button>
                 <button class="filter-btn" data-filter="delivered">Entregues</button>
             </div>
         </div>
         <div class="search-wrap">
-            <span class="search-icon">🔍</span>
-            <input type="search" id="searchInput" class="search-input" placeholder="Pesquisar atleta...">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input type="search" id="searchInput" class="search-input" placeholder="Pesquisar atleta..." aria-label="Pesquisar atleta">
         </div>
-        <div id="lanchesList" class="lanches-list">
+        <div id="lanchesList" class="lanches-list" aria-live="polite">
             <div class="loading">
                 <div class="spinner"></div>
                 <span>A carregar...</span>
@@ -476,235 +475,144 @@
 </div><!-- /container -->
 
 <!-- TOAST CONTAINER -->
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-container" id="toastContainer" aria-live="assertive"></div>
 
-<!-- PASSWORD MODAL (para acesso a settings) -->
-<div class="modal-overlay hidden" id="passwordModal">
-    <div class="modal" style="max-width:300px">
-        <h2 class="modal-title">🔐 Acesso Restrito</h2>
-        <p class="modal-subtitle">
-            Os settings são protegidos. Insere a password para continuar.
-        </p>
-        <div class="form-group">
-            <label class="form-label" for="adminPassword">Password *</label>
-            <input type="password" id="adminPassword" class="form-input" placeholder="••••••••"
-                   autofocus onkeypress="if(event.key==='Enter')confirmPassword()">
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" id="cancelPasswordBtn">Cancelar</button>
-            <button class="btn btn-primary" id="confirmPasswordBtn" style="flex:2">
-                🔓 Verificar
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- CONFIG MODAL -->
-<div class="modal-overlay hidden" id="configModal">
-    <div class="modal">
-        <h2 class="modal-title">⚙️ Configuração da API</h2>
-        <p class="modal-subtitle">
-            Cola abaixo a URL do teu Google Apps Script. Se ainda não tens,
-            segue os passos indicados.
-        </p>
-        <div class="modal-steps">
-            <strong>Como obter a URL:</strong>
-            <ol>
-                <li>Cria uma Google Sheet com colunas: <code>ID</code>, <code>Nome do Atleta</code>, <code>Data</code>, <code>Entregue</code>, <code>Observações</code></li>
-                <li>Vai a <strong>Extensions → Apps Script</strong></li>
-                <li>Cola o código do ficheiro <code>Code.gs</code> (incluído no projeto)</li>
-                <li>Clica em <strong>Deploy → New deployment → Web app</strong></li>
-                <li>Execute as: <strong>Me</strong> · Who has access: <strong>Anyone</strong></li>
-                <li>Autoriza e copia a URL gerada</li>
-            </ol>
-        </div>
-        <div class="form-group">
-            <label class="form-label" for="apiUrlInput">URL da API *</label>
-            <input type="url" id="apiUrlInput" class="form-input"
-                   placeholder="https://script.google.com/macros/s/..." required>
-        </div>
-        <div class="form-row">
+<!-- LOGIN MODAL -->
+<div class="modal-overlay hidden" id="loginModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" style="max-width:340px">
+        <h2 class="modal-title" id="loginTitle">🔐 Acesso de Editor</h2>
+        <p class="modal-subtitle">Apenas os responsáveis da equipa podem alterar a informação.</p>
+        <form id="loginForm">
             <div class="form-group">
-                <label class="form-label" for="adminPasswordSet">Password de Admin *</label>
-                <input type="password" id="adminPasswordSet" class="form-input"
-                       placeholder="Define uma password segura"
-                       title="Mínimo 4 caracteres">
+                <label class="form-label" for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" class="form-input" autocomplete="username" required>
             </div>
             <div class="form-group">
-                <label class="form-label" for="masterKeyInput">Chave de Acesso *</label>
-                <input type="password" id="masterKeyInput" class="form-input"
-                       placeholder="Código secreto"
-                       title="Mínimo 6 caracteres">
+                <label class="form-label" for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" class="form-input" autocomplete="current-password" required>
             </div>
-        </div>
-        <p style="font-size:.8rem; color:#666; margin-bottom:16px;">
-            🔐 <strong>Password:</strong> Protege os settings (roda dentada).<br>
-            🔑 <strong>Chave de Acesso:</strong> Apenas tu consegues adicionar/editar/deletar registos.
-        </p>
-        <div class="modal-footer">
-            <button class="btn-secondary" id="cancelConfigBtn">Cancelar</button>
-            <button class="btn btn-primary" id="saveConfigBtn" style="flex:2">
-                💾 Guardar e Continuar
-            </button>
-        </div>
+            <p class="form-error" id="loginError"></p>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close="loginModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="loginSubmitBtn" style="flex:2">🔓 Entrar</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- EDIT LANCHE MODAL -->
 <div class="modal-overlay hidden" id="editModal">
-    <div class="modal">
-        <h2 class="modal-title">✏️ Editar Lanche</h2>
-        <div class="form-group">
-            <label class="form-label" for="editAthletteName">Nome do Atleta *</label>
-            <input type="text" id="editAthletteName" class="form-input" required>
-        </div>
-        <div class="form-row">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+        <h2 class="modal-title" id="editTitle">✏️ Editar Lanche</h2>
+        <form id="editForm">
             <div class="form-group">
-                <label class="form-label" for="editLunchDate">Data *</label>
-                <input type="date" id="editLunchDate" class="form-input" required>
+                <label class="form-label" for="editAthleteName">Nome do Atleta *</label>
+                <input type="text" id="editAthleteName" class="form-input" required maxlength="100">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="editLunchDate">Data *</label>
+                    <input type="date" id="editLunchDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editLunchStatus">Estado</label>
+                    <select id="editLunchStatus" class="form-select">
+                        <option value="false">Pendente</option>
+                        <option value="true">Entregue</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
-                <label class="form-label" for="editLunchStatus">Estado</label>
-                <select id="editLunchStatus" class="form-select">
-                    <option value="Não">Pendente</option>
-                    <option value="Sim">Entregue</option>
-                </select>
+                <label class="form-label" for="editLunchNotes">Observações</label>
+                <input type="text" id="editLunchNotes" class="form-input" maxlength="300">
             </div>
-        </div>
-        <div class="form-group">
-            <label class="form-label" for="editLunchNotes">Observações</label>
-            <input type="text" id="editLunchNotes" class="form-input" placeholder="Ex: Lanche para o jogo de sábado">
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" id="cancelEditBtn">Cancelar</button>
-            <button class="btn btn-primary" id="saveEditBtn" style="flex:2">
-                💾 Guardar Alterações
-            </button>
-        </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close="editModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="saveEditBtn" style="flex:2">💾 Guardar Alterações</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- CONFIRM DELETE MODAL -->
 <div class="modal-overlay hidden" id="confirmModal">
-    <div class="modal confirm-modal">
-        <div class="confirm-icon">🗑️</div>
-        <h3 class="modal-title" style="justify-content:center;display:flex">Eliminar Registo?</h3>
-        <p class="confirm-msg" id="confirmMsg">Tens a certeza que queres eliminar este lanche?<br>Esta ação não pode ser desfeita.</p>
+    <div class="modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="confirm-icon" aria-hidden="true">🗑️</div>
+        <h3 class="modal-title" id="confirmTitle" style="justify-content:center;display:flex">Eliminar Registo?</h3>
+        <p class="confirm-msg" id="confirmMsg"></p>
         <div class="confirm-actions">
-            <button class="btn btn-secondary" id="cancelDeleteBtn">Cancelar</button>
+            <button class="btn btn-secondary" data-close="confirmModal">Cancelar</button>
             <button class="btn btn-confirm-delete" id="confirmDeleteBtn">🗑️ Eliminar</button>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
+        integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o"
+        crossorigin="anonymous"></script>
 <script>
 /*
  * ============================================================
  *  LANCHES FUTSAL — index.html
  *  Stack: HTML + CSS + Vanilla JS  →  GitHub Pages (static)
- *         Google Sheets + Apps Script  →  JSON API (serverless)
- * ============================================================
+ *         Supabase (Postgres + Auth + RLS)  →  base de dados
  *
- *  PASSO A PASSO PARA CONFIGURAR:
- *
- *  1. CRIAR A GOOGLE SHEET
- *     • Google Drive → Novo → Google Sheets
- *     • Nome: "Lanches Futsal" (qualquer nome serve)
- *     • Linha 1 (cabeçalhos):
- *         A=ID  B=Nome do Atleta  C=Data  D=Entregue  E=Observações
- *     • Deixa as restantes linhas vazias (o script preenche automaticamente)
- *
- *  2. CRIAR O GOOGLE APPS SCRIPT
- *     • Na Sheet: Extensions → Apps Script
- *     • Apaga todo o conteúdo existente
- *     • Cola o conteúdo do ficheiro Code.gs (incluso no projeto)
- *     • Ctrl+S para guardar; nomeia como "LanchesFutsalAPI"
- *
- *  3. FAZER DEPLOY COMO WEB APP
- *     • Deploy → New deployment
- *     • Engrenagem ⚙ → Web app
- *     • Description: "API Lanches Futsal"
- *     • Execute as: Me
- *     • Who has access: Anyone
- *     • Deploy → Autoriza a conta Google → COPIA A URL
- *       (parecida com: https://script.google.com/macros/s/XXXXXXX/exec)
- *
- *  4. PUBLICAR NO GITHUB PAGES
- *     • Cria repositório no GitHub (ex: lanches-futsal)
- *     • Faz upload de index.html
- *     • Settings → Pages → Source: main / root → Save
- *     • URL: https://<utilizador>.github.io/lanches-futsal
- *
- *  5. LIGAR A API
- *     • Abre o site no browser
- *     • Cola a URL do passo 3 no modal que aparece
- *     • Pronto! Partilha o link no WhatsApp. ✅
+ *  • Leitura pública (pais).
+ *  • Escrita apenas para os editores definidos em public.editors
+ *    (imposto pela base de dados, não pelo browser).
+ *  • Configuração em config.json (supabaseUrl + supabaseKey publishable).
+ *  • Setup completo: ver README.md e supabase/schema.sql.
  * ============================================================
  */
 
+const REFRESH_INTERVAL_MS = 60_000;
+const LANCHE_COLUMNS = 'id,nome,data,entregue,observacoes';
+
 // ── STATE ──────────────────────────────────────────────────
-let API_URL      = '';  // Será carregado do config.json
-let MASTER_KEY   = localStorage.getItem('lanchesFutsalMasterKey') || '';
-let lanchesData  = [];
-let currentFilter= 'all';
-let searchQuery  = '';
-let deleteTarget = null;        // id pendente de confirmação
-let editTarget   = null;        // id pendente de edição
-let autoRefreshTimer = null;
+let db = null;
+let isEditor = false;
+let lanchesData = [];
+let currentFilter = 'all';
+let searchQuery = '';
+let deleteTarget = null;
+let editTarget = null;
+let refreshTimer = null;
 
 // ── DOM REFS ───────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 const el = {
-    statusDot:       $('statusDot'),
-    statusText:      $('statusText'),
-    lastSync:        $('lastSync'),
-    totalCount:      $('totalCount'),
-    deliveredCount:  $('deliveredCount'),
-    pendingCount:    $('pendingCount'),
-    progressFill:    $('progressFill'),
-    progressPct:     $('progressPct'),
-    addForm:         $('addForm'),
-    athleteName:     $('athleteName'),
-    lunchDate:       $('lunchDate'),
-    lunchStatus:     $('lunchStatus'),
-    lunchNotes:      $('lunchNotes'),
-    submitBtn:       $('submitBtn'),
-    lanchesList:     $('lanchesList'),
-    searchInput:     $('searchInput'),
-    passwordModal:   $('passwordModal'),
-    adminPassword:   $('adminPassword'),
-    confirmPasswordBtn:$('confirmPasswordBtn'),
-    cancelPasswordBtn:$('cancelPasswordBtn'),
-    configModal:     $('configModal'),
-    apiUrlInput:     $('apiUrlInput'),
-    adminPasswordSet:$('adminPasswordSet'),
-    masterKeyInput:  $('masterKeyInput'),
-    saveConfigBtn:   $('saveConfigBtn'),
-    cancelConfigBtn: $('cancelConfigBtn'),
-    confirmModal:    $('confirmModal'),
-    confirmMsg:      $('confirmMsg'),
-    confirmDeleteBtn:$('confirmDeleteBtn'),
-    cancelDeleteBtn: $('cancelDeleteBtn'),
-    editModal:       $('editModal'),
-    editAthletteName:$('editAthletteName'),
-    editLunchDate:   $('editLunchDate'),
-    editLunchStatus: $('editLunchStatus'),
-    editLunchNotes:  $('editLunchNotes'),
-    saveEditBtn:     $('saveEditBtn'),
-    cancelEditBtn:   $('cancelEditBtn'),
-    toastContainer:  $('toastContainer'),
-    refreshBtn:      $('refreshBtn'),
-    settingsBtn:     $('settingsBtn'),
+    statusDot: $('statusDot'), statusText: $('statusText'), lastSync: $('lastSync'),
+    totalCount: $('totalCount'), deliveredCount: $('deliveredCount'), pendingCount: $('pendingCount'),
+    progressFill: $('progressFill'), progressPct: $('progressPct'),
+    addForm: $('addForm'), athleteName: $('athleteName'), lunchDate: $('lunchDate'),
+    lunchStatus: $('lunchStatus'), lunchNotes: $('lunchNotes'), submitBtn: $('submitBtn'),
+    lanchesList: $('lanchesList'), searchInput: $('searchInput'),
+    userChip: $('userChip'), refreshBtn: $('refreshBtn'), loginBtn: $('loginBtn'), logoutBtn: $('logoutBtn'),
+    loginModal: $('loginModal'), loginForm: $('loginForm'), loginEmail: $('loginEmail'),
+    loginPassword: $('loginPassword'), loginError: $('loginError'), loginSubmitBtn: $('loginSubmitBtn'),
+    editModal: $('editModal'), editForm: $('editForm'), editAthleteName: $('editAthleteName'),
+    editLunchDate: $('editLunchDate'), editLunchStatus: $('editLunchStatus'),
+    editLunchNotes: $('editLunchNotes'), saveEditBtn: $('saveEditBtn'),
+    confirmModal: $('confirmModal'), confirmMsg: $('confirmMsg'), confirmDeleteBtn: $('confirmDeleteBtn'),
+    toastContainer: $('toastContainer'),
 };
 
 // ── TOAST ──────────────────────────────────────────────────
 function showToast(msg, type = 'success', duration = 4500) {
-    const icons = { success:'✅', error:'❌', warning:'⚠️', info:'ℹ️' };
+    const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
     const t = document.createElement('div');
     t.className = `toast ${type}`;
-    t.innerHTML = `<span>${icons[type]||'ℹ️'}</span>
-                   <span class="toast-msg">${msg}</span>
-                   <button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+    const icon = document.createElement('span');
+    icon.textContent = icons[type] || 'ℹ️';
+    const text = document.createElement('span');
+    text.className = 'toast-msg';
+    text.textContent = msg;
+    const close = document.createElement('button');
+    close.className = 'toast-close';
+    close.setAttribute('aria-label', 'Fechar');
+    close.textContent = '×';
+    close.addEventListener('click', () => t.remove());
+    t.append(icon, text, close);
     el.toastContainer.appendChild(t);
     setTimeout(() => t.isConnected && t.remove(), duration);
 }
@@ -716,94 +624,93 @@ function setStatus(state, text) {
 }
 
 function updateLastSync() {
-    const now = new Date();
-    const hm  = now.toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
+    const hm = new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
     el.lastSync.textContent = `Atualizado: ${hm}`;
 }
 
 // ── DATE HELPERS ───────────────────────────────────────────
 function todayStr() {
     const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+/** "2026-01-15" → "15/01/2026" (sem conversões de fuso horário). */
 function formatDateDisplay(raw) {
-    if (!raw) return '—';
-    // GAS may return "2024-01-15", "2024-01-15T00:00:00.000Z", or a JS date string
-    const d = new Date(raw);
-    if (isNaN(d)) return raw;
-    // Shift from UTC-midnight to local date
-    const local = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
-    return local.toLocaleDateString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric' });
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw || '');
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : (raw || '—');
 }
 
-// ── STATS & PROGRESS ───────────────────────────────────────
+function escHtml(t) {
+    const d = document.createElement('div');
+    d.textContent = t == null ? '' : String(t);
+    return d.innerHTML;
+}
+
+// ── MODALS ─────────────────────────────────────────────────
+function openModal(modal, focusEl) {
+    modal.classList.remove('hidden');
+    if (focusEl) setTimeout(() => focusEl.focus(), 50);
+}
+
+function closeModal(modal) {
+    modal.classList.add('hidden');
+    if (modal === el.editModal) editTarget = null;
+    if (modal === el.confirmModal) deleteTarget = null;
+}
+
+// ── STATS & RENDER ─────────────────────────────────────────
 function updateStats() {
-    const total     = lanchesData.length;
-    const delivered = lanchesData.filter(l => isDelivered(l)).length;
-    const pending   = total - delivered;
-    const pct       = total ? Math.round((delivered / total) * 100) : 0;
-
-    el.totalCount.textContent     = total;
+    const total = lanchesData.length;
+    const delivered = lanchesData.filter(l => l.entregue).length;
+    const pct = total ? Math.round((delivered / total) * 100) : 0;
+    el.totalCount.textContent = total;
     el.deliveredCount.textContent = delivered;
-    el.pendingCount.textContent   = pending;
-    el.progressFill.style.width   = pct + '%';
-    el.progressPct.textContent    = pct + '%';
+    el.pendingCount.textContent = total - delivered;
+    el.progressFill.style.width = pct + '%';
+    el.progressPct.textContent = pct + '%';
 }
 
-function isDelivered(l) {
-    // Handles "Sim", true, "TRUE", "true", 1
-    const v = l.entregue;
-    return v === 'Sim' || v === true || String(v).toLowerCase() === 'true' || v === 1 || v === '1';
-}
-
-// ── RENDER LIST ────────────────────────────────────────────
 function renderLanches() {
-    let data = [...lanchesData];
-
-    if (currentFilter === 'delivered') data = data.filter(l =>  isDelivered(l));
-    if (currentFilter === 'pending')   data = data.filter(l => !isDelivered(l));
-
+    let data = lanchesData;
+    if (currentFilter === 'delivered') data = data.filter(l => l.entregue);
+    if (currentFilter === 'pending') data = data.filter(l => !l.entregue);
     if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        data = data.filter(l => (l.nome || '').toLowerCase().includes(q));
+        data = data.filter(l => l.nome.toLowerCase().includes(q));
     }
 
-    // Sort: pendentes primeiro, depois mais recentes
-    data.sort((a, b) => {
-        const aDel = isDelivered(a) ? 1 : 0;
-        const bDel = isDelivered(b) ? 1 : 0;
-        if (aDel !== bDel) return aDel - bDel;
-        return new Date(b.data) - new Date(a.data);
-    });
+    // Pendentes primeiro, depois mais recentes (datas ISO comparam como texto)
+    data = [...data].sort((a, b) =>
+        (a.entregue - b.entregue) || b.data.localeCompare(a.data));
 
     if (data.length === 0) {
         const msgs = {
-            all:       ['📋', 'Nenhum lanche registado ainda.<br>Usa o formulário acima para adicionar o primeiro!'],
+            all: ['📋', 'Nenhum lanche registado ainda.'],
             delivered: ['✅', 'Nenhum lanche entregue ainda.'],
-            pending:   ['🎉', 'Todos os lanches foram entregues!'],
+            pending: ['🎉', 'Todos os lanches foram entregues!'],
         };
         const [icon, text] = msgs[currentFilter] || msgs.all;
+        const msg = searchQuery ? `🔍 Nenhum atleta encontrado para "${escHtml(searchQuery)}".` : text;
         el.lanchesList.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">${icon}</div>
-                <p class="empty-text">${searchQuery ? '🔍 Nenhum atleta encontrado para "'+escHtml(searchQuery)+'".' : text}</p>
+                <p class="empty-text">${msg}</p>
             </div>`;
         return;
     }
 
     el.lanchesList.innerHTML = data.map(l => {
-        const del     = isDelivered(l);
-        const badge   = del
+        const badge = l.entregue
             ? '<span class="lanche-badge badge-entregue">✓ Entregue</span>'
             : '<span class="lanche-badge badge-pendente">⏳ Pendente</span>';
-        const notes   = l.observacoes
+        const notes = l.observacoes
             ? `<span class="lanche-notes">💬 ${escHtml(l.observacoes)}</span>` : '';
-
+        const id = Number(l.id);
         return `
-        <div class="lanche-item ${del?'delivered':''}" data-id="${l.id}">
+        <div class="lanche-item ${l.entregue ? 'delivered' : ''}" data-id="${id}">
             <label class="lanche-checkbox">
-                <input type="checkbox" ${del?'checked':''} onchange="handleToggle('${l.id}', this.checked)">
+                <input type="checkbox" data-action="toggle" ${l.entregue ? 'checked' : ''} ${isEditor ? '' : 'disabled'}
+                       aria-label="Entregue: ${escHtml(l.nome)}">
                 <span class="checkmark"></span>
             </label>
             <div class="lanche-info">
@@ -815,546 +722,315 @@ function renderLanches() {
             </div>
             <div class="item-actions">
                 ${badge}
-                <button class="btn btn-danger btn-sm" onclick="editLanche('${l.id}')" title="Editar">✏️</button>
-                <button class="btn btn-danger btn-sm" onclick="confirmDelete('${l.id}', '${escAttr(l.nome)}')" title="Eliminar">🗑</button>
+                <button class="btn btn-danger btn-sm admin-only" data-action="edit" title="Editar" aria-label="Editar">✏️</button>
+                <button class="btn btn-danger btn-sm admin-only" data-action="delete" title="Eliminar" aria-label="Eliminar">🗑</button>
             </div>
         </div>`;
     }).join('');
 }
 
-function escHtml(t) {
-    if (!t) return '';
-    const d = document.createElement('div');
-    d.textContent = String(t);
-    return d.innerHTML;
-}
-function escAttr(t) {
-    return String(t||'').replace(/'/g, "\\'");
+function findLanche(id) {
+    return lanchesData.find(l => l.id === id);
 }
 
-// ── API: LOAD ──────────────────────────────────────────────
-async function loadData(silent = false) {
-    if (!API_URL) { showConfigModal(); return; }
-
+// ── DATA: READ ─────────────────────────────────────────────
+async function loadData({ silent = false } = {}) {
     if (!silent) {
         setStatus('connecting', 'A carregar dados...');
         el.lanchesList.innerHTML = '<div class="loading"><div class="spinner"></div><span>A carregar...</span></div>';
     }
 
-    try {
-        const res  = await fetch(`${API_URL}?action=read`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-
-        if (!json.success) throw new Error(json.error || 'Resposta inválida da API');
-
-        lanchesData = json.data || [];
-        renderLanches();
-        updateStats();
-        setStatus('online', 'Conectado');
-        updateLastSync();
-
-        if (!silent) startAutoRefresh();
-
-    } catch (err) {
-        console.error('loadData:', err);
+    const { data, error } = await db.from('lanches').select(LANCHE_COLUMNS).order('data', { ascending: false });
+    if (error) {
+        console.error('loadData:', error);
         setStatus('offline', 'Sem conexão');
         if (!silent) {
-            showToast('Não foi possível carregar os dados. Verifica a URL da API.', 'error', 6000);
+            showToast('Não foi possível carregar os dados.', 'error', 6000);
             el.lanchesList.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-icon">📡</div>
-                    <p class="empty-text">Falha na conexão com a API.<br>
-                    Verifica a URL nas configurações (⚙️) e tenta de novo.</p>
+                    <p class="empty-text">Falha na ligação à base de dados.<br>Tenta de novo com ↻.</p>
                 </div>`;
         }
-    }
-}
-
-// ── API: CREATE ────────────────────────────────────────────
-async function addData(nome, data, entregue, observacoes) {
-    if (!API_URL) { showConfigModal(); return false; }
-
-    // Se não tem Chave, pedir
-    if (!MASTER_KEY) {
-        const key = prompt('🔑 Insere a Chave de Acesso para adicionar:\n(mínimo 6 caracteres)');
-        if (!key) return false;
-        if (key.length < 6) { showToast('Chave inválida.', 'error'); return false; }
-        MASTER_KEY = key;
-        localStorage.setItem('lanchesFutsalMasterKey', key);
-        // Atualizar UI do botão
-        el.submitBtn.textContent = '➕ Adicionar Lanche';
-        showToast('✅ Chave guardada! Podes agora adicionar lanches.', 'success');
-    }
-
-    el.submitBtn.disabled = true;
-    el.submitBtn.textContent = '⏳ A adicionar...';
-
-    try {
-        const res  = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ action:'create', nome, data, entregue, observacoes, masterKey: MASTER_KEY }),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-
-        if (!json.success) throw new Error(json.error || 'Erro ao criar');
-
-        showToast(`Lanche de ${nome} adicionado! ✅`, 'success');
-        el.addForm.reset();
-        el.lunchDate.value = todayStr();
-        await loadData(true);
-        renderLanches();
-        updateStats();
-        return true;
-
-    } catch (err) {
-        console.error('addData:', err);
-        showToast('Erro ao adicionar lanche. Tenta novamente.', 'error');
-        return false;
-    } finally {
-        el.submitBtn.disabled = false;
-        el.submitBtn.textContent = '➕ Adicionar Lanche';
-    }
-}
-
-// ── API: UPDATE STATUS ─────────────────────────────────────
-async function updateStatus(id, newEntregue) {
-    if (!API_URL) { showConfigModal(); return false; }
-
-    // Se não tem Chave, pedir
-    if (!MASTER_KEY) {
-        const key = prompt('🔑 Insere a Chave de Acesso para atualizar:\n(mínimo 6 caracteres)');
-        if (!key) { await loadData(true); renderLanches(); return false; }
-        if (key.length < 6) { showToast('Chave inválida.', 'error'); await loadData(true); renderLanches(); return false; }
-        MASTER_KEY = key;
-        localStorage.setItem('lanchesFutsalMasterKey', key);
-        showToast('✅ Chave guardada! Podes agora editar lanches.', 'success');
-    }
-
-    try {
-        const res  = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ action:'update', id, entregue: newEntregue, masterKey: MASTER_KEY }),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-
-        if (!json.success) throw new Error(json.error || 'Erro ao atualizar');
-
-        const label = newEntregue === 'Sim' ? 'entregue ✅' : 'pendente ⏳';
-        showToast(`Lanche marcado como ${label}`, 'success');
-        await loadData(true);
-        renderLanches();
-        updateStats();
-        return true;
-
-    } catch (err) {
-        console.error('updateStatus:', err);
-        showToast('Erro ao atualizar estado. Tenta novamente.', 'error');
-        // Rollback checkbox
-        await loadData(true);
-        renderLanches();
-        return false;
-    }
-}
-
-// ── API: DELETE ────────────────────────────────────────────
-async function deleteItem(id) {
-    if (!API_URL) { showConfigModal(); return false; }
-
-    // Se não tem Chave, pedir
-    if (!MASTER_KEY) {
-        const key = prompt('🔑 Insere a Chave de Acesso para eliminar:\n(mínimo 6 caracteres)');
-        if (!key) return false;
-        if (key.length < 6) { showToast('Chave inválida.', 'error'); return false; }
-        MASTER_KEY = key;
-        localStorage.setItem('lanchesFutsalMasterKey', key);
-        showToast('✅ Chave guardada! Podes agora eliminar lanches.', 'success');
-    }
-
-    try {
-        const res  = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ action:'delete', id, masterKey: MASTER_KEY }),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-
-        if (!json.success) throw new Error(json.error || 'Erro ao eliminar');
-
-        showToast('Registo eliminado.', 'info');
-        await loadData(true);
-        renderLanches();
-        updateStats();
-        return true;
-
-    } catch (err) {
-        console.error('deleteItem:', err);
-        showToast('Erro ao eliminar. Tenta novamente.', 'error');
-        return false;
-    }
-}
-
-// ── AUTO-REFRESH ───────────────────────────────────────────
-function startAutoRefresh() {
-    clearInterval(autoRefreshTimer);
-    autoRefreshTimer = setInterval(() => loadData(true), 60_000); // 60 s
-}
-
-// ── SECURITY: PASSWORDS & KEYS ────────────────────────────
-const ADMIN_PASSWORD_KEY = 'lanchesFutsalAdminPassword';
-const MASTER_KEY_STORAGE = 'lanchesFutsalMasterKey';
-
-function getAdminPassword() {
-    return localStorage.getItem(ADMIN_PASSWORD_KEY) || '';
-}
-
-function setAdminPassword(pwd) {
-    if (pwd && pwd.length >= 4) {
-        localStorage.setItem(ADMIN_PASSWORD_KEY, pwd);
-        return true;
-    }
-    return false;
-}
-
-function getMasterKey() {
-    return localStorage.getItem(MASTER_KEY_STORAGE) || '';
-}
-
-function setMasterKey(key) {
-    if (key && key.length >= 6) {
-        localStorage.setItem(MASTER_KEY_STORAGE, key);
-        MASTER_KEY = key;
-        return true;
-    }
-    return false;
-}
-
-// ── CONFIG MODAL ───────────────────────────────────────────
-function showPasswordModal() {
-    el.adminPassword.value = '';
-    el.passwordModal.classList.remove('hidden');
-    setTimeout(() => el.adminPassword.focus(), 100);
-}
-
-function hidePasswordModal() {
-    el.passwordModal.classList.add('hidden');
-}
-
-function confirmPassword() {
-    const entered = el.adminPassword.value || '';
-    const stored  = getAdminPassword();
-
-    if (!stored) {
-        showToast('Primeira configuração: defina uma password.', 'info');
-        showConfigModal();
-        hidePasswordModal();
         return;
     }
 
-    if (entered === stored) {
-        showConfigModal();
-        hidePasswordModal();
-    } else {
-        showToast('Password incorreta!', 'error');
-        el.adminPassword.value = '';
-        el.adminPassword.focus();
-    }
+    lanchesData = data;
+    renderLanches();
+    updateStats();
+    setStatus('online', 'Conectado');
+    updateLastSync();
 }
 
-function showConfigModal() {
-    el.apiUrlInput.value = API_URL || '';
-    el.adminPasswordSet.value = '';
-    el.masterKeyInput.value = '';
-    el.configModal.classList.remove('hidden');
-    setTimeout(() => el.apiUrlInput.focus(), 100);
+function startAutoRefresh() {
+    clearInterval(refreshTimer);
+    refreshTimer = setInterval(() => {
+        if (!document.hidden) loadData({ silent: true });
+    }, REFRESH_INTERVAL_MS);
 }
 
-function hideConfigModal() {
-    el.configModal.classList.add('hidden');
-}
-
-// ── EDIT LANCHE MODAL ──────────────────────────────────────
-function showEditModal(id) {
-    const lanche = lanchesData.find(l => l.id == id);
-    if (!lanche) return;
-
-    editTarget = id;
-    el.editAthletteName.value = lanche.nome;
-    el.editLunchDate.value = lanche.data;
-    el.editLunchStatus.value = lanche.entregue;
-    el.editLunchNotes.value = lanche.observacoes;
-    el.editModal.classList.remove('hidden');
-    setTimeout(() => el.editAthletteName.focus(), 100);
-}
-
-function hideEditModal() {
-    el.editModal.classList.add('hidden');
-    editTarget = null;
-}
-
-async function saveEdit() {
-    if (!API_URL || !MASTER_KEY) {
-        const key = prompt('🔑 Insere a Chave de Acesso para editar:\n(mínimo 6 caracteres)');
-        if (!key) return false;
-        if (key.length < 6) { showToast('Chave inválida.', 'error'); return false; }
-        MASTER_KEY = key;
-        localStorage.setItem('lanchesFutsalMasterKey', key);
-        showToast('✅ Chave guardada! Editando lanche...', 'success');
-    }
-
-    if (!editTarget) return false;
-
-    const nome = el.editAthletteName.value.trim();
-    const data = el.editLunchDate.value;
-    const entregue = el.editLunchStatus.value;
-    const observacoes = el.editLunchNotes.value.trim();
-
-    if (!nome || !data) { showToast('Preenche nome e data.', 'warning'); return false; }
-
-    el.saveEditBtn.disabled = true;
-    el.saveEditBtn.textContent = '⏳ A guardar...';
-
-    try {
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                action: 'update',
-                id: editTarget,
-                nome,
-                data,
-                entregue,
-                observacoes,
-                masterKey: MASTER_KEY
-            }),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-
-        if (!json.success) throw new Error(json.error || 'Erro ao editar');
-
-        showToast('Lanche editado com sucesso!', 'success');
-        hideEditModal();
-        await loadData(true);
-        renderLanches();
-        updateStats();
-        return true;
-
-    } catch (err) {
-        console.error('saveEdit:', err);
-        showToast('Erro ao editar lanche. Tenta novamente.', 'error');
+// ── DATA: WRITE ────────────────────────────────────────────
+/**
+ * Executa uma escrita e trata erros comuns. `query` deve terminar em .select('id')
+ * para que uma escrita bloqueada pelo RLS (0 linhas afetadas) seja detetada.
+ */
+async function runWrite(query, failMsg) {
+    if (!isEditor) {
+        showToast('Inicia sessão como editor para alterar dados.', 'warning');
         return false;
+    }
+    const { data, error } = await query;
+    if (error || !data || data.length === 0) {
+        console.error(failMsg, error);
+        const denied = !error || error.code === '42501' || error.code === 'PGRST301';
+        if (denied) {
+            showToast('Sem permissão ou registo inexistente. Inicia sessão novamente.', 'error');
+            await refreshEditorState();
+        } else if (error.code === '23514') {
+            showToast('Dados inválidos (nome até 100 e observações até 300 caracteres).', 'error');
+        } else {
+            showToast(failMsg, 'error');
+        }
+        await loadData({ silent: true });
+        return false;
+    }
+    await loadData({ silent: true });
+    return true;
+}
+
+function readForm(nameEl, dateEl, statusEl, notesEl) {
+    const fields = {
+        nome: nameEl.value.trim(),
+        data: dateEl.value,
+        entregue: statusEl.value === 'true',
+        observacoes: notesEl.value.trim(),
+    };
+    if (!fields.nome || !fields.data) {
+        showToast('Preenche nome e data.', 'warning');
+        return null;
+    }
+    return fields;
+}
+
+async function withBusyButton(btn, busyLabel, fn) {
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = busyLabel;
+    try {
+        return await fn();
     } finally {
-        el.saveEditBtn.disabled = false;
-        el.saveEditBtn.textContent = '💾 Guardar Alterações';
+        btn.disabled = false;
+        btn.textContent = label;
     }
 }
 
-// ── CONFIRM DELETE MODAL ───────────────────────────────────
-function confirmDelete(id, nome) {
-    deleteTarget = id;
-    el.confirmMsg.innerHTML = `Tens a certeza que queres eliminar o lanche de <strong>${escHtml(nome)}</strong>?<br>Esta ação não pode ser desfeita.`;
-    el.confirmModal.classList.remove('hidden');
+async function addLanche(e) {
+    e.preventDefault();
+    const fields = readForm(el.athleteName, el.lunchDate, el.lunchStatus, el.lunchNotes);
+    if (!fields) return;
+    const ok = await withBusyButton(el.submitBtn, '⏳ A adicionar...', () =>
+        runWrite(db.from('lanches').insert(fields).select('id'), 'Erro ao adicionar lanche.'));
+    if (ok) {
+        showToast(`Lanche de ${fields.nome} adicionado!`, 'success');
+        el.addForm.reset();
+        el.lunchDate.value = todayStr();
+    }
 }
-function hideConfirmModal() {
-    el.confirmModal.classList.add('hidden');
-    deleteTarget = null;
+
+async function toggleLanche(id, checkbox) {
+    checkbox.disabled = true;
+    const entregue = checkbox.checked;
+    const ok = await runWrite(
+        db.from('lanches').update({ entregue }).eq('id', id).select('id'), 'Erro ao atualizar estado.');
+    if (ok) showToast(`Lanche marcado como ${entregue ? 'entregue ✅' : 'pendente ⏳'}`, 'success');
+}
+
+function showEditModal(id) {
+    const lanche = findLanche(id);
+    if (!lanche) return;
+    editTarget = id;
+    el.editAthleteName.value = lanche.nome;
+    el.editLunchDate.value = lanche.data;
+    el.editLunchStatus.value = String(lanche.entregue);
+    el.editLunchNotes.value = lanche.observacoes;
+    openModal(el.editModal, el.editAthleteName);
+}
+
+async function saveEdit(e) {
+    e.preventDefault();
+    if (editTarget == null) return;
+    const fields = readForm(el.editAthleteName, el.editLunchDate, el.editLunchStatus, el.editLunchNotes);
+    if (!fields) return;
+    const id = editTarget;
+    const ok = await withBusyButton(el.saveEditBtn, '⏳ A guardar...', () =>
+        runWrite(db.from('lanches').update(fields).eq('id', id).select('id'), 'Erro ao editar lanche.'));
+    if (ok) {
+        showToast('Lanche editado com sucesso!', 'success');
+        closeModal(el.editModal);
+    }
+}
+
+function showConfirmDelete(id) {
+    const lanche = findLanche(id);
+    if (!lanche) return;
+    deleteTarget = id;
+    el.confirmMsg.innerHTML =
+        `Tens a certeza que queres eliminar o lanche de <strong>${escHtml(lanche.nome)}</strong>?<br>Esta ação não pode ser desfeita.`;
+    openModal(el.confirmModal, el.confirmDeleteBtn);
+}
+
+async function confirmDelete() {
+    if (deleteTarget == null) return;
+    const id = deleteTarget;
+    closeModal(el.confirmModal);
+    const ok = await runWrite(db.from('lanches').delete().eq('id', id).select('id'), 'Erro ao eliminar.');
+    if (ok) showToast('Registo eliminado.', 'info');
+}
+
+// ── AUTH ───────────────────────────────────────────────────
+async function refreshEditorState() {
+    const { data: { session } } = await db.auth.getSession();
+    await applySession(session);
+}
+
+async function applySession(session) {
+    let editor = false;
+    if (session) {
+        const { data, error } = await db.rpc('is_editor');
+        if (error) {
+            console.error('is_editor:', error);
+            showToast('Não foi possível verificar permissões. Tenta ↻.', 'error');
+        } else if (data === true) {
+            editor = true;
+        } else {
+            showToast('Esta conta não tem permissão para editar.', 'error');
+            await db.auth.signOut();
+            return; // onAuthStateChange volta a chamar applySession(null)
+        }
+    }
+    isEditor = editor;
+    document.body.classList.toggle('is-editor', isEditor);
+    el.loginBtn.classList.toggle('hidden', isEditor);
+    el.userChip.textContent = isEditor ? `👤 ${session.user.email.split('@')[0]}` : '';
+    renderLanches();
+}
+
+async function login(e) {
+    e.preventDefault();
+    el.loginError.textContent = '';
+    const email = el.loginEmail.value.trim();
+    const password = el.loginPassword.value;
+    const { error } = await withBusyButton(el.loginSubmitBtn, '⏳ A entrar...', () =>
+        db.auth.signInWithPassword({ email, password }));
+    if (error) {
+        el.loginError.textContent = error.status === 429
+            ? 'Demasiadas tentativas. Aguarda alguns minutos.'
+            : 'Email ou password inválidos.';
+        return;
+    }
+    el.loginPassword.value = '';
+    closeModal(el.loginModal);
+    showToast('Sessão iniciada.', 'success');
+}
+
+async function logout() {
+    await db.auth.signOut();
+    showToast('Sessão terminada.', 'info');
 }
 
 // ── EVENT LISTENERS ────────────────────────────────────────
-
-// Form submit
-el.addForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const nome      = el.athleteName.value.trim();
-    const data      = el.lunchDate.value;
-    const entregue  = el.lunchStatus.value;
-    const observacoes = el.lunchNotes.value.trim();
-
-    if (!nome || !data) { showToast('Preenche nome e data.', 'warning'); return; }
-    await addData(nome, data, entregue, observacoes);
+el.addForm.addEventListener('submit', addLanche);
+el.editForm.addEventListener('submit', saveEdit);
+el.loginForm.addEventListener('submit', login);
+el.confirmDeleteBtn.addEventListener('click', confirmDelete);
+el.loginBtn.addEventListener('click', () => {
+    el.loginError.textContent = '';
+    openModal(el.loginModal, el.loginEmail);
+});
+el.logoutBtn.addEventListener('click', logout);
+el.refreshBtn.addEventListener('click', async () => {
+    el.refreshBtn.style.opacity = '.5';
+    await loadData();
+    el.refreshBtn.style.opacity = '1';
 });
 
-// Filter buttons (click + touch support for mobile)
 document.querySelectorAll('.filter-btn').forEach(btn => {
-    const handleFilterClick = () => {
+    btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
         renderLanches();
-    };
-    btn.addEventListener('click', handleFilterClick);
-    btn.addEventListener('touchend', handleFilterClick);
+    });
 });
 
-// Search
 el.searchInput.addEventListener('input', () => {
     searchQuery = el.searchInput.value.trim();
     renderLanches();
 });
 
-// Refresh button (click + touch support for mobile)
-const handleRefreshClick = (e) => {
-    if (e.type.includes('touch')) e.preventDefault();
-    el.refreshBtn.textContent = '↻';
-    el.refreshBtn.style.opacity = '.5';
-    loadData().finally(() => { el.refreshBtn.style.opacity = '1'; });
-};
-el.refreshBtn.addEventListener('click', handleRefreshClick);
-el.refreshBtn.addEventListener('touchstart', handleRefreshClick, false);
-
-// Settings button (click + touch support for mobile)
-const handleSettingsClick = (e) => {
-    if (e.type.includes('touch')) e.preventDefault();
-    showPasswordModal();
-};
-el.settingsBtn.addEventListener('click', handleSettingsClick);
-el.settingsBtn.addEventListener('touchstart', handleSettingsClick, false);
-
-// Save config
-const handleSaveConfig = () => {
-    const url = el.apiUrlInput.value.trim();
-    const pwd = el.adminPasswordSet.value.trim();
-    const key = el.masterKeyInput.value.trim();
-
-    if (!url) { showToast('Insere uma URL válida.', 'warning'); return; }
-    if (!url.includes('script.google.com')) {
-        showToast('A URL deve ser do Google Apps Script.', 'warning'); return;
-    }
-    if (!pwd || pwd.length < 4) {
-        showToast('Password: mínimo 4 caracteres.', 'warning'); return;
-    }
-    if (!key || key.length < 6) {
-        showToast('Chave de Acesso: mínimo 6 caracteres.', 'warning'); return;
-    }
-
-    localStorage.setItem('lanchesFutsalApiUrl', url);
-    setAdminPassword(pwd);
-    setMasterKey(key);
-    API_URL = url;
-    hideConfigModal();
-    showToast('Configuração guardada! A carregar dados...', 'success');
-    loadData();
-};
-el.saveConfigBtn.addEventListener('click', handleSaveConfig);
-el.saveConfigBtn.addEventListener('touchend', handleSaveConfig);
-
-// Cancel config
-const handleCancelConfig = () => {
-    if (!API_URL) return;
-    hideConfigModal();
-};
-el.cancelConfigBtn.addEventListener('click', handleCancelConfig);
-el.cancelConfigBtn.addEventListener('touchend', handleCancelConfig);
-
-// Password modal (click + touch support for mobile)
-const addPasswordEventListeners = () => {
-    el.confirmPasswordBtn.addEventListener('click', confirmPassword);
-    el.confirmPasswordBtn.addEventListener('touchend', confirmPassword);
-
-    el.cancelPasswordBtn.addEventListener('click', hidePasswordModal);
-    el.cancelPasswordBtn.addEventListener('touchend', hidePasswordModal);
-
-    el.passwordModal.addEventListener('click', e => {
-        if (e.target === el.passwordModal) hidePasswordModal();
-    });
-    el.passwordModal.addEventListener('touchend', e => {
-        if (e.target === el.passwordModal) hidePasswordModal();
-    });
-};
-addPasswordEventListeners();
-
-// Click outside config modal
-el.configModal.addEventListener('click', e => {
-    if (e.target === el.configModal && API_URL) hideConfigModal();
+// Ações da lista (delegação: sem handlers inline)
+el.lanchesList.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = Number(btn.closest('.lanche-item').dataset.id);
+    if (btn.dataset.action === 'edit') showEditModal(id);
+    if (btn.dataset.action === 'delete') showConfirmDelete(id);
+});
+el.lanchesList.addEventListener('change', e => {
+    if (e.target.dataset.action !== 'toggle') return;
+    toggleLanche(Number(e.target.closest('.lanche-item').dataset.id), e.target);
 });
 
-// Confirm delete (click + touch support for mobile)
-const handleConfirmDelete = async () => {
-    if (!deleteTarget) return;
-    const id = deleteTarget;
-    hideConfirmModal();
-    await deleteItem(id);
-};
-el.confirmDeleteBtn.addEventListener('click', handleConfirmDelete);
-el.confirmDeleteBtn.addEventListener('touchend', handleConfirmDelete);
-
-const handleCancelDelete = hideConfirmModal;
-el.cancelDeleteBtn.addEventListener('click', handleCancelDelete);
-el.cancelDeleteBtn.addEventListener('touchend', handleCancelDelete);
-
-el.confirmModal.addEventListener('click', e => {
-    if (e.target === el.confirmModal) hideConfirmModal();
-});
-el.confirmModal.addEventListener('touchend', e => {
-    if (e.target === el.confirmModal) hideConfirmModal();
+// Fechar modais: botões [data-close], clique fora, tecla Esc
+document.querySelectorAll('[data-close]').forEach(btn =>
+    btn.addEventListener('click', () => closeModal($(btn.dataset.close))));
+document.querySelectorAll('.modal-overlay').forEach(overlay =>
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay); }));
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(closeModal);
 });
 
-// ── EDIT MODAL EVENT LISTENERS ─────────────────────────────
-const handleSaveEdit = saveEdit;
-el.saveEditBtn.addEventListener('click', handleSaveEdit);
-el.saveEditBtn.addEventListener('touchstart', handleSaveEdit, false);
-
-const handleCancelEdit = hideEditModal;
-el.cancelEditBtn.addEventListener('click', handleCancelEdit);
-el.cancelEditBtn.addEventListener('touchend', handleCancelEdit);
-
-el.editModal.addEventListener('click', e => {
-    if (e.target === el.editModal) hideEditModal();
-});
-el.editModal.addEventListener('touchend', e => {
-    if (e.target === el.editModal) hideEditModal();
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && db) loadData({ silent: true });
 });
 
-// ── GLOBAL HANDLERS (called from innerHTML) ────────────────
-window.handleToggle   = (id, checked) => updateStatus(id, checked ? 'Sim' : 'Não');
-window.confirmDelete  = confirmDelete;
-window.confirmPassword = confirmPassword;
-window.editLanche     = (id) => showEditModal(id);
+// ── INIT ───────────────────────────────────────────────────
+function showFatal(msg) {
+    setStatus('offline', 'Não configurado');
+    el.lanchesList.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">🔧</div>
+            <p class="empty-text">${escHtml(msg)}</p>
+        </div>`;
+}
 
-// ── LOAD CONFIG E INICIALIZAR ─────────────────────────────
 async function initApp() {
     el.lunchDate.value = todayStr();
 
+    let config;
     try {
-        // Carregar config.json com cache busting (força sempre versão fresca)
-        const timestamp = new Date().getTime();
-        const configRes = await fetch(`config.json?v=${timestamp}`);
-        if (configRes.ok) {
-            const config = await configRes.json();
-            API_URL = config.apiUrl || '';
-        }
+        const res = await fetch(`config.json?v=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        config = await res.json();
     } catch (err) {
-        console.error('Erro ao carregar config.json:', err);
+        console.error('config.json:', err);
+        showFatal('Não foi possível carregar config.json.');
+        return;
     }
-
-    if (!API_URL) {
-        // Se config.json não existir, mostrar modal de configuração
-        showConfigModal();
-        setStatus('offline', 'Não configurado');
-        el.lanchesList.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">🔧</div>
-                <p class="empty-text">Configura a URL da API para começar.</p>
-            </div>`;
+    if (!window.supabase || !config.supabaseUrl || !config.supabaseKey) {
+        showFatal('Configuração da base de dados em falta ou biblioteca não carregada.');
         return;
     }
 
-    // API está configurada, carregar dados
-    loadData();
+    db = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+    // setTimeout: evitar chamadas ao Supabase dentro do callback (recomendação da biblioteca)
+    db.auth.onAuthStateChange((_event, session) => setTimeout(() => applySession(session), 0));
 
-    // Se não tem Chave de Acesso, mostrar aviso sutil
-    if (!MASTER_KEY) {
-        showToast('💡 Apenas leitura: clica em "Adicionar" e insere a Chave de Acesso para editar.', 'info', 6000);
-    }
+    await loadData();
+    startAutoRefresh();
 }
 
-// Iniciar app quando página carregar
 initApp();
 </script>
 </body>
