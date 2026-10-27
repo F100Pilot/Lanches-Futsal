@@ -1642,7 +1642,7 @@ async function offerFpfImport() {
         return;
     }
     const existing = new Set(jogosData.map(j => j.fpf_id).filter(Boolean));
-    const novos = fpfRows.filter(r => !existing.has(r.fpf_id)).length;
+    const novos = fpfRows.filter(r => !existing.has(r.fpf_id) && !(r._legacyId && existing.has(r._legacyId))).length;
     const series = Array.isArray(payload.series) ? payload.series.map(s => String(s)).join(', ') : '';
     el.fpfSummary.textContent = `${series ? series + ' · ' : ''}${fpfRows.length} jogos (${novos} novos, ${fpfRows.length - novos} já existentes serão atualizados).`;
     el.fpfPreview.innerHTML = fpfRows.map(r => `
@@ -1660,11 +1660,24 @@ async function confirmFpfImport() {
     const rows = fpfRows;
     if (!rows.length) return;
     await withBusyButton(el.fpfConfirmBtn, 'A importar...', async () => {
+        // Jogos importados antes com a chave antiga (só matchId) passam para a chave jornada+equipas
+        const byFpf = new Map(jogosData.filter(j => j.fpf_id).map(j => [j.fpf_id, j]));
+        for (const r of rows) {
+            const legacy = r._legacyId && byFpf.get(r._legacyId);
+            if (legacy && !byFpf.has(r.fpf_id)) {
+                const ok = await runWrite(db.from('jogos').update({ fpf_id: r.fpf_id }).eq('id', legacy.id).select('id'),
+                    'Erro ao atualizar a identificação de um jogo da FPF.');
+                if (!ok) return;
+                byFpf.set(r.fpf_id, legacy);
+            }
+        }
         // Mantém a hora já conhecida quando a FPF ainda não a publica
-        const known = new Map(jogosData.filter(j => j.fpf_id && j.hora).map(j => [j.fpf_id, j.hora]));
-        rows.forEach(r => { if (!r.hora && known.has(r.fpf_id)) r.hora = hhmm(known.get(r.fpf_id)); });
+        const payload = rows.map(({ _legacyId, ...r }) => {
+            const known = byFpf.get(r.fpf_id);
+            return (!r.hora && known && known.hora) ? { ...r, hora: hhmm(known.hora) } : r;
+        });
         const saved = await runWrite(
-            db.from('jogos').upsert(rows, { onConflict: 'fpf_id' }).select('id,data'), 'Erro ao gravar os jogos da FPF.');
+            db.from('jogos').upsert(payload, { onConflict: 'fpf_id' }).select('id,data'), 'Erro ao gravar os jogos da FPF.');
         if (!saved) return;
         // Lanches ligados acompanham a data do jogo
         for (const j of saved) {

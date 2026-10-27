@@ -28,17 +28,22 @@ async function importarParaLanches(TEAM, APP) {
             throw new Error(`A equipa "${TEAM}" não aparece nesta página. Confirma o link da competição e o nome da equipa nas Opções da app.`);
         }
 
-        const matchesOf = root => [...root.querySelectorAll('a.game-link')].map(a => {
-            const id = /matchId=(\d+)/.exec(a.getAttribute('href') || '');
-            return id && {
-                matchId: id[1],
-                home: txt(a.querySelector('.home-team')),
-                away: txt(a.querySelector('.away-team')),
-                score: txt(a.querySelector('.score > span')),
-                schedule: txt(a.querySelector('.game-schedule')),
-                stadium: txt(a.querySelector('small')),
+        // Jogos já disputados vêm dentro de <a class="game-link" href="…matchId=…">;
+        // jogos por jogar são só <div class="game"> (sem link nem resultado, com "1 nov<br>09:00").
+        const matchesOf = root => [...root.querySelectorAll('#matches .game')].map(g => {
+            const link = g.closest('a.game-link');
+            const id = link && /matchId=(\d+)/.exec(link.getAttribute('href') || '');
+            const next = g.nextElementSibling;
+            const sched = g.querySelector('.game-schedule');
+            return {
+                matchId: id ? id[1] : '',
+                home: txt(g.querySelector('.home-team')),
+                away: txt(g.querySelector('.away-team')),
+                score: txt(g.querySelector('.score > span:not(.game-schedule)')),
+                schedule: sched ? sched.innerHTML.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '',
+                stadium: next && next.classList.contains('game-list-stadium') ? txt(next) : '',
             };
-        }).filter(Boolean);
+        });
 
         const matches = [];
         const seen = new Set();
@@ -50,24 +55,23 @@ async function importarParaLanches(TEAM, APP) {
             const competicao = [fase, serie].filter(Boolean).join(' · ');
             series.push(competicao);
             const urls = [...new Set([...s.querySelectorAll('a[href*="GetClassificationAndMatchesByFixture"]')].map(a => a.href))];
-            const pages = [s, ...urls];
-            for (let i = 0; i < pages.length; i++) {
-                say(`a ler ${competicao} — jornada ${i} de ${urls.length}…`);
-                let root = pages[i];
-                if (typeof root === 'string') {
-                    const res = await fetch(root, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                    if (!res.ok) throw new Error(`a FPF respondeu HTTP ${res.status}.`);
-                    root = new DOMParser().parseFromString(await res.text(), 'text/html');
-                }
+            for (let i = 0; i < urls.length; i++) {
+                say(`a ler ${competicao} — jornada ${i + 1} de ${urls.length}…`);
+                const fixtureId = (/fixtureId=(\d+)/.exec(urls[i]) || [])[1];
+                const res = await fetch(urls[i], { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!res.ok) throw new Error(`a FPF respondeu HTTP ${res.status}.`);
+                const root = new DOMParser().parseFromString(await res.text(), 'text/html');
                 for (const m of matchesOf(root)) {
-                    if (seen.has(m.matchId) || (norm(m.home) !== target && norm(m.away) !== target)) continue;
-                    seen.add(m.matchId);
-                    matches.push({ ...m, competicao });
+                    if (norm(m.home) !== target && norm(m.away) !== target) continue;
+                    const key = `${fixtureId}|${norm(m.home)}|${norm(m.away)}`;
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    matches.push({ ...m, fixtureId, competicao });
                 }
             }
         }
 
-        const json = JSON.stringify({ v: 1, team: TEAM, series, matches });
+        const json = JSON.stringify({ v: 2, team: TEAM, series, matches });
         const bytes = new TextEncoder().encode(json);
         let bin = '';
         bytes.forEach(b => { bin += String.fromCharCode(b); });
