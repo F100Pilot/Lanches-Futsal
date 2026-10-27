@@ -1245,7 +1245,11 @@ function renderAll(opts) {
 }
 
 // ── DATA: READ ─────────────────────────────────────────────
+let loadSeq = 0;   // pedidos sobrepostos (ex.: arranque + início de sessão): só o mais recente conta
+
 async function loadData({ silent = false } = {}) {
+    const seq = ++loadSeq;
+    const asEditor = isEditor;
     if (!silent) setStatus('connecting', 'A carregar...');
 
     const [lanches, jogos, atletas, definicoes, cont] = await Promise.all([
@@ -1255,6 +1259,7 @@ async function loadData({ silent = false } = {}) {
         db.from('definicoes').select(isEditor ? 'fpf_equipa_url,fpf_equipa_nome' : 'fpf_equipa_url').eq('id', 1).maybeSingle(),
         isEditor ? db.from('atletas_contactos').select('atleta_id,encarregado_nome,telefone') : Promise.resolve({ data: [] }),
     ]);
+    if (seq !== loadSeq) return;   // chegou entretanto uma resposta mais recente
     const error = lanches.error || jogos.error || atletas.error || definicoes.error || cont.error;
     if (error) {
         console.error('loadData:', error);
@@ -1270,7 +1275,7 @@ async function loadData({ silent = false } = {}) {
     jogosData = jogos.data;
     atletasData = atletas.data;
     fpfEquipaUrl = definicoes.data ? definicoes.data.fpf_equipa_url || '' : '';
-    fpfEquipaNome = definicoes.data ? definicoes.data.fpf_equipa_nome || '' : '';
+    if (asEditor && definicoes.data) fpfEquipaNome = definicoes.data.fpf_equipa_nome || '';
     contactos = new Map(cont.data.map(c => [c.atleta_id, c]));
     renderAll({ animate: !silent });
     setStatus('online', 'Conectado');
@@ -1627,18 +1632,21 @@ async function offerFpfImport() {
     }
     const encoded = fpfPending;
     fpfPending = null;
+    await loadData({ silent: true });   // dados de editor atuais (fpf_id, nome da equipa) antes de comparar
     const { decodePayload, toJogo } = await import('./fpf/parse.js');
     const payload = decodePayload(encoded);
     if (!payload) { showToast('Dados da FPF inválidos.', 'error'); return; }
+    // O favorito já filtrou pela equipa com que foi instalado; o nome das Opções é só alternativa
+    const team = String(payload.team || '').trim() || fpfEquipaNome;
     const today = new Date();
     const byId = new Map();
     payload.matches.forEach(m => {
-        const jogo = toJogo(m, fpfEquipaNome, { today });
+        const jogo = toJogo(m, team, { today });
         if (jogo) byId.set(jogo.fpf_id, jogo);
     });
     fpfRows = [...byId.values()].sort((a, b) => a.data.localeCompare(b.data));
     if (!fpfRows.length) {
-        showToast(`Nenhum jogo de "${fpfEquipaNome}" nos dados recebidos. Confirma o nome da equipa nas Opções.`, 'warning', 7000);
+        showToast(`Nenhum jogo de "${team}" nos dados recebidos. Confirma o nome da equipa nas Opções.`, 'warning', 7000);
         return;
     }
     const existing = new Set(jogosData.map(j => j.fpf_id).filter(Boolean));
