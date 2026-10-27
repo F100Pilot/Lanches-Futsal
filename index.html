@@ -374,6 +374,12 @@
         .check input { width: 22px; height: 22px; accent-color: var(--accent); }
         .input:disabled { opacity: .6; }
         select.input { appearance: auto; }
+        .about { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+        .about dl { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+        .about dl div { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+        .about dt { color: var(--muted); }
+        .about dd { margin: 0; font-weight: 600; text-align: right; }
+        .about .link-btn { align-self: flex-start; }
         .section-title { font-family: var(--display); font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-top: 4px; }
 
         @media (prefers-reduced-motion: reduce) {
@@ -620,6 +626,14 @@
             <button type="button" class="menu-item" id="menuPassword"><svg width="22" height="22" aria-hidden="true"><use href="#i-key"/></svg>Alterar password</button>
             <button type="button" class="menu-item danger" id="logoutBtn"><svg width="22" height="22" aria-hidden="true"><use href="#i-out"/></svg>Terminar sessão</button>
         </div>
+        <section class="about" aria-labelledby="aboutTitle">
+            <span class="section-title" id="aboutTitle">Sobre</span>
+            <dl>
+                <div><dt>Versão</dt><dd id="appVersion"></dd></div>
+                <div><dt>Developer</dt><dd>Paulo Morais</dd></div>
+            </dl>
+            <a class="link-btn" href="https://github.com/F100Pilot/Lanches-Futsal/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Novidades de cada versão <svg width="14" height="14" aria-hidden="true"><use href="#i-ext"/></svg></a>
+        </section>
     </div>
 </div>
 
@@ -754,6 +768,9 @@
  * ============================================================
  */
 
+// Versão da app (ver CHANGELOG.md): atualizar a cada publicação
+const APP_VERSION = '2.3.0';
+const APP_RELEASE_DATE = '2026-10-27';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
 const LANCHE_COLUMNS = 'id,nome,data,entregue,observacoes,atleta_id,jogo_id';
@@ -1929,7 +1946,14 @@ function showFatal(msg) {
     el.lanchesList.innerHTML = emptyHtml(escHtml(msg));
 }
 
+function renderVersion() {
+    const p = parseDate(APP_RELEASE_DATE);
+    const date = p ? `${String(p.d).padStart(2, '0')}/${String(p.mo).padStart(2, '0')}/${p.y}` : APP_RELEASE_DATE;
+    $('appVersion').textContent = `${APP_VERSION} · ${date}`;
+}
+
 async function initApp() {
+    renderVersion();
     readFpfHash();
     let config;
     try {

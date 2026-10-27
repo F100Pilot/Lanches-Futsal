@@ -1,5 +1,7 @@
 # 🍔 Lanches Futsal — Gestão de Lanches da Equipa
 
+Desenvolvido por **Paulo Morais** · versão atual e novidades em [`CHANGELOG.md`](CHANGELOG.md) (também em Opções → Sobre).
+
 Aplicação web para gestão de lanches de uma equipa de Futsal, partilhada via WhatsApp com os pais dos atletas.
 
 **Link:** https://f100pilot.github.io/Lanches-Futsal/
