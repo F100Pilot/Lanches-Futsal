@@ -5,6 +5,11 @@ Desenvolvido por **Paulo Morais**.
 A versão da app está em `index.html` (`APP_VERSION`, `APP_RELEASE_DATE`) e aparece em **Opções → Sobre**.
 Numeração `MAIOR.MENOR.CORREÇÃO`: funcionalidades novas sobem o MENOR, correções sobem a CORREÇÃO.
 
+## 2.3.2 — 27/10/2026
+- Instruções para mudança de série ou de fase na FPF (Opções → Site da FPF e README).
+- Aviso a âmbar no separador Jogos: a hora dos jogos tem sempre de ser confirmada com o Delegado ou a Equipa Técnica.
+- Lista de jogos no formulário do lanche e linha do jogo na lista de lanches também mostram "Carregado vs …" / "… vs Carregado".
+
 ## 2.3.1 — 27/10/2026
 - Jogos mostram as duas equipas, com a da casa primeiro como na FPF (ex.: "Vilafranquense vs Carregado · Fora").
 - Favorito da FPF: pausa maior entre jornadas e, se o site limitar pedidos, espera 10 s e tenta de novo (até 3 vezes).

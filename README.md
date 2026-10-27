@@ -25,7 +25,19 @@ Separadores **Lanches** (lista por mês) e **Jogos** (calendário mensal + lista
    1. Arrastar o botão **📌 Importar para Lanches Futsal** para a barra de favoritos (uma vez; repetir se o nome da equipa mudar).
    2. Abrir o link da competição na FPF e clicar no favorito: lê as séries onde a equipa aparece (nome exato na FPF), todas as jornadas, e abre a app com os jogos da equipa.
    3. Na app, confirmar a lista: cria/atualiza os jogos (data, hora, adversário, casa/fora, pavilhão, fase/série, resultado, link). A hora definida à mão mantém-se quando a FPF não a publica; lanches ligados acompanham a data do jogo.
-   Se a equipa mudar de série dentro da mesma competição, a importação acompanha; se a FPF criar uma competição nova, basta trocar o link.
+   Se a equipa mudar de série dentro da mesma competição, a importação acompanha; se a FPF criar uma competição nova, basta trocar o link (ver abaixo).
+
+### 🔁 Mudança de série ou de fase na FPF
+Instruções também na app: **Opções → Site da FPF → "Mudou de série ou de fase?"**.
+
+- **Nova série na mesma competição** (mesmo link): nada a mudar. Abrir o link da competição e clicar no favorito; a série onde a equipa está é encontrada automaticamente.
+- **Nova fase ou competição** (página nova na FPF, com outro link):
+  1. Em `resultados.fpf.pt`, abrir a página da nova competição/fase onde aparece a equipa.
+  2. Copiar o endereço da barra do browser (começa por `https://resultados.fpf.pt/Competition/Details?`).
+  3. Na app, **Opções → Site da FPF → Link da competição**: colar o novo link e **Guardar**. O botão **FPF** do cabeçalho passa a abrir a página nova.
+  4. Confirmar o **Nome da equipa na FPF** tal como aparece na nova página; se mudou, guardar e **reinstalar o favorito**.
+  5. Abrir o link da competição e clicar no favorito. Os jogos da fase anterior ficam na app.
+- O favorito **só** precisa de ser reinstalado se o nome da equipa mudar (guarda o nome e o endereço da app, não o link da competição).
 
 ---
 

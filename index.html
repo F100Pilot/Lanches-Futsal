@@ -311,6 +311,13 @@
         .cal-day.selected .cal-dot { background: var(--accent-ink); box-shadow: none; }
         .cal-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin-top: 8px; padding: 0 4px; }
         .cal-legend span { display: flex; align-items: center; gap: 5px; }
+        .notice-warn {
+            display: flex; align-items: flex-start; gap: 10px; margin: 0; padding: 12px 14px;
+            border-radius: 14px; background: var(--warn-soft); color: var(--warn);
+            border: 1px solid rgba(251, 191, 36, .35); font-size: 14px; line-height: 1.4;
+        }
+        .notice-warn svg { flex-shrink: 0; margin-top: 1px; }
+        .notice-warn strong { font-weight: 700; }
 
         /* ── GAME CARD ── */
         .game { background: var(--surface); border-radius: 14px; padding: 6px; display: flex; flex-direction: column; }
@@ -353,6 +360,15 @@
         .bookmarklet:active { cursor: grabbing; }
         .steps { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
         .steps strong { color: var(--text); }
+        .help { font-size: 13px; color: var(--muted); background: var(--bg); border-radius: 14px; padding: 0 14px; }
+        .help summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; font-weight: 600; color: var(--text); list-style: none; }
+        .help summary::-webkit-details-marker { display: none; }
+        .help summary::before { content: '›'; display: inline-block; width: 18px; color: var(--accent); font-size: 18px; transition: transform .2s; }
+        .help[open] summary::before { transform: rotate(90deg); }
+        .help p { margin: 0 0 10px; }
+        .help strong { color: var(--text); }
+        .help code { font-size: 12px; overflow-wrap: anywhere; }
+        .help .steps { margin-bottom: 10px; }
         .preview-list { max-height: 40vh; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
         .preview-list div { display: flex; gap: 10px; padding: 6px 8px; border-radius: 8px; background: var(--bg); }
         .preview-list span:first-child { color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; width: 52px; }
@@ -483,6 +499,10 @@
                 <span><i class="cal-dot none"></i>Sem lanche</span>
             </div>
         </section>
+        <p class="notice-warn" role="note">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+            <span>A hora dos jogos tem sempre de ser confirmada com o <strong>Delegado</strong> ou a <strong>Equipa Técnica</strong>.</span>
+        </p>
         <div id="jogosList" class="list" aria-live="polite"></div>
     </div>
 </div>
@@ -625,6 +645,19 @@
             </ol>
             <button type="button" class="btn btn-ghost" id="copyBookmarkletBtn">Copiar código do favorito</button>
             <span class="form-hint">Se não conseguires arrastar: cria um favorito novo e cola o código no campo do endereço. Se mudares o nome da equipa, volta a instalar.</span>
+            <details class="help">
+                <summary>Mudou de série ou de fase?</summary>
+                <p><strong>Nova série na mesma competição</strong> (o link da FPF é o mesmo): não é preciso mudar nada. Abre o link da competição e clica no favorito — ele encontra sozinho a série onde a equipa está.</p>
+                <p><strong>Nova fase ou competição</strong> (a FPF criou uma página nova, com outro link):</p>
+                <ol class="steps">
+                    <li>No site <strong>resultados.fpf.pt</strong>, abre a página da nova competição/fase onde aparece a equipa.</li>
+                    <li>Copia o endereço da barra do browser (começa por <code>https://resultados.fpf.pt/Competition/Details?</code>).</li>
+                    <li>Aqui, em <strong>Link da competição</strong>, apaga o link antigo, cola o novo e carrega em <strong>Guardar</strong>. O botão <strong>FPF</strong> no cabeçalho passa a abrir a página nova.</li>
+                    <li>Confirma que o <strong>Nome da equipa na FPF</strong> está escrito como aparece na nova página. Se mudou, guarda e <strong>reinstala o favorito</strong>.</li>
+                    <li>Abre o link da competição (acima) e clica no favorito. Os jogos da fase anterior ficam na app.</li>
+                </ol>
+                <p>O favorito <strong>não</strong> precisa de ser reinstalado quando muda só o link.</p>
+            </details>
         </form>
         <div class="menu">
             <button type="button" class="menu-item" id="menuPassword"><svg width="22" height="22" aria-hidden="true"><use href="#i-key"/></svg>Alterar password</button>
@@ -773,7 +806,7 @@
  */
 
 // Versão da app (ver CHANGELOG.md): atualizar a cada publicação
-const APP_VERSION = '2.3.1';
+const APP_VERSION = '2.3.2';
 const APP_RELEASE_DATE = '2026-10-27';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
@@ -1000,6 +1033,12 @@ function animateNumber(node, to) {
     requestAnimationFrame(step);
 }
 
+/** "Carregado vs X" (casa) / "X vs Carregado" (fora), em texto simples; "vs X" sem nome da equipa. */
+function matchupText(j) {
+    if (!fpfEquipaNome) return `vs ${j.adversario}`;
+    return j.casa ? `${fpfEquipaNome} vs ${j.adversario}` : `${j.adversario} vs ${fpfEquipaNome}`;
+}
+
 function gameTitleHtml(j) {
     const badge = j.casa
         ? '<span class="badge badge-casa">Casa</span>'
@@ -1072,7 +1111,7 @@ function updateStats() {
 
 function lancheItemHtml(l, index, isPast) {
     const jogo = l.jogo_id != null ? jogoById(l.jogo_id) : null;
-    const sub = [jogo ? `vs ${jogo.adversario}` : '', l.observacoes].filter(Boolean).join(' · ');
+    const sub = [jogo ? matchupText(jogo) : '', l.observacoes].filter(Boolean).join(' · ');
     const note = sub ? `<div class="item-note">${escHtml(sub)}</div>` : '';
     const nome = lancheNome(l);
     const inner = `${dateBlockHtml(l.data)}
@@ -1174,7 +1213,7 @@ function renderCalendar() {
         const games = gamesByDay.get(key) || [];
         const cls = ['cal-day', games.length ? 'has-game' : '', key === today ? 'today' : '', key === selectedDay ? 'selected' : ''].join(' ');
         const label = games.length
-            ? `${d} de ${MONTHS[m - 1]}: ${games.map(g => `jogo vs ${g.adversario}`).join(', ')}`
+            ? `${d} de ${MONTHS[m - 1]}: ${games.map(g => `jogo ${matchupText(g)}`).join(', ')}`
             : `${d} de ${MONTHS[m - 1]}`;
         const dot = games.length ? `<i class="cal-dot ${dayStatus(games)}"></i>` : '';
         html += `<button class="${cls}" data-day="${key}" ${games.length ? '' : 'disabled'}
@@ -1192,7 +1231,7 @@ function jogoCardHtml(j, index) {
             <div class="game-meta">${escHtml(gameMetaText(j))}</div>
         </div>`;
     const main = isEditor
-        ? `<button class="item-main" data-action="edit-jogo" data-jogo="${Number(j.id)}" aria-label="Editar jogo vs ${escHtml(j.adversario)}">${inner}</button>`
+        ? `<button class="item-main" data-action="edit-jogo" data-jogo="${Number(j.id)}" aria-label="Editar jogo ${escHtml(matchupText(j))}">${inner}</button>`
         : `<div class="item-main">${inner}</div>`;
     const assign = isEditor && !lanchesDoJogo(j.id).length
         ? `<button class="link-btn" data-action="assign" data-jogo="${Number(j.id)}">Atribuir lanche</button>` : '';
@@ -1366,7 +1405,7 @@ function fillGameSelect(selectedId) {
     const options = jogosData
         .filter(j => j.data >= today || j.id === selectedId)
         .sort(byDateAsc)
-        .map(j => `<option value="${Number(j.id)}">${escHtml(shortDate(j.data))} · vs ${escHtml(j.adversario)}</option>`);
+        .map(j => `<option value="${Number(j.id)}">${escHtml(shortDate(j.data))} · ${escHtml(matchupText(j))}</option>`);
     el.lunchGame.innerHTML = '<option value="">Sem jogo</option>' + options.join('');
     el.lunchGame.value = selectedId != null ? String(selectedId) : '';
     syncGameDate();
@@ -1530,7 +1569,7 @@ async function saveJogo(e) {
         const stale = lanchesDoJogo(id).filter(l => l.data !== fields.data).map(l => l.id);
         if (stale.length) await runWrite(db.from('lanches').update({ data: fields.data }).in('id', stale).select('id'), 'Erro ao atualizar a data dos lanches.');
     }
-    showToast(id == null ? `Jogo vs ${fields.adversario} adicionado.` : 'Jogo atualizado.', 'success');
+    showToast(id == null ? `Jogo ${matchupText(fields)} adicionado.` : 'Jogo atualizado.', 'success');
     closeModal(el.jogoModal);
     const p = parseDate(fields.data);
     calMonth = { y: p.y, m: p.mo };
