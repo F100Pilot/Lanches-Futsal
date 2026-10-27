@@ -230,6 +230,8 @@
         }
         .grabber { width: 40px; height: 5px; border-radius: 3px; background: var(--line); align-self: center; }
         .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        /* Título e botão de fechar sempre visíveis quando a folha desliza */
+        .sheet > .sheet-head { position: sticky; top: -12px; z-index: 2; margin: -12px -20px 0; padding: 12px 20px 10px; background: var(--surface); }
         .sheet-title { font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1; text-transform: uppercase; letter-spacing: .5px; }
         .sheet-sub { font-size: 14px; color: var(--muted); }
 
@@ -822,7 +824,7 @@
  */
 
 // Versão da app (ver CHANGELOG.md): atualizar a cada publicação
-const APP_VERSION = '2.3.3';
+const APP_VERSION = '2.3.4';
 const APP_RELEASE_DATE = '2026-10-27';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
@@ -969,6 +971,17 @@ function safeUrl(raw) {
     } catch {
         return '';
     }
+}
+
+/** Link de uma competição em resultados.fpf.pt (normalizado), ou '' se não for. */
+function fpfCompetitionUrl(raw) {
+    const url = safeUrl(raw);
+    if (!url) return '';
+    const u = new URL(url);
+    if (u.hostname !== 'resultados.fpf.pt' || u.pathname.toLowerCase() !== '/competition/details'
+        || !/^\d{1,12}$/.test(u.searchParams.get('competitionId') || '')) return '';
+    u.hash = '';
+    return u.href;
 }
 
 function byDateAsc(a, b) { return a.data.localeCompare(b.data) || String(a.hora || '').localeCompare(String(b.hora || '')) || a.id - b.id; }
@@ -1305,7 +1318,7 @@ function renderAtletas() {
 }
 
 function renderHeaderLinks() {
-    const url = safeUrl(fpfEquipaUrl);
+    const url = fpfCompetitionUrl(fpfEquipaUrl);
     el.fpfLink.classList.toggle('hidden', !url);
     if (url) el.fpfLink.href = url;
 }
@@ -1677,9 +1690,9 @@ function confirmDeleteAtleta() {
 // Definições
 async function saveFpfSettings() {
     const raw = el.fpfUrlInput.value.trim();
-    const url = raw ? safeUrl(raw) : null;
+    const url = raw ? fpfCompetitionUrl(raw) : null;
     const nome = el.fpfTeamInput.value.trim();
-    if (raw && !url) { showToast('O link tem de começar por https://', 'warning'); return false; }
+    if (raw && !url) { showToast('Cola o link da página da competição: começa por https://resultados.fpf.pt/Competition/Details?', 'warning'); return false; }
     if (!nome) { showToast('Indica o nome da equipa tal como aparece na FPF.', 'warning'); return false; }
     if (url === (fpfEquipaUrl || null) && nome === fpfEquipaNome) return true;
     const ok = await runWrite(
@@ -1711,7 +1724,7 @@ async function buildBookmarklet() {
 }
 
 async function refreshBookmarklet() {
-    const url = safeUrl(fpfEquipaUrl);
+    const url = fpfCompetitionUrl(fpfEquipaUrl);
     el.fpfOpenLink.href = url || '#';
     try {
         el.bookmarkletLink.href = await buildBookmarklet();
@@ -1966,10 +1979,12 @@ el.loginBtn.addEventListener('click', () => {
     openModal(el.loginModal, el.loginEmail);
 });
 el.userChip.addEventListener('click', () => {
-    el.fpfUrlInput.value = fpfEquipaUrl;
+    const savedUrlOk = !fpfEquipaUrl || fpfCompetitionUrl(fpfEquipaUrl);
+    el.fpfUrlInput.value = savedUrlOk ? fpfEquipaUrl : '';
     el.fpfTeamInput.value = fpfEquipaNome;
     refreshBookmarklet();
     openModal(el.optionsModal);
+    if (!savedUrlOk) showToast('O link da competição guardado não é válido. Cola o link da FPF e carrega em Guardar.', 'warning');
 });
 el.menuAtletas.addEventListener('click', () => openModal(el.atletasModal, el.newAtletaBtn));
 el.menuNovoJogo.addEventListener('click', () => { closeModal(el.optionsModal); setView('jogos'); showJogoModal(); });
