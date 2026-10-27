@@ -46,13 +46,29 @@
 
         .container {
             max-width: 560px; margin: 0 auto;
-            padding: 20px 16px calc(110px + env(safe-area-inset-bottom));
+            padding: 0 16px calc(110px + env(safe-area-inset-bottom));
             display: flex; flex-direction: column; gap: 16px;
         }
         .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; }
 
         /* ── HEADER ── */
-        .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .header {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            /* Fixo no topo (telemóvel): ocupa a largura toda do contentor, incluindo as margens laterais */
+            position: sticky; top: 0; z-index: 40;
+            margin: 0 -16px; padding: calc(14px + env(safe-area-inset-top)) 16px 12px;
+            background: var(--bg); border-bottom: 1px solid transparent;
+            transition: background .2s, border-color .2s, box-shadow .2s;
+        }
+        .header.scrolled {
+            background: rgba(11, 18, 32, .92); border-bottom-color: var(--line);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
+            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            padding-top: calc(8px + env(safe-area-inset-top)); padding-bottom: 8px;
+        }
+        .header.scrolled .brand-status { display: none; }
+        .header.scrolled .brand-name { font-size: 20px; }
+        .header.scrolled .brand-mark { width: 28px; height: 28px; }
         .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
         .brand-mark { flex-shrink: 0; transition: transform .6s var(--ease); }
         .brand:hover .brand-mark { transform: translateY(-2px) scale(1.06); }
@@ -806,7 +822,7 @@
  */
 
 // Versão da app (ver CHANGELOG.md): atualizar a cada publicação
-const APP_VERSION = '2.3.2';
+const APP_VERSION = '2.3.3';
 const APP_RELEASE_DATE = '2026-10-27';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
@@ -2030,6 +2046,17 @@ window.addEventListener('hashchange', () => {
     readFpfHash();
     if (fpfPending) offerFpfImport();
 });
+
+// Cabeçalho fixo: fundo e sombra só depois de começar a deslizar
+const headerEl = document.querySelector('.header');
+// Histerese: compacta aos 40 px e só volta ao normal perto do topo (evita tremer quando a altura muda)
+const syncHeader = () => {
+    const y = window.scrollY;
+    if (y > 40) headerEl.classList.add('scrolled');
+    else if (y < 8) headerEl.classList.remove('scrolled');
+};
+window.addEventListener('scroll', syncHeader, { passive: true });
+syncHeader();
 
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden && db) loadData({ silent: true });

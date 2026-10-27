@@ -5,6 +5,9 @@ Desenvolvido por **Paulo Morais**.
 A versão da app está em `index.html` (`APP_VERSION`, `APP_RELEASE_DATE`) e aparece em **Opções → Sobre**.
 Numeração `MAIOR.MENOR.CORREÇÃO`: funcionalidades novas sobem o MENOR, correções sobem a CORREÇÃO.
 
+## 2.3.3 — 27/10/2026
+- Cabeçalho fixo no topo: entrar/opções, recarregar e FPF sempre à vista ao deslizar (telemóvel).
+
 ## 2.3.2 — 27/10/2026
 - Instruções para mudança de série ou de fase na FPF (Opções → Site da FPF e README).
 - Aviso a âmbar no separador Jogos: a hora dos jogos tem sempre de ser confirmada com o Delegado ou a Equipa Técnica.
