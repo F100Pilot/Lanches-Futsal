@@ -10,6 +10,8 @@
 --   • lanches_log passa a registar todas as tabelas (coluna tabela)
 -- ============================================================
 
+begin;
+
 -- ── FUNÇÕES GENÉRICAS ────────────────────────────────────────
 create function public.touch_row() returns trigger
 language plpgsql set search_path = '' as $$
@@ -164,3 +166,5 @@ grant update (fpf_equipa_url) on public.definicoes to authenticated;
 
 grant select (atleta_id, jogo_id) on public.lanches to anon;
 grant insert (atleta_id, jogo_id), update (atleta_id, jogo_id) on public.lanches to authenticated;
+
+commit;
