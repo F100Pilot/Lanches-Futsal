@@ -1,0 +1,22 @@
+# Projetos Supabase gratuitos são pausados após 7 dias sem atividade.
+# Este workflow faz uma leitura pública a cada 3 dias para manter a base de dados ativa.
+name: Supabase keepalive
+
+on:
+  schedule:
+    - cron: '17 6 */3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ler 1 registo
+        run: |
+          url=$(jq -r .supabaseUrl config.json)
+          key=$(jq -r .supabaseKey config.json)
+          curl --fail --silent --show-error "$url/rest/v1/lanches?select=id&limit=1" -H "apikey: $key"
