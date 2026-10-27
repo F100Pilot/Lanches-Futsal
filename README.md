@@ -16,7 +16,7 @@ Aplicação web para gestão de lanches de uma equipa de Futsal, partilhada via 
 1. Clicar em 🔐 no cabeçalho.
 2. Entrar com **email + password** pessoais.
 3. Adicionar, editar, marcar como entregue e eliminar lanches.
-4. ⏻ termina a sessão.
+4. O círculo com a inicial permite alterar a password; o botão de saída termina a sessão.
 
 ---
 
@@ -53,9 +53,10 @@ Supabase: Auth (2 editores) + Postgres (RLS) → lanches, lanches_log, editors
 Projeto: `lanches-futsal`
 
 ### Configuração inicial (uma vez)
-1. **Authentication → Sign In / Providers → Email**: desativar *Allow new users to sign up*.
-2. **Authentication → Users → Add user → Create new user**: criar as 2 contas (marcar *Auto Confirm User*), cada pessoa com a sua password.
-3. **SQL Editor**:
+1. **Authentication → Sign In / Providers → User Signups**: desativar *Allow new users to sign up*.
+2. **Authentication → Sign In / Providers → Email**: *Minimum password length* = 10.
+3. **Authentication → Users → Add user → Create new user**: criar as 2 contas (marcar *Auto Confirm User*) com uma password temporária; cada editor muda-a na app (tocar no círculo com a inicial → *Alterar password*).
+4. **SQL Editor**:
    ```sql
    insert into public.editors (email) values ('admin@exemplo.pt'), ('colega@exemplo.pt');
    ```
