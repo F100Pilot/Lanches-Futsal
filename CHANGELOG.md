@@ -5,6 +5,10 @@ Desenvolvido por **Paulo Morais**.
 A versão da app está em `index.html` (`APP_VERSION`, `APP_RELEASE_DATE`) e aparece em **Opções → Sobre**.
 Numeração `MAIOR.MENOR.CORREÇÃO`: funcionalidades novas sobem o MENOR, correções sobem a CORREÇÃO.
 
+## 2.3.4 — 27/10/2026
+- Folhas (Opções, Atletas, formulários): título e botão de fechar ficam fixos no topo ao deslizar.
+- Link da competição só aceita páginas `https://resultados.fpf.pt/Competition/Details?…`; um link inválido já guardado é assinalado nas Opções.
+
 ## 2.3.3 — 27/10/2026
 - Cabeçalho fixo no topo: entrar/opções, recarregar e FPF sempre à vista ao deslizar (telemóvel).
 
