@@ -547,7 +547,7 @@
         </p>
         <div class="btn-row jogos-actions">
             <button type="button" class="btn btn-ghost admin-only" id="escalaBtn"><svg width="20" height="20" aria-hidden="true"><use href="#i-users"/></svg>Gerar escala</button>
-            <a class="btn btn-ghost hidden" id="shareMonthBtn" target="_blank" rel="noopener noreferrer"><svg width="20" height="20" aria-hidden="true"><use href="#i-chat"/></svg>Partilhar mês</a>
+            <a class="btn btn-ghost admin-only hidden" id="shareMonthBtn" target="_blank" rel="noopener noreferrer"><svg width="20" height="20" aria-hidden="true"><use href="#i-chat"/></svg>Partilhar mês</a>
         </div>
         <div id="jogosList" class="list" aria-live="polite"></div>
     </div>
@@ -872,7 +872,7 @@
  */
 
 // Versão da app (ver CHANGELOG.md): atualizar a cada publicação
-const APP_VERSION = '2.4.2';
+const APP_VERSION = '2.4.3';
 const APP_RELEASE_DATE = '2026-10-28';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
@@ -1104,7 +1104,9 @@ function jogosShareText(title, games) {
     return [`⚽ ${title}`, '', ...lines, '', HORA_AVISO, location.origin + location.pathname].join('\n');
 }
 
+/** Botão de partilha no WhatsApp: só para editores. */
 function shareLinkHtml(j, withLabel) {
+    if (!isEditor) return '';
     const label = withLabel ? 'WhatsApp' : '';
     return `<a class="link-btn" href="${escHtml(whatsAppUrl(jogoShareText(j)))}" target="_blank" rel="noopener noreferrer"
         aria-label="Partilhar jogo ${escHtml(matchupText(j))} no WhatsApp"><svg width="16" height="16" aria-hidden="true"><use href="#i-chat"/></svg>${label}</a>`;

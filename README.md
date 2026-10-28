@@ -16,7 +16,7 @@ Aplicação web para gestão de lanches de uma equipa de Futsal, partilhada via 
 
 Separadores **Lanches** (lista por mês) e **Jogos** (calendário mensal + lista de jogos, com quem leva o lanche). O botão **FPF** no cabeçalho abre a página da competição no site da FPF.
 
-Botões de **WhatsApp** (próximo jogo, cada jogo e **Partilhar mês** no separador Jogos) abrem o WhatsApp com a mensagem pronta: jogo, pavilhão, quem leva o lanche e o aviso de confirmar a hora.
+Só para editores: botões de **WhatsApp** (próximo jogo, cada jogo e **Partilhar mês** no separador Jogos) abrem o WhatsApp com a mensagem pronta: jogo, pavilhão, quem leva o lanche e o aviso de confirmar a hora.
 
 ### ✏️ Editores (máx. 2: administrador + colega)
 1. Clicar no cadeado no cabeçalho e entrar com **email + password** pessoais.
