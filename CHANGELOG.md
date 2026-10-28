@@ -5,6 +5,9 @@ Desenvolvido por **Paulo Morais**.
 A versão da app está em `index.html` (`APP_VERSION`, `APP_RELEASE_DATE`) e aparece em **Opções → Sobre**.
 Numeração `MAIOR.MENOR.CORREÇÃO`: funcionalidades novas sobem o MENOR, correções sobem a CORREÇÃO.
 
+## 2.4.1 — 28/10/2026
+- Faixa no topo de todos os ecrãs (incluindo folhas e janelas) com a versão e o developer: Paulo Morais.
+
 ## 2.4.0 — 28/10/2026
 - Escala de lanches automática (Jogos → Gerar escala, ou Opções): distribui os próximos jogos sem lanche pelos atletas ativos, começando por quem levou menos. Antes de gravar dá para mudar o atleta de cada jogo, tirar jogos da escala e redistribuir. Os jogos às 11:00 ficam sem lanche por omissão (hora configurável).
 - Partilhar no WhatsApp: próximo jogo, cada jogo e os jogos do mês, com o atleta do lanche e o aviso da hora.
