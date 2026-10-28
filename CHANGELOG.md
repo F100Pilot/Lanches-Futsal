@@ -5,6 +5,9 @@ Desenvolvido por **Paulo Morais**.
 A versão da app está em `index.html` (`APP_VERSION`, `APP_RELEASE_DATE`) e aparece em **Opções → Sobre**.
 Numeração `MAIOR.MENOR.CORREÇÃO`: funcionalidades novas sobem o MENOR, correções sobem a CORREÇÃO.
 
+## 2.4.3 — 28/10/2026
+- Botões de partilha no WhatsApp só aparecem para os editores.
+
 ## 2.4.2 — 28/10/2026
 - Mensagens do WhatsApp incluem o link do mapa (Google Maps) do pavilhão de cada jogo (abreviaturas da FPF como "Pav"/"Mun" são expandidas na pesquisa).
 
