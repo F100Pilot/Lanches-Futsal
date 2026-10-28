@@ -5,6 +5,11 @@ Desenvolvido por **Paulo Morais**.
 A versão da app está em `index.html` (`APP_VERSION`, `APP_RELEASE_DATE`) e aparece em **Opções → Sobre**.
 Numeração `MAIOR.MENOR.CORREÇÃO`: funcionalidades novas sobem o MENOR, correções sobem a CORREÇÃO.
 
+## 2.4.0 — 28/10/2026
+- Escala de lanches automática (Jogos → Gerar escala, ou Opções): distribui os próximos jogos sem lanche pelos atletas ativos, começando por quem levou menos. Antes de gravar dá para mudar o atleta de cada jogo, tirar jogos da escala e redistribuir. Os jogos às 11:00 ficam sem lanche por omissão (hora configurável).
+- Partilhar no WhatsApp: próximo jogo, cada jogo e os jogos do mês, com o atleta do lanche e o aviso da hora.
+- Atletas: número de lanches de cada um (e quantos entregues) e a data do próximo.
+
 ## 2.3.4 — 27/10/2026
 - Folhas (Opções, Atletas, formulários): título e botão de fechar ficam fixos no topo ao deslizar.
 - Link da competição só aceita páginas `https://resultados.fpf.pt/Competition/Details?…`; um link inválido já guardado é assinalado nas Opções.

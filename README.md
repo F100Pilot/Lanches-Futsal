@@ -16,11 +16,14 @@ Aplicação web para gestão de lanches de uma equipa de Futsal, partilhada via 
 
 Separadores **Lanches** (lista por mês) e **Jogos** (calendário mensal + lista de jogos, com quem leva o lanche). O botão **FPF** no cabeçalho abre a página da competição no site da FPF.
 
+Botões de **WhatsApp** (próximo jogo, cada jogo e **Partilhar mês** no separador Jogos) abrem o WhatsApp com a mensagem pronta: jogo, pavilhão, quem leva o lanche e o aviso de confirmar a hora.
+
 ### ✏️ Editores (máx. 2: administrador + colega)
 1. Clicar no cadeado no cabeçalho e entrar com **email + password** pessoais.
 2. **+** adiciona um lanche (separador Lanches) ou um jogo (separador Jogos).
 3. Tocar num lanche/jogo para editar ou eliminar; tocar no estado para marcar entregue/pendente; "Atribuir lanche" num jogo sem lanche.
-4. O círculo com a inicial abre as **Opções**: atletas (nome, nº, ativo, contacto do encarregado), novo jogo, site da FPF, alterar password, terminar sessão.
+4. O círculo com a inicial abre as **Opções**: atletas (nome, nº, ativo, contacto do encarregado, nº de lanches e próximo), escala de lanches, novo jogo, site da FPF, alterar password, terminar sessão.
+   **Escala de lanches** (Jogos → *Gerar escala*): propõe um atleta para cada próximo jogo sem lanche, começando por quem levou menos. Os jogos à hora indicada (por omissão 11:00) ficam sem lanche. Antes de gravar pode-se trocar o atleta, incluir/excluir jogos ou redistribuir; depois cada lanche edita-se como qualquer outro.
 5. **Importar jogos da FPF** (Opções → Site da FPF). O site da FPF só responde a browsers, por isso a leitura é feita no computador do editor com um botão de favoritos:
    1. Arrastar o botão **📌 Importar para Lanches Futsal** para a barra de favoritos (uma vez; repetir se o nome da equipa mudar).
    2. Abrir o link da competição na FPF e clicar no favorito: lê as séries onde a equipa aparece (nome exato na FPF), todas as jornadas, e abre a app com os jogos da equipa.

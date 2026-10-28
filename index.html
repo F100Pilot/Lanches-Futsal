@@ -415,6 +415,16 @@
         .about dt { color: var(--muted); }
         .about dd { margin: 0; font-weight: 600; text-align: right; }
         .about .link-btn { align-self: flex-start; }
+        .jogos-actions .btn { height: 46px; font-size: 15px; text-decoration: none; }
+        .hero-links { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .escala-list { display: flex; flex-direction: column; gap: 8px; }
+        .escala-row { background: var(--bg); border-radius: 14px; padding: 4px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+        .escala-row.off { opacity: .6; padding-bottom: 4px; }
+        .escala-row .check { align-items: flex-start; padding-top: 8px; }
+        .escala-row .check input { margin-top: 1px; flex-shrink: 0; }
+        .escala-when { display: block; }
+        .escala-vs { display: block; font-size: 12px; font-weight: 500; color: var(--muted); overflow-wrap: anywhere; }
+        .escala-none { font-size: 13px; color: var(--muted); padding: 0 0 6px 32px; }
         .section-title { font-family: var(--display); font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-top: 4px; }
 
         @media (prefers-reduced-motion: reduce) {
@@ -436,6 +446,7 @@
     <symbol id="i-out" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></g></symbol>
     <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 19.5l1.3-3.9A8 8 0 1 1 8.6 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
 </svg>
 
@@ -521,6 +532,10 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
             <span>A hora dos jogos tem sempre de ser confirmada com o <strong>Delegado</strong> ou a <strong>Equipa Técnica</strong>.</span>
         </p>
+        <div class="btn-row jogos-actions">
+            <button type="button" class="btn btn-ghost admin-only" id="escalaBtn"><svg width="20" height="20" aria-hidden="true"><use href="#i-users"/></svg>Gerar escala</button>
+            <a class="btn btn-ghost hidden" id="shareMonthBtn" target="_blank" rel="noopener noreferrer"><svg width="20" height="20" aria-hidden="true"><use href="#i-chat"/></svg>Partilhar mês</a>
+        </div>
         <div id="jogosList" class="list" aria-live="polite"></div>
     </div>
 </div>
@@ -571,6 +586,25 @@
         <button type="submit" class="btn btn-primary" id="saveBtn">Adicionar lanche</button>
         <button type="button" class="btn btn-danger hidden" id="deleteBtn">Eliminar lanche</button>
     </form>
+</div>
+
+<!-- FOLHA: ESCALA DE LANCHES -->
+<div class="overlay hidden" id="escalaModal">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="escalaTitle">
+        <div class="grabber" aria-hidden="true"></div>
+        <div class="sheet-head">
+            <h2 class="sheet-title" id="escalaTitle">Escala de lanches</h2>
+            <button type="button" class="icon-btn" data-close="escalaModal" aria-label="Fechar"><svg width="18" height="18" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+        <p class="sheet-sub">Jogos a partir de hoje ainda sem lanche. Os atletas que levaram menos lanches vêm primeiro (entre parênteses, os lanches já registados). Muda o que quiseres antes de gravar; depois cada lanche continua editável.</p>
+        <label class="field">
+            <span class="field-label">Jogos sem lanche às <small>(vazio = todos com lanche)</small></span>
+            <input class="input" type="time" id="escalaHora">
+        </label>
+        <div class="escala-list" id="escalaList"></div>
+        <button type="button" class="btn btn-ghost" id="escalaRedoBtn">Redistribuir automaticamente</button>
+        <button type="button" class="btn btn-primary" id="escalaSaveBtn">Gravar</button>
+    </div>
 </div>
 
 <!-- FOLHA: JOGO -->
@@ -640,6 +674,7 @@
         </div>
         <div class="menu">
             <button type="button" class="menu-item" id="menuAtletas"><svg width="22" height="22" aria-hidden="true"><use href="#i-users"/></svg>Atletas<span class="menu-hint" id="menuAtletasHint"></span></button>
+            <button type="button" class="menu-item" id="menuEscala"><svg width="22" height="22" aria-hidden="true"><use href="#i-cal"/></svg>Escala de lanches</button>
             <button type="button" class="menu-item" id="menuNovoJogo"><svg width="22" height="22" aria-hidden="true"><use href="#i-cal"/></svg>Novo jogo</button>
         </div>
         <form class="field" id="fpfForm">
@@ -824,8 +859,8 @@
  */
 
 // Versão da app (ver CHANGELOG.md): atualizar a cada publicação
-const APP_VERSION = '2.3.4';
-const APP_RELEASE_DATE = '2026-10-27';
+const APP_VERSION = '2.4.0';
+const APP_RELEASE_DATE = '2026-10-28';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
 const LANCHE_COLUMNS = 'id,nome,data,entregue,observacoes,atleta_id,jogo_id';
@@ -857,6 +892,7 @@ let editTarget = null;         // lanche em edição (null = novo)
 let jogoTarget = null;
 let atletaTarget = null;
 let pendingDelete = null;      // função a executar ao confirmar
+let escalaRows = [];           // proposta da escala: { jogo, include, atletaId, manual }
 let refreshTimer = null;
 
 // ── DOM REFS ───────────────────────────────────────────────
@@ -869,6 +905,9 @@ const el = {
     totalCount: $('totalCount'), deliveredCount: $('deliveredCount'), pendingCount: $('pendingCount'),
     progressFill: $('progressFill'), progressPct: $('progressPct'),
     lanchesList: $('lanchesList'), searchInput: $('searchInput'),
+    escalaBtn: $('escalaBtn'), shareMonthBtn: $('shareMonthBtn'), menuEscala: $('menuEscala'),
+    escalaModal: $('escalaModal'), escalaHora: $('escalaHora'), escalaList: $('escalaList'),
+    escalaRedoBtn: $('escalaRedoBtn'), escalaSaveBtn: $('escalaSaveBtn'),
     calPrev: $('calPrev'), calNext: $('calNext'), calTitle: $('calTitle'), calGrid: $('calGrid'), jogosList: $('jogosList'),
     addBtn: $('addBtn'),
     lancheModal: $('lancheModal'), lancheForm: $('lancheForm'), lancheTitle: $('lancheTitle'),
@@ -1001,6 +1040,51 @@ function lanchesDoJogo(jogoId) {
     return lanchesData.filter(l => l.jogo_id === jogoId);
 }
 
+/** Atleta de um lanche: pela ligação, ou pelo nome nos lanches antigos sem ligação. */
+function atletaDoLanche(l) {
+    if (l.atleta_id != null) return atletaById(l.atleta_id) || null;
+    const nome = String(l.nome || '').toLowerCase();
+    return atletasData.find(a => a.nome.toLowerCase() === nome) || null;
+}
+
+function lanchesDoAtleta(a) {
+    return lanchesData.filter(l => atletaDoLanche(l) === a);
+}
+
+// ── PARTILHA (WhatsApp) ────────────────────────────────────
+const HORA_AVISO = '⚠️ A hora tem sempre de ser confirmada com o Delegado ou a Equipa Técnica.';
+
+function whatsAppUrl(text) {
+    return 'https://wa.me/?text=' + encodeURIComponent(text);
+}
+
+function lancheShareText(j) {
+    const nomes = lanchesDoJogo(j.id).map(lancheNome);
+    return nomes.length ? `🥪 Lanche: ${nomes.join(', ')}` : '🥪 Sem lanche';
+}
+
+function jogoShareText(j) {
+    return [
+        `⚽ ${shortDate(j.data)}${j.hora ? ' · ' + hhmm(j.hora) : ''}`,
+        `${matchupText(j)} (${j.casa ? 'Casa' : 'Fora'})`,
+        j.local ? `📍 ${j.local}` : '',
+        j.resultado ? `Resultado: ${j.resultado}` : '',
+        lancheShareText(j),
+    ].filter(Boolean).concat('', HORA_AVISO, location.origin + location.pathname).join('\n');
+}
+
+function jogosShareText(title, games) {
+    const lines = games.map(j =>
+        `• ${shortDate(j.data)}${j.hora ? ' · ' + hhmm(j.hora) : ''} — ${matchupText(j)} (${j.casa ? 'Casa' : 'Fora'})\n   ${lancheShareText(j)}`);
+    return [`⚽ ${title}`, '', ...lines, '', HORA_AVISO, location.origin + location.pathname].join('\n');
+}
+
+function shareLinkHtml(j, withLabel) {
+    const label = withLabel ? 'WhatsApp' : '';
+    return `<a class="link-btn" href="${escHtml(whatsAppUrl(jogoShareText(j)))}" target="_blank" rel="noopener noreferrer"
+        aria-label="Partilhar jogo ${escHtml(matchupText(j))} no WhatsApp"><svg width="16" height="16" aria-hidden="true"><use href="#i-chat"/></svg>${label}</a>`;
+}
+
 // ── MODALS ─────────────────────────────────────────────────
 function openModal(modal, focusEl) {
     modal.classList.remove('hidden');
@@ -1014,6 +1098,7 @@ function closeModal(modal) {
     if (modal === el.atletaModal) atletaTarget = null;
     if (modal === el.confirmModal) pendingDelete = null;
     if (modal === el.fpfModal) fpfRows = [];
+    if (modal === el.escalaModal) escalaRows = [];
 }
 
 function askDelete(html, action) {
@@ -1104,7 +1189,10 @@ function renderHero() {
                     <div class="hero-name">${gameTitleHtml(nextGame)}</div>
                     <div class="hero-note">${escHtml([nextGame.local, nextGame.competicao].filter(Boolean).join(' · '))}</div>
                 </div>
-                ${fpf ? `<a class="link-btn" href="${escHtml(fpf)}" target="_blank" rel="noopener noreferrer">FPF <svg width="14" height="14" aria-hidden="true"><use href="#i-ext"/></svg></a>` : ''}
+                <div class="hero-links">
+                    ${shareLinkHtml(nextGame, true)}
+                    ${fpf ? `<a class="link-btn" href="${escHtml(fpf)}" target="_blank" rel="noopener noreferrer">FPF <svg width="14" height="14" aria-hidden="true"><use href="#i-ext"/></svg></a>` : ''}
+                </div>
             </div>
             <div class="hero-foot" data-jogo="${Number(nextGame.id)}">${lancheLineHtml(nextGame)}</div>`;
         el.hero.classList.remove('hidden');
@@ -1270,7 +1358,7 @@ function jogoCardHtml(j, index) {
     return `
         <article class="game ${past}" style="--i:${Math.min(index, 12)}">
             <div style="display:flex;align-items:center">${main}${score}</div>
-            <div class="game-foot" data-jogo="${Number(j.id)}">${lancheLineHtml(j)}${assign}${link}</div>
+            <div class="game-foot" data-jogo="${Number(j.id)}">${lancheLineHtml(j)}${assign}${shareLinkHtml(j, false)}${link}</div>
         </article>`;
 }
 
@@ -1281,6 +1369,11 @@ function renderJogos({ animate = true } = {}) {
     const games = jogosData
         .filter(j => selectedDay ? j.data === selectedDay : j.data.startsWith(prefix))
         .sort(byDateAsc);
+    el.shareMonthBtn.classList.toggle('hidden', !games.length);
+    if (games.length) {
+        const title = selectedDay ? `Jogo de ${shortDate(selectedDay)}` : `Jogos de ${MONTHS[m - 1]} ${y}`;
+        el.shareMonthBtn.href = whatsAppUrl(jogosShareText(title, games));
+    }
     if (!games.length) {
         const hint = isEditor ? '<br>Usa o botão + para adicionar um jogo.' : '';
         el.jogosList.innerHTML = emptyHtml(`Sem jogos em ${MONTHS[m - 1]}.${hint}`);
@@ -1300,17 +1393,25 @@ function renderAtletas() {
         el.atletasList.innerHTML = emptyHtml('Ainda não há atletas.');
         return;
     }
+    const today = todayStr();
     const sorted = [...atletasData].sort((a, b) =>
         (b.ativo - a.ativo) || ((a.numero ?? 999) - (b.numero ?? 999)) || a.nome.localeCompare(b.nome, 'pt'));
     el.atletasList.innerHTML = sorted.map(a => {
         const c = contactos.get(a.id);
         const sub = [c && c.encarregado_nome, c && c.telefone].filter(Boolean).join(' · ') || 'Sem contacto do encarregado';
+        const ls = lanchesDoAtleta(a);
+        const entregues = ls.filter(l => l.entregue).length;
+        const proximo = ls.filter(l => l.data >= today).sort(byDateAsc)[0];
+        const count = ls.length
+            ? `${ls.length} ${ls.length === 1 ? 'lanche' : 'lanches'} (${entregues} ${entregues === 1 ? 'entregue' : 'entregues'})${proximo ? ' · próximo ' + formatDateDisplay(proximo.data) : ''}`
+            : 'Ainda sem lanches';
         return `
             <button class="row ${a.ativo ? '' : 'inactive'}" data-atleta="${Number(a.id)}" aria-label="Editar ${escHtml(a.nome)}">
                 <span class="row-num">${a.numero ?? '–'}</span>
                 <span class="row-info">
                     <span class="row-title">${escHtml(a.nome)}</span>
                     ${a.ativo ? '' : '<span class="badge badge-off">Inativo</span>'}
+                    <span class="row-sub" style="display:block">${escHtml(count)}</span>
                     <span class="row-sub" style="display:block">${escHtml(sub)}</span>
                 </span>
             </button>`;
@@ -1542,6 +1643,149 @@ function confirmDeleteLanche() {
         closeModal(el.lancheModal);
         const ok = await runWrite(db.from('lanches').delete().eq('id', id).select('id'), 'Erro ao eliminar.');
         if (ok) showToast('Lanche eliminado.', 'info');
+        await loadData({ silent: true });
+    });
+}
+
+// Escala automática de lanches
+const ESCALA_HORA_KEY = 'lanches-futsal:sem-lanche-hora';
+const ESCALA_HORA_DEFAULT = '11:00';   // normalmente os jogos às 11:00 não têm lanche
+
+function readEscalaHora() {
+    try {
+        const v = localStorage.getItem(ESCALA_HORA_KEY);
+        return v == null ? ESCALA_HORA_DEFAULT : v;
+    } catch {
+        return ESCALA_HORA_DEFAULT;
+    }
+}
+
+function writeEscalaHora(v) {
+    try { localStorage.setItem(ESCALA_HORA_KEY, v); } catch { /* sem armazenamento: só nesta sessão */ }
+}
+
+const atletasAtivos = () => atletasData.filter(a => a.ativo);
+
+function byNumeroNome(a, b) {
+    return ((a.numero ?? 999) - (b.numero ?? 999)) || a.nome.localeCompare(b.nome, 'pt');
+}
+
+/** Lanches já registados por atleta ativo: { count, last } (last = data do mais recente). */
+function lancheLoad() {
+    const load = new Map(atletasAtivos().map(a => [a.id, { count: 0, last: '' }]));
+    lanchesData.forEach(l => {
+        const a = atletaDoLanche(l);
+        const s = a && load.get(a.id);
+        if (!s) return;
+        s.count++;
+        if (l.data > s.last) s.last = l.data;
+    });
+    return load;
+}
+
+/**
+ * Atribui os jogos incluídos sem escolha manual, por ordem de data, a quem tem menos lanches
+ * (desempate: quem levou há mais tempo, depois número e nome). As escolhas manuais contam primeiro.
+ */
+function distributeEscala() {
+    const load = lancheLoad();
+    escalaRows.forEach(r => {
+        const s = r.include && r.manual && load.get(r.atletaId);
+        if (!s) return;
+        s.count++;
+        if (r.jogo.data > s.last) s.last = r.jogo.data;
+    });
+    escalaRows.forEach(r => {
+        if (!r.include || (r.manual && load.has(r.atletaId))) return;
+        r.manual = false;
+        r.atletaId = [...load.keys()].sort((ia, ib) => {
+            const a = load.get(ia), b = load.get(ib);
+            return (a.count - b.count) || a.last.localeCompare(b.last) || byNumeroNome(atletaById(ia), atletaById(ib));
+        })[0] ?? null;
+        if (r.atletaId == null) return;
+        const s = load.get(r.atletaId);
+        s.count++;
+        s.last = r.jogo.data;
+    });
+}
+
+/** Jogos à hora `hora` ficam sem lanche; os da hora anterior voltam a ter. Os outros mantêm a escolha. */
+function applyEscalaHora(hora, previous = null) {
+    escalaRows.forEach(r => {
+        const h = hhmm(r.jogo.hora);
+        if (previous == null) r.include = !hora || h !== hora;
+        else if (hora && h === hora) r.include = false;
+        else if (previous && h === previous) r.include = true;
+    });
+}
+
+function renderEscala() {
+    const load = lancheLoad();
+    const options = atletasAtivos().sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
+        .map(a => ({ id: a.id, label: `${a.nome} (${load.get(a.id).count})` }));
+    el.escalaList.innerHTML = escalaRows.map((r, i) => {
+        const j = r.jogo;
+        const when = `${shortDate(j.data)}${j.hora ? ' · ' + hhmm(j.hora) : ' · hora por definir'}`;
+        const select = r.include
+            ? `<select class="input" data-escala="${i}" aria-label="Atleta do lanche de ${escHtml(when)}">${options.map(o =>
+                `<option value="${o.id}"${o.id === r.atletaId ? ' selected' : ''}>${escHtml(o.label)}</option>`).join('')}</select>`
+            : '<div class="escala-none">Sem lanche neste jogo</div>';
+        return `
+            <div class="escala-row ${r.include ? '' : 'off'}">
+                <label class="check">
+                    <input type="checkbox" data-escala-incl="${i}" ${r.include ? 'checked' : ''}>
+                    <span><span class="escala-when">${escHtml(when)}</span><span class="escala-vs">${escHtml(matchupText(j))} · ${j.casa ? 'Casa' : 'Fora'}</span></span>
+                </label>
+                ${select}
+            </div>`;
+    }).join('');
+    const n = escalaRows.filter(r => r.include && r.atletaId != null).length;
+    el.escalaSaveBtn.textContent = n ? `Gravar ${n} ${n === 1 ? 'lanche' : 'lanches'}` : 'Nada para gravar';
+    el.escalaSaveBtn.disabled = !n;
+}
+
+function showEscalaModal() {
+    if (!atletasAtivos().length) {
+        showToast('Adiciona primeiro atletas ativos (Opções → Atletas).', 'warning');
+        return;
+    }
+    const today = todayStr();
+    const jogos = jogosData.filter(j => j.data >= today && !lanchesDoJogo(j.id).length).sort(byDateAsc);
+    if (!jogos.length) {
+        showToast('Todos os próximos jogos já têm lanche atribuído.', 'info');
+        return;
+    }
+    escalaRows = jogos.map(jogo => ({ jogo, include: true, atletaId: null, manual: false }));
+    el.escalaHora.value = readEscalaHora();
+    el.escalaHora.dataset.prev = el.escalaHora.value;
+    applyEscalaHora(el.escalaHora.value);
+    distributeEscala();
+    renderEscala();
+    openModal(el.escalaModal);
+}
+
+async function saveEscala() {
+    await withBusyButton(el.escalaSaveBtn, 'A gravar...', async () => {
+        // Outro editor pode ter atribuído entretanto: esses jogos ficam como estão
+        await loadData({ silent: true });
+        const chosen = escalaRows.filter(r => r.include && r.atletaId != null);
+        const rows = chosen
+            .filter(r => jogoById(r.jogo.id) && !lanchesDoJogo(r.jogo.id).length && atletaById(r.atletaId))
+            .map(r => {
+                const a = atletaById(r.atletaId);
+                return { nome: a.nome, atleta_id: a.id, jogo_id: r.jogo.id, data: jogoById(r.jogo.id).data, entregue: false, observacoes: '' };
+            });
+        if (!rows.length) {
+            showToast('Esses jogos já têm lanche atribuído.', 'info');
+            closeModal(el.escalaModal);
+            return;
+        }
+        const saved = await runWrite(db.from('lanches').insert(rows).select('id'), 'Erro ao gravar a escala de lanches.');
+        if (!saved) return;
+        const skipped = chosen.length - rows.length;
+        showToast(`${saved.length} ${saved.length === 1 ? 'lanche atribuído' : 'lanches atribuídos'}.`
+            + (skipped ? ` ${skipped} já tinham lanche.` : ''), 'success', 6000);
+        closeModal(el.escalaModal);
         await loadData({ silent: true });
     });
 }
@@ -1987,6 +2231,30 @@ el.userChip.addEventListener('click', () => {
     if (!savedUrlOk) showToast('O link da competição guardado não é válido. Cola o link da FPF e carrega em Guardar.', 'warning');
 });
 el.menuAtletas.addEventListener('click', () => openModal(el.atletasModal, el.newAtletaBtn));
+el.escalaBtn.addEventListener('click', showEscalaModal);
+el.menuEscala.addEventListener('click', () => { closeModal(el.optionsModal); setView('jogos'); showEscalaModal(); });
+el.escalaHora.addEventListener('change', () => {
+    writeEscalaHora(el.escalaHora.value);
+    applyEscalaHora(el.escalaHora.value, el.escalaHora.dataset.prev || '');
+    el.escalaHora.dataset.prev = el.escalaHora.value;
+    distributeEscala();
+    renderEscala();
+});
+el.escalaList.addEventListener('change', e => {
+    const incl = e.target.closest('[data-escala-incl]');
+    const pick = e.target.closest('[data-escala]');
+    if (incl) escalaRows[Number(incl.dataset.escalaIncl)].include = incl.checked;
+    if (pick) Object.assign(escalaRows[Number(pick.dataset.escala)], { atletaId: Number(pick.value), manual: true });
+    if (!incl && !pick) return;
+    distributeEscala();
+    renderEscala();
+});
+el.escalaRedoBtn.addEventListener('click', () => {
+    escalaRows.forEach(r => { r.manual = false; });
+    distributeEscala();
+    renderEscala();
+});
+el.escalaSaveBtn.addEventListener('click', saveEscala);
 el.menuNovoJogo.addEventListener('click', () => { closeModal(el.optionsModal); setView('jogos'); showJogoModal(); });
 el.menuPassword.addEventListener('click', showAccountModal);
 el.logoutBtn.addEventListener('click', logout);
