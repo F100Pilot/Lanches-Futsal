@@ -872,7 +872,7 @@
  */
 
 // Versão da app (ver CHANGELOG.md): atualizar a cada publicação
-const APP_VERSION = '2.4.1';
+const APP_VERSION = '2.4.2';
 const APP_RELEASE_DATE = '2026-10-28';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
@@ -1071,6 +1071,15 @@ function whatsAppUrl(text) {
     return 'https://wa.me/?text=' + encodeURIComponent(text);
 }
 
+/** Pesquisa do pavilhão no Google Maps (abre a app de mapas no telemóvel). A FPF abrevia os nomes ("Pav Mun …"). */
+function mapsUrl(local) {
+    const query = local
+        .replace(/\bPav\b\.?/gi, 'Pavilhão')
+        .replace(/\bMun\b\.?/gi, 'Municipal')
+        .replace(/\bDesp\b\.?/gi, 'Desportivo');
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${query}, Portugal`);
+}
+
 function lancheShareText(j) {
     const nomes = lanchesDoJogo(j.id).map(lancheNome);
     return nomes.length ? `🥪 Lanche: ${nomes.join(', ')}` : '🥪 Sem lanche';
@@ -1081,6 +1090,7 @@ function jogoShareText(j) {
         `⚽ ${shortDate(j.data)}${j.hora ? ' · ' + hhmm(j.hora) : ''}`,
         `${matchupText(j)} (${j.casa ? 'Casa' : 'Fora'})`,
         j.local ? `📍 ${j.local}` : '',
+        j.local ? `🗺️ ${mapsUrl(j.local)}` : '',
         j.resultado ? `Resultado: ${j.resultado}` : '',
         lancheShareText(j),
     ].filter(Boolean).concat('', HORA_AVISO, location.origin + location.pathname).join('\n');
@@ -1088,7 +1098,9 @@ function jogoShareText(j) {
 
 function jogosShareText(title, games) {
     const lines = games.map(j =>
-        `• ${shortDate(j.data)}${j.hora ? ' · ' + hhmm(j.hora) : ''} — ${matchupText(j)} (${j.casa ? 'Casa' : 'Fora'})\n   ${lancheShareText(j)}`);
+        `• ${shortDate(j.data)}${j.hora ? ' · ' + hhmm(j.hora) : ''} — ${matchupText(j)} (${j.casa ? 'Casa' : 'Fora'})`
+        + (j.local ? `\n   📍 ${j.local}\n   🗺️ ${mapsUrl(j.local)}` : '')
+        + `\n   ${lancheShareText(j)}`);
     return [`⚽ ${title}`, '', ...lines, '', HORA_AVISO, location.origin + location.pathname].join('\n');
 }
 
