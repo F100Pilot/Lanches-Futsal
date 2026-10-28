@@ -5,6 +5,10 @@ Desenvolvido por **Paulo Morais**.
 A versão da app está em `index.html` (`APP_VERSION`, `APP_RELEASE_DATE`) e aparece em **Opções → Sobre**.
 Numeração `MAIOR.MENOR.CORREÇÃO`: funcionalidades novas sobem o MENOR, correções sobem a CORREÇÃO.
 
+## 2.4.4 — 28/10/2026
+- Resumo dos lanches por atleta: **Total** = nº de atletas ativos, **Entregues** = atletas que já entregaram na volta atual, **Pendentes** = os que faltam. Quando todos entregam, começa uma nova volta.
+- Fechar a escala sem gravar mostra o aviso "A escala não foi gravada.".
+
 ## 2.4.3 — 28/10/2026
 - Botões de partilha no WhatsApp só aparecem para os editores.
 
