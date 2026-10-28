@@ -872,7 +872,7 @@
  */
 
 // Versão da app (ver CHANGELOG.md): atualizar a cada publicação
-const APP_VERSION = '2.4.3';
+const APP_VERSION = '2.4.4';
 const APP_RELEASE_DATE = '2026-10-28';
 const REFRESH_INTERVAL_MS = 60_000;
 const MIN_PASSWORD_LENGTH = 10;
@@ -1125,7 +1125,10 @@ function closeModal(modal) {
     if (modal === el.atletaModal) atletaTarget = null;
     if (modal === el.confirmModal) pendingDelete = null;
     if (modal === el.fpfModal) fpfRows = [];
-    if (modal === el.escalaModal) escalaRows = [];
+    if (modal === el.escalaModal) {
+        if (escalaRows.length) showToast('A escala não foi gravada.', 'info');
+        escalaRows = [];
+    }
 }
 
 function askDelete(html, action) {
@@ -1242,9 +1245,16 @@ function renderHero() {
 }
 
 // ── RENDER: LANCHES ────────────────────────────────────────
+/**
+ * Resumo por atleta ativo: Total = nº de atletas ativos; Entregues = quem já entregou na volta atual.
+ * Volta atual: todos entregam uma vez; quando todos têm o mesmo nº de entregas, a volta está completa.
+ */
 function updateStats() {
-    const total = lanchesData.length;
-    const delivered = lanchesData.filter(l => l.entregue).length;
+    const counts = atletasAtivos().map(a => lanchesDoAtleta(a).filter(l => l.entregue).length);
+    const total = counts.length;
+    const min = total ? Math.min(...counts) : 0;
+    const allEqual = counts.every(c => c === min);
+    const delivered = allEqual ? (min > 0 ? total : 0) : counts.filter(c => c > min).length;
     const pct = total ? Math.round((delivered / total) * 100) : 0;
     animateNumber(el.totalCount, total);
     animateNumber(el.deliveredCount, delivered);
@@ -1804,6 +1814,7 @@ async function saveEscala() {
             });
         if (!rows.length) {
             showToast('Esses jogos já têm lanche atribuído.', 'info');
+            escalaRows = [];
             closeModal(el.escalaModal);
             return;
         }
@@ -1812,6 +1823,7 @@ async function saveEscala() {
         const skipped = chosen.length - rows.length;
         showToast(`${saved.length} ${saved.length === 1 ? 'lanche atribuído' : 'lanches atribuídos'}.`
             + (skipped ? ` ${skipped} já tinham lanche.` : ''), 'success', 6000);
+        escalaRows = [];
         closeModal(el.escalaModal);
         await loadData({ silent: true });
     });
